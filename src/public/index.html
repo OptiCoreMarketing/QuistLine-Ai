@@ -27,9 +27,9 @@
     <div class="space-y-6 text-center">
       <div class="w-10 h-10 rounded-lg bg-emerald-500/20 border border-emerald-500/50 flex items-center justify-center font-bold text-emerald-400 text-xl cursor-pointer">cto</div>
       <nav class="space-y-4 text-slate-400">
-        <button onclick="switchTab('hq')" class="block p-2 hover:text-white"><i class="fa-solid fa-rocket text-lg"></i></button>
-        <button onclick="switchTab('tasks')" class="block p-2 hover:text-white"><i class="fa-solid fa-building text-lg"></i></button>
-        <button onclick="switchTab('files')" class="block p-2 hover:text-white"><i class="fa-solid fa-folder text-lg"></i></button>
+        <button onclick="switchTab('hq')" title="Headquarters" class="block p-2 hover:text-white"><i class="fa-solid fa-rocket text-lg"></i></button>
+        <button onclick="switchTab('tasks')" title="Tasks" class="block p-2 hover:text-white"><i class="fa-solid fa-list-check text-lg"></i></button>
+        <button onclick="switchTab('files')" title="Files" class="block p-2 hover:text-white"><i class="fa-solid fa-folder text-lg"></i></button>
       </nav>
     </div>
     <div class="text-slate-400 hover:text-white cursor-pointer">
@@ -73,25 +73,25 @@
     <!-- SUB HEADER (Workspace Tabs) -->
     <div class="bg-sidebar border-b border-dark px-4 flex justify-between items-center text-xs shrink-0">
       <nav class="flex gap-6">
-        <button onclick="switchTab('hq')" id="tab-hq" class="py-2.5 active-nav-tab font-semibold flex items-center gap-1.5">
+        <button onclick="switchTab('hq')" id="tab-hq" class="py-2.5 active-nav-tab font-semibold flex items-center gap-1.5 cursor-pointer">
           <i class="fa-solid fa-gauge-high"></i> Headquarters
         </button>
-        <button onclick="switchTab('tasks')" id="tab-tasks" class="py-2.5 text-slate-400 hover:text-white flex items-center gap-1.5">
+        <button onclick="switchTab('tasks')" id="tab-tasks" class="py-2.5 text-slate-400 hover:text-white flex items-center gap-1.5 cursor-pointer">
           <i class="fa-solid fa-list-check"></i> Tasks
         </button>
-        <button onclick="switchTab('files')" id="tab-files" class="py-2.5 text-slate-400 hover:text-white flex items-center gap-1.5">
+        <button onclick="switchTab('files')" id="tab-files" class="py-2.5 text-slate-400 hover:text-white flex items-center gap-1.5 cursor-pointer">
           <i class="fa-solid fa-folder"></i> Files
         </button>
-        <button onclick="switchTab('inbox')" id="tab-inbox" class="py-2.5 text-slate-400 hover:text-white flex items-center gap-1.5">
+        <button onclick="switchTab('inbox')" id="tab-inbox" class="py-2.5 text-slate-400 hover:text-white flex items-center gap-1.5 cursor-pointer">
           <i class="fa-solid fa-inbox"></i> Inbox <i class="fa-solid fa-lock text-[10px] text-slate-600"></i>
         </button>
-        <button onclick="switchTab('ads')" id="tab-ads" class="py-2.5 text-slate-400 hover:text-white flex items-center gap-1.5">
+        <button onclick="switchTab('ads')" id="tab-ads" class="py-2.5 text-slate-400 hover:text-white flex items-center gap-1.5 cursor-pointer">
           <i class="fa-solid fa-bullhorn"></i> Ads <i class="fa-solid fa-lock text-[10px] text-slate-600"></i>
         </button>
-        <button onclick="switchTab('finance')" id="tab-finance" class="py-2.5 text-slate-400 hover:text-white flex items-center gap-1.5">
+        <button onclick="switchTab('finance')" id="tab-finance" class="py-2.5 text-slate-400 hover:text-white flex items-center gap-1.5 cursor-pointer">
           <i class="fa-solid fa-wallet"></i> Finance <i class="fa-solid fa-lock text-[10px] text-slate-600"></i>
         </button>
-        <button onclick="switchTab('settings')" id="tab-settings" class="py-2.5 text-slate-400 hover:text-white flex items-center gap-1.5">
+        <button onclick="switchTab('settings')" id="tab-settings" class="py-2.5 text-slate-400 hover:text-white flex items-center gap-1.5 cursor-pointer">
           <i class="fa-solid fa-gear"></i> Settings
         </button>
       </nav>
@@ -283,9 +283,34 @@
             </div>
           </div>
         </main>
+
+        <!-- RIGHT CHAT PANEL FOR HQ -->
+        <aside class="w-80 border-l border-dark bg-sidebar flex flex-col justify-between shrink-0">
+          <div class="p-3 border-b border-dark flex justify-between items-center text-xs">
+            <span class="font-bold text-slate-200 flex items-center gap-1.5"><i class="fa-solid fa-crown text-amber-400"></i> Chief Lead Chat</span>
+            <span class="bg-emerald-950 border border-emerald-600/50 text-emerald-400 text-[10px] px-2 py-0.5 rounded font-mono font-bold">ONLINE</span>
+          </div>
+
+          <div class="flex-1 p-3 space-y-3 overflow-y-auto custom-scrollbar text-xs">
+            <div class="bg-slate-900/60 border border-dark rounded-lg p-3 text-emerald-400 text-[11px] leading-relaxed">
+              Opret opgaver i Tasks eller bed mig om at scanne virksomheder. Jeg koordinerer direkte med Engineer for at bygge og afvikle dine produkter.
+            </div>
+          </div>
+
+          <div class="p-3 border-t border-dark space-y-2 bg-slate-900/30">
+            <div class="flex items-center gap-2 text-xs text-slate-400">
+              <input type="checkbox" id="hire-eng" checked class="rounded border-dark bg-slate-950 text-emerald-500 focus:ring-0" />
+              <label for="hire-eng" class="text-[11px]">Hyr Engineer til opgaven</label>
+            </div>
+            <div class="relative">
+              <input type="text" placeholder="Skriv til Chief..." class="w-full bg-slate-950 border border-dark rounded-lg pl-3 pr-8 py-2 text-xs text-white focus:outline-none focus:border-slate-600" />
+              <button class="absolute right-2 top-2 text-slate-500 hover:text-emerald-400"><i class="fa-solid fa-paper-plane"></i></button>
+            </div>
+          </div>
+        </aside>
       </div>
 
-      <!-- SUBTAB 2: TASKS (KANBAN BOARD FROM IMAGES 1 & 2) -->
+      <!-- SUBTAB 2: TASKS (KANBAN BOARD) -->
       <div id="subtab-tasks" class="hidden flex-1 flex flex-col p-6 overflow-y-auto bg-slate-950">
         <div class="text-xs text-slate-400 mb-6">
           Chat with your lead to populate the backlog and delegate tasks to employees.
@@ -302,7 +327,6 @@
             </div>
             <p class="text-[11px] text-slate-500">What the lead has planned next, in priority order</p>
 
-            <!-- Card 1 -->
             <div class="bg-card border border-dark rounded-xl p-4 space-y-3">
               <div class="flex justify-between items-start">
                 <span class="text-[11px] text-slate-500 font-mono">#1</span>
@@ -313,7 +337,6 @@
               </p>
             </div>
 
-            <!-- Card 2 -->
             <div class="bg-card border border-dark rounded-xl p-4 space-y-3">
               <div class="flex justify-between items-start">
                 <span class="text-[11px] text-slate-500 font-mono">#2</span>
@@ -350,40 +373,37 @@
             </div>
             <p class="text-[11px] text-slate-500">Finished tasks, newest first</p>
 
-            <!-- Done Card 1 -->
             <div class="bg-card border border-dark rounded-xl p-4 space-y-3">
               <div class="flex justify-between items-center text-[11px] text-slate-400 font-mono">
                 <span><i class="fa-regular fa-clock"></i> 5m 27s</span>
                 <span class="bg-amber-950 border border-amber-800/50 text-amber-400 text-[10px] px-1.5 py-0.5 rounded font-bold">STOPPED</span>
               </div>
               <p class="text-xs text-slate-200 font-medium">
-                Execute GoogleSyn's first real LEAD SCAN: "frisører i Odense" (hairdressers in ...
+                Execute GoogleSyn's first real LEAD SCAN: "frisører i Odense"
               </p>
               <button class="text-emerald-400 hover:underline text-xs flex items-center gap-1.5 pt-1">
                 <i class="fa-regular fa-file-lines"></i> Read engineer's report &rarr;
               </button>
             </div>
 
-            <!-- Done Card 2 -->
             <div class="bg-card border border-dark rounded-xl p-4 space-y-3">
               <div class="flex justify-between items-center text-[11px] text-slate-400 font-mono">
                 <span><i class="fa-regular fa-clock"></i> 2m 53s</span>
               </div>
               <p class="text-xs text-slate-200 font-medium">
-                Run GoogleSyn's first LEAD SCAN (read-only research — do NOT modify any files i...
+                Run GoogleSyn's first LEAD SCAN (read-only research)
               </p>
               <button class="text-emerald-400 hover:underline text-xs flex items-center gap-1.5 pt-1">
                 <i class="fa-regular fa-file-lines"></i> Read engineer's report &rarr;
               </button>
             </div>
 
-            <!-- Done Card 3 -->
             <div class="bg-card border border-dark rounded-xl p-4 space-y-3">
               <div class="flex justify-between items-center text-[11px] text-slate-400 font-mono">
                 <span><i class="fa-regular fa-clock"></i> 13m 11s</span>
               </div>
               <p class="text-xs text-slate-200 font-medium">
-                Build GoogleSyn's MVP in /home/team/shared/site — a TanStack Start app (React +...
+                Build GoogleSyn's MVP in /home/team/shared/site
               </p>
               <button class="text-emerald-400 hover:underline text-xs flex items-center gap-1.5 pt-1">
                 <i class="fa-regular fa-file-lines"></i> Read engineer's report &rarr;
@@ -393,9 +413,8 @@
         </div>
       </div>
 
-      <!-- SUBTAB 3: FILES (EXPLORER FROM IMAGES 3 & 4) -->
+      <!-- SUBTAB 3: FILES (EXPLORER) -->
       <div id="subtab-files" class="hidden flex-1 flex min-h-0 bg-slate-950">
-        <!-- File Tree Sidebar -->
         <div class="w-64 border-r border-dark flex flex-col justify-between p-3 bg-sidebar shrink-0">
           <div>
             <div class="flex justify-between items-center text-xs text-slate-400 pb-2 border-b border-dark mb-2">
@@ -406,27 +425,26 @@
               </div>
             </div>
 
-            <!-- Folder / File List -->
             <div class="space-y-1 font-mono text-xs">
               <div class="flex justify-between items-center p-1.5 rounded bg-slate-900/60 text-amber-400">
                 <span class="flex items-center gap-2"><i class="fa-solid fa-folder text-amber-500"></i> .run</span>
-                <span class="text-[10px] text-slate-500">11. aug., 00.51</span>
+                <span class="text-[10px] text-slate-500">11. aug.</span>
               </div>
               <div class="flex justify-between items-center p-1.5 rounded hover:bg-slate-900 text-amber-400 cursor-pointer">
                 <span class="flex items-center gap-2"><i class="fa-solid fa-folder text-amber-500"></i> .tanstack</span>
-                <span class="text-[10px] text-slate-500">11. aug., 01.16</span>
+                <span class="text-[10px] text-slate-500">11. aug.</span>
               </div>
               <div class="flex justify-between items-center p-1.5 rounded hover:bg-slate-900 text-amber-400 cursor-pointer">
                 <span class="flex items-center gap-2"><i class="fa-solid fa-folder text-amber-500"></i> dist</span>
-                <span class="text-[10px] text-slate-500">11. aug., 01.16</span>
+                <span class="text-[10px] text-slate-500">11. aug.</span>
               </div>
               <div class="flex justify-between items-center p-1.5 rounded hover:bg-slate-900 text-amber-400 cursor-pointer">
                 <span class="flex items-center gap-2"><i class="fa-solid fa-folder text-amber-500"></i> node_modules</span>
-                <span class="text-[10px] text-slate-500">11. aug., 01.16</span>
+                <span class="text-[10px] text-slate-500">11. aug.</span>
               </div>
               <div class="flex justify-between items-center p-1.5 rounded hover:bg-slate-900 text-amber-400 cursor-pointer">
                 <span class="flex items-center gap-2"><i class="fa-solid fa-folder text-amber-500"></i> src</span>
-                <span class="text-[10px] text-slate-500">11. aug., 14.56</span>
+                <span class="text-[10px] text-slate-500">11. aug.</span>
               </div>
               <div class="flex justify-between items-center p-1.5 rounded hover:bg-slate-900 text-slate-300 cursor-pointer">
                 <span class="flex items-center gap-2"><i class="fa-regular fa-file text-slate-500"></i> .gitignore</span>
@@ -436,14 +454,6 @@
                 <span class="flex items-center gap-2"><i class="fa-regular fa-file text-slate-500"></i> SITE.md</span>
                 <span class="text-[10px] text-slate-500">3 KB</span>
               </div>
-              <div class="flex justify-between items-center p-1.5 rounded hover:bg-slate-900 text-slate-300 cursor-pointer">
-                <span class="flex items-center gap-2"><i class="fa-regular fa-file-code text-indigo-400"></i> build-vercel.sh</span>
-                <span class="text-[10px] text-slate-500">2 KB</span>
-              </div>
-              <div class="flex justify-between items-center p-1.5 rounded hover:bg-slate-900 text-slate-300 cursor-pointer">
-                <span class="flex items-center gap-2"><i class="fa-regular fa-file text-slate-500"></i> package.json</span>
-                <span class="text-[10px] text-slate-500">850 B</span>
-              </div>
             </div>
           </div>
 
@@ -452,31 +462,47 @@
           </button>
         </div>
 
-        <!-- File Preview Panel -->
         <div class="flex-1 flex flex-col items-center justify-center text-slate-600 space-y-3">
           <i class="fa-regular fa-file-lines text-5xl"></i>
           <span class="text-xs">Select a file to preview</span>
         </div>
       </div>
 
+      <!-- SUBTAB 4: INBOX / ADS / FINANCE / SETTINGS PLACEHOLDERS -->
+      <div id="subtab-inbox" class="hidden flex-1 p-8 text-slate-400 text-xs bg-slate-950">Inbox er låst eller tom.</div>
+      <div id="subtab-ads" class="hidden flex-1 p-8 text-slate-400 text-xs bg-slate-950">Ads er låst eller tom.</div>
+      <div id="subtab-finance" class="hidden flex-1 p-8 text-slate-400 text-xs bg-slate-950">Finance status $0.00.</div>
+      <div id="subtab-settings" class="hidden flex-1 p-8 text-slate-400 text-xs bg-slate-950">Virksomhedsindstillinger og konfiguration.</div>
+
     </div>
   </div>
 
+  <!-- JAVASCRIPT FEJLSISKER ROUTING LOGIK -->
   <script>
     function switchTab(tabId) {
-      ['hq', 'tasks', 'files', 'inbox', 'ads', 'finance', 'settings'].forEach(t => {
-        const el = document.getElementById(`subtab-${t}`);
-        const tabBtn = document.getElementById(`tab-${t}`);
-        if (el) el.classList.add('hidden');
+      const allTabs = ['hq', 'tasks', 'files', 'inbox', 'ads', 'finance', 'settings'];
+
+      allTabs.forEach(id => {
+        const contentEl = document.getElementById(`subtab-${id}`);
+        const tabBtn = document.getElementById(`tab-${id}`);
+
+        if (contentEl) {
+          contentEl.classList.add('hidden');
+        }
+
         if (tabBtn) {
-          tabBtn.classList.remove('active-nav-tab', 'font-semibold');
+          tabBtn.classList.remove('active-nav-tab', 'text-emerald-400', 'font-semibold');
           tabBtn.classList.add('text-slate-400');
         }
       });
 
-      const activeEl = document.getElementById(`subtab-${tabId}`);
+      const activeContent = document.getElementById(`subtab-${tabId}`);
       const activeTabBtn = document.getElementById(`tab-${tabId}`);
-      if (activeEl) activeEl.classList.remove('hidden');
+
+      if (activeContent) {
+        activeContent.classList.remove('hidden');
+      }
+
       if (activeTabBtn) {
         activeTabBtn.classList.add('active-nav-tab', 'font-semibold');
         activeTabBtn.classList.remove('text-slate-400');
@@ -491,38 +517,40 @@
       const controls = document.getElementById('org-view-controls');
 
       if (view === 'team') {
-        teamCanvas.classList.remove('hidden');
-        sitePreview.classList.add('hidden');
-        btnTeam.className = 'font-bold text-white flex items-center gap-1';
-        btnSite.className = 'font-medium text-slate-400 hover:text-white flex items-center gap-1';
-        controls.classList.remove('hidden');
+        if (teamCanvas) teamCanvas.classList.remove('hidden');
+        if (sitePreview) sitePreview.classList.add('hidden');
+        if (btnTeam) btnTeam.className = 'font-bold text-white flex items-center gap-1';
+        if (btnSite) btnSite.className = 'font-medium text-slate-400 hover:text-white flex items-center gap-1';
+        if (controls) controls.classList.remove('hidden');
       } else {
-        teamCanvas.classList.add('hidden');
-        sitePreview.classList.remove('hidden');
-        btnSite.className = 'font-bold text-white flex items-center gap-1';
-        btnTeam.className = 'font-medium text-slate-400 hover:text-white flex items-center gap-1';
-        controls.classList.add('hidden');
+        if (teamCanvas) teamCanvas.classList.add('hidden');
+        if (sitePreview) sitePreview.classList.remove('hidden');
+        if (btnSite) btnSite.className = 'font-bold text-white flex items-center gap-1';
+        if (btnTeam) btnTeam.className = 'font-medium text-slate-400 hover:text-white flex items-center gap-1';
+        if (controls) controls.classList.add('hidden');
       }
     }
 
     function setOrgLayout(layout) {
       const chart = document.getElementById('layout-chart');
-      const grid = document.getElementById('layout-grid');
       const btnChart = document.getElementById('btn-org-chart');
       const btnGrid = document.getElementById('btn-org-grid');
 
       if (layout === 'chart') {
-        chart.classList.remove('hidden');
-        if (grid) grid.classList.add('hidden');
-        btnChart.className = 'bg-slate-800 text-slate-200 px-2.5 py-1 rounded flex items-center gap-1 text-[11px]';
-        btnGrid.className = 'text-slate-400 hover:text-white px-2.5 py-1 rounded flex items-center gap-1 text-[11px]';
+        if (chart) chart.classList.remove('hidden');
+        if (btnChart) btnChart.className = 'bg-slate-800 text-slate-200 px-2.5 py-1 rounded flex items-center gap-1 text-[11px]';
+        if (btnGrid) btnGrid.className = 'text-slate-400 hover:text-white px-2.5 py-1 rounded flex items-center gap-1 text-[11px]';
       } else {
-        chart.classList.add('hidden');
-        if (grid) grid.classList.remove('hidden');
-        btnGrid.className = 'bg-slate-800 text-slate-200 px-2.5 py-1 rounded flex items-center gap-1 text-[11px]';
-        btnChart.className = 'text-slate-400 hover:text-white px-2.5 py-1 rounded flex items-center gap-1 text-[11px]';
+        if (chart) chart.classList.add('hidden');
+        if (btnGrid) btnGrid.className = 'bg-slate-800 text-slate-200 px-2.5 py-1 rounded flex items-center gap-1 text-[11px]';
+        if (btnChart) btnChart.className = 'text-slate-400 hover:text-white px-2.5 py-1 rounded flex items-center gap-1 text-[11px]';
       }
     }
+
+    // Sikr at første fane indlæses korrekt ved start
+    document.addEventListener('DOMContentLoaded', () => {
+      switchTab('hq');
+    });
   </script>
 </body>
 </html>
