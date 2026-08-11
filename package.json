@@ -1,0 +1,15 @@
+{
+  "name": "quistline-ai",
+  "version": "1.0.0",
+  "description": "QuistLine.ai Lead Agent Workspace med Chief, Engineer og Groq Engine",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node tests/server.test.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "groq-sdk": "^0.5.0"
+  }
+}
