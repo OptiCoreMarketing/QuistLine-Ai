@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>QuistLine.ai — CTO AI Business Platform</title>
+  <title>cto.new — AI Business Platform</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
@@ -20,43 +20,227 @@
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #1f293d; border-radius: 3px; }
   </style>
 </head>
-<body class="h-screen flex overflow-hidden">
+<body class="h-screen overflow-hidden">
 
-  <!-- LEFT NAVIGATION BAR (Global App Context) -->
-  <aside class="w-16 bg-sidebar border-r border-dark flex flex-col justify-between items-center py-4 shrink-0">
-    <div class="space-y-6 text-center">
-      <div class="w-10 h-10 rounded-lg bg-emerald-500/20 border border-emerald-500/50 flex items-center justify-center font-bold text-emerald-400 text-xl cursor-pointer">cto</div>
-      <nav class="space-y-4 text-slate-400">
-        <button onclick="switchTab('hq')" title="Headquarters" class="block p-2 hover:text-white"><i class="fa-solid fa-rocket text-lg"></i></button>
-        <button onclick="switchTab('tasks')" title="Tasks" class="block p-2 hover:text-white"><i class="fa-solid fa-list-check text-lg"></i></button>
-        <button onclick="switchTab('files')" title="Files" class="block p-2 hover:text-white"><i class="fa-solid fa-folder text-lg"></i></button>
-      </nav>
-    </div>
-    <div class="text-slate-400 hover:text-white cursor-pointer">
-      <i class="fa-solid fa-circle-user text-xl"></i>
-    </div>
-  </aside>
+  <!-- ================================================================= -->
+  <!-- 1. GLOBAL APP LEVEL LAYOUT (Main Navigation: Launch, Businesses, Integrations) -->
+  <!-- ================================================================= -->
+  <div id="global-app-layout" class="h-full flex">
+    
+    <!-- GLOBAL LEFT SIDEBAR -->
+    <aside class="w-60 bg-sidebar border-r border-dark flex flex-col justify-between p-4 shrink-0">
+      <div class="space-y-6">
+        <!-- Logo -->
+        <div class="flex items-center gap-2 px-2 cursor-pointer" onclick="navigateGlobal('launch')">
+          <div class="w-8 h-8 rounded bg-emerald-500/20 border border-emerald-500/50 flex items-center justify-center font-bold text-emerald-400">cto</div>
+          <span class="font-extrabold text-white text-lg tracking-wider">cto<span class="text-xs text-emerald-400 block font-normal -mt-1">AI BUSINESS</span></span>
+        </div>
 
-  <!-- WORKSPACE WRAPPER -->
-  <div class="flex-1 flex flex-col min-w-0">
+        <!-- Navigation Menu -->
+        <nav class="space-y-1 text-xs">
+          <button id="nav-launch" onclick="navigateGlobal('launch')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-emerald-400 bg-emerald-950/40 border border-emerald-500/30 font-medium transition">
+            <i class="fa-solid fa-rocket"></i> Launch new business
+          </button>
+          <button id="nav-businesses" onclick="navigateGlobal('businesses')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-900 transition font-medium">
+            <i class="fa-solid fa-building flex-shrink-0"></i> Businesses
+          </button>
+          <button id="nav-integrations" onclick="navigateGlobal('integrations')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-900 transition font-medium">
+            <i class="fa-solid fa-plug"></i> Integrations
+          </button>
 
-    <!-- TOP HEADER -->
-    <header class="h-12 bg-sidebar border-b border-dark flex items-center justify-between px-4 text-xs shrink-0">
-      <div class="flex items-center gap-3">
-        <span class="text-slate-400 font-bold tracking-wider">cto</span>
-        <span class="text-slate-600">/</span>
-        <div class="flex items-center gap-2 bg-slate-900 border border-dark px-2.5 py-1 rounded text-slate-200">
-          <i class="fa-solid fa-building-flag text-emerald-400"></i>
-          <span id="project-title" class="font-semibold">GoogleSyn</span>
-          <i class="fa-solid fa-pen text-[10px] text-slate-500 cursor-pointer"></i>
-          <i class="fa-solid fa-arrows-rotate text-[10px] text-slate-500 cursor-pointer ml-1"></i>
+          <div class="pt-4 pb-1 text-[10px] font-bold text-slate-500 uppercase tracking-wider px-3">Marketplace</div>
+          <button class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-900 transition">
+            <i class="fa-solid fa-store"></i> Marketplace
+          </button>
+          <button class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-900 transition">
+            <i class="fa-solid fa-layer-group"></i> My Listings
+          </button>
+        </nav>
+      </div>
+
+      <!-- Left Sidebar Bottom (Upgrade & Profile) -->
+      <div class="space-y-3">
+        <div class="bg-indigo-950/30 border border-indigo-500/30 rounded-xl p-3 text-xs space-y-2">
+          <div class="flex justify-between items-center font-bold text-white">
+            <span class="flex items-center gap-1.5"><i class="fa-solid fa-wand-magic-sparkles text-indigo-400"></i> Upgrade</span>
+            <a href="#" class="text-[10px] text-indigo-400 hover:underline">View plans &rarr;</a>
+          </div>
+          <ul class="text-[11px] text-slate-400 space-y-1 list-disc list-inside">
+            <li>Configure lead agent permissions</li>
+            <li>Send and receive emails</li>
+            <li>Paid marketplace listings</li>
+          </ul>
+        </div>
+
+        <div class="pt-2 border-t border-dark flex justify-between items-center text-xs px-1">
+          <div class="flex items-center gap-2">
+            <div class="w-6 h-6 rounded-full bg-slate-800 flex items-center justify-center text-[10px] text-white">A</div>
+            <div>
+              <div class="text-slate-200 font-medium text-[11px]">Angel</div>
+              <div class="text-[9px] text-slate-500 font-bold">FREE</div>
+            </div>
+          </div>
+          <i class="fa-solid fa-headset text-slate-500 hover:text-white cursor-pointer" title="Support"></i>
+        </div>
+      </div>
+    </aside>
+
+    <!-- GLOBAL MAIN CONTENT AREA -->
+    <main class="flex-1 overflow-y-auto bg-slate-950 p-8 custom-scrollbar">
+
+      <!-- VIEW 1: LAUNCH NEW BUSINESS -->
+      <div id="view-launch" class="max-w-3xl mx-auto space-y-6 pt-6">
+        <h1 class="text-2xl font-bold text-white text-center">What business do you want to launch?</h1>
+
+        <!-- Sponsored Banner -->
+        <div class="bg-slate-900 border border-dark rounded-xl p-4 flex items-center justify-between">
+          <div class="flex items-center gap-4">
+            <div class="w-10 h-10 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-500 text-xl font-bold">S</div>
+            <div>
+              <div class="text-xs font-bold text-amber-400 uppercase tracking-wider mb-0.5">SPONSORED Similarweb</div>
+              <div class="text-sm font-semibold text-white">Start Your Free Similarweb Trial</div>
+              <div class="text-xs text-slate-400">Turn large-scale website and mobile app data into actionable analytics.</div>
+            </div>
+          </div>
+          <button class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-xs font-semibold transition">Get Started &rarr;</button>
+        </div>
+
+        <!-- Prompt Text Area -->
+        <div class="bg-card border border-dark rounded-xl p-4 space-y-4">
+          <textarea rows="5" class="w-full bg-transparent text-slate-200 text-sm focus:outline-none resize-none" placeholder="Who's it for? What does it do? How will it make money? Rough notes are perfect."></textarea>
+          <div class="flex justify-between items-center pt-2 border-t border-dark">
+            <div class="flex items-center gap-2 text-xs text-slate-400 bg-slate-900 px-3 py-1.5 rounded-lg border border-dark">
+              <i class="fa-solid fa-robot"></i> Auto model
+            </div>
+            <button class="bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 transition">
+              <i class="fa-solid fa-rocket"></i> Launch business
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick Access to Active Business -->
+        <div class="pt-6">
+          <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Your Businesses</div>
+          <div onclick="openBusiness('GoogleSyn')" class="bg-card border border-dark hover:border-emerald-500/50 rounded-xl p-4 flex justify-between items-center cursor-pointer transition group">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-lg bg-indigo-950 border border-indigo-500/30 flex items-center justify-center text-indigo-400 font-bold">G</div>
+              <div>
+                <div class="font-bold text-white text-sm group-hover:text-emerald-400 transition">GoogleSyn</div>
+                <div class="text-xs text-slate-500 flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-amber-500"></span> Paused
+                </div>
+              </div>
+            </div>
+            <i class="fa-solid fa-chevron-right text-slate-600 group-hover:text-emerald-400 transition"></i>
+          </div>
         </div>
       </div>
 
-      <!-- Top Nav Right -->
+      <!-- VIEW 2: BUSINESSES LIST -->
+      <div id="view-businesses" class="hidden max-w-4xl mx-auto space-y-6 pt-4">
+        <div>
+          <h1 class="text-xl font-bold text-white">Businesses</h1>
+          <p class="text-xs text-slate-400">Manage the businesses you're building with cto.new</p>
+        </div>
+
+        <!-- Business Card -->
+        <div class="bg-card border border-dark rounded-xl p-5 flex items-center justify-between">
+          <div class="flex items-center gap-4">
+            <div class="w-14 h-14 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-white font-bold text-2xl">G</div>
+            <div class="space-y-1">
+              <div class="flex items-center gap-3">
+                <h3 class="font-bold text-white text-base">GoogleSyn</h3>
+                <span class="text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded-full font-medium">Paused</span>
+              </div>
+              <div class="text-xs text-slate-400 flex items-center gap-4">
+                <span>Active 27m ago</span>
+                <span>Employees: <i class="fa-solid fa-crown text-amber-400"></i> Lead, <i class="fa-solid fa-code text-indigo-400"></i> Engineer</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button onclick="openBusiness('GoogleSyn')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 transition">
+              Open <i class="fa-solid fa-arrow-right text-xs"></i>
+            </button>
+            <button class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-2 rounded-lg text-xs font-semibold">
+              <i class="fa-solid fa-shop"></i> Sell
+            </button>
+          </div>
+        </div>
+
+        <!-- Marketplace Banner -->
+        <div class="bg-gradient-to-r from-emerald-950/40 to-slate-900 border border-emerald-600/30 rounded-xl p-5 flex justify-between items-center">
+          <div>
+            <div class="font-bold text-white text-sm mb-1">Browse the marketplace</div>
+            <div class="text-xs text-slate-400">Buy a ready-to-run AI business and skip the setup.</div>
+          </div>
+          <button class="bg-emerald-950 border border-emerald-600/50 text-emerald-400 hover:bg-emerald-900 px-4 py-2 rounded-lg text-xs font-semibold">Discover businesses &rarr;</button>
+        </div>
+      </div>
+
+      <!-- VIEW 3: INTEGRATIONS -->
+      <div id="view-integrations" class="hidden max-w-4xl mx-auto space-y-6 pt-4">
+        <div>
+          <h1 class="text-xl font-bold text-white">Integrations</h1>
+          <p class="text-xs text-slate-400">Connect external tools to power your AI business agents</p>
+        </div>
+
+        <div class="space-y-4">
+          <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">CODE</div>
+          <div class="bg-card border border-dark rounded-xl p-5 flex justify-between items-center">
+            <div class="flex items-center gap-4">
+              <i class="fa-brands fa-github text-3xl text-white"></i>
+              <div>
+                <div class="font-bold text-white text-sm">GitHub <span class="text-xs text-slate-500 font-normal ml-2">• Not connected</span></div>
+                <div class="text-xs text-slate-400">Connect GitHub so businesses can work on your repositories.</div>
+              </div>
+            </div>
+            <button class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-xs font-semibold">Connect GitHub</button>
+          </div>
+
+          <div class="text-xs font-bold text-slate-400 uppercase tracking-wider pt-4">MCPS & TOOLS</div>
+          <div class="bg-card border border-dark rounded-xl p-5 flex justify-between items-center">
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold">K</div>
+              <div>
+                <div class="font-bold text-white text-sm"><span class="text-amber-400 text-[10px] font-bold border border-amber-400/30 px-1 rounded mr-1">SPONSORED</span> Kaspr: B2B Contact Data Tool</div>
+                <div class="text-xs text-slate-400">Automate your candidate outreach by finding verified contact data.</div>
+              </div>
+            </div>
+            <button class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-xs font-semibold">Start Prospecting &rarr;</button>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+
+  <!-- ================================================================= -->
+  <!-- 2. BUSINESS WORKSPACE LEVEL LAYOUT (Inside GoogleSyn Headquarters) -->
+  <!-- ================================================================= -->
+  <div id="workspace-app-layout" class="h-full flex flex-col hidden">
+
+    <!-- WORKSPACE TOP HEADER -->
+    <header class="h-12 bg-sidebar border-b border-dark flex items-center justify-between px-4 text-xs shrink-0">
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2 cursor-pointer" onclick="navigateGlobal('launch')">
+          <div class="w-6 h-6 rounded bg-emerald-500/20 border border-emerald-500/50 flex items-center justify-center font-bold text-emerald-400 text-xs">cto</div>
+          <span class="font-bold text-white">cto</span>
+        </div>
+        <span class="text-slate-600">/</span>
+        <div class="flex items-center gap-2 bg-slate-900 border border-dark px-2.5 py-1 rounded text-slate-200">
+          <i class="fa-solid fa-building-flag text-emerald-400"></i>
+          <span id="workspace-business-name" class="font-semibold">GoogleSyn</span>
+          <i class="fa-solid fa-pen text-[10px] text-slate-500 cursor-pointer"></i>
+        </div>
+      </div>
+
+      <!-- Top Nav Right Actions -->
       <div class="flex items-center gap-4 text-slate-400">
-        <a href="#" class="hover:text-white flex items-center gap-1"><i class="fa-solid fa-house"></i> Home</a>
-        <a href="#" class="hover:text-white flex items-center gap-1"><i class="fa-solid fa-store"></i> Marketplace</a>
+        <button onclick="navigateGlobal('launch')" class="hover:text-white flex items-center gap-1"><i class="fa-solid fa-house"></i> Home</button>
+        <button onclick="navigateGlobal('businesses')" class="hover:text-white flex items-center gap-1"><i class="fa-solid fa-store"></i> Marketplace</button>
         <a href="#" class="hover:text-white flex items-center gap-1"><i class="fa-solid fa-book"></i> Documentation</a>
         <button class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1 rounded-md font-medium text-xs flex items-center gap-1.5 transition">
           <i class="fa-solid fa-shop"></i> Sell this business
@@ -64,13 +248,10 @@
         <button class="bg-indigo-600/30 border border-indigo-500/40 text-indigo-300 hover:bg-indigo-600/50 px-3 py-1 rounded-md font-medium text-xs flex items-center gap-1.5">
           <i class="fa-brands fa-discord"></i> Discord
         </button>
-        <button class="bg-purple-900/40 border border-purple-500/40 text-purple-200 hover:bg-purple-800/50 px-3 py-1 rounded-md font-medium text-xs flex items-center gap-1.5">
-          <i class="fa-solid fa-wand-magic-sparkles"></i> Upgrade
-        </button>
       </div>
     </header>
 
-    <!-- SUB HEADER (Workspace Tabs) -->
+    <!-- WORKSPACE SUB HEADER (Tabs: Headquarters, Tasks, Files...) -->
     <div class="bg-sidebar border-b border-dark px-4 flex justify-between items-center text-xs shrink-0">
       <nav class="flex gap-6">
         <button onclick="switchTab('hq')" id="tab-hq" class="py-2.5 active-nav-tab font-semibold flex items-center gap-1.5 cursor-pointer">
@@ -100,19 +281,20 @@
       </button>
     </div>
 
-    <!-- MAIN WORKSPACE LAYOUT -->
+    <!-- WORKSPACE MAIN CONTENT AREA -->
     <div class="flex-1 flex min-h-0">
 
       <!-- SUBTAB 1: HEADQUARTERS -->
       <div id="subtab-hq" class="flex-1 flex min-w-0">
-        <!-- LEFT CONTROL PANEL -->
+        
+        <!-- HQ LEFT SIDEBAR -->
         <aside class="w-64 bg-sidebar border-r border-dark p-3 flex flex-col justify-between shrink-0 custom-scrollbar overflow-y-auto">
           <div class="space-y-5">
             <button class="w-full py-2 bg-emerald-950/40 hover:bg-emerald-900/50 border border-emerald-600/50 text-emerald-400 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 transition">
               <i class="fa-solid fa-play"></i> Resume business
             </button>
 
-            <!-- MY TODO LIST -->
+            <!-- TODO LIST -->
             <div>
               <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                 <i class="fa-solid fa-circle-check text-emerald-500"></i> MY TODO LIST
@@ -134,7 +316,7 @@
               </div>
             </div>
 
-            <!-- ADS -->
+            <!-- ADS & FINANCE -->
             <div>
               <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                 <i class="fa-solid fa-bullhorn text-slate-500"></i> ADS <i class="fa-solid fa-lock text-[10px] text-slate-600"></i>
@@ -144,13 +326,11 @@
               </button>
             </div>
 
-            <!-- FINANCE -->
             <div>
               <div class="flex justify-between items-center mb-2">
                 <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                  <i class="fa-solid fa-wallet text-slate-500"></i> FINANCE <i class="fa-solid fa-lock text-[10px] text-slate-600"></i>
+                  <i class="fa-solid fa-wallet text-slate-500"></i> FINANCE
                 </span>
-                <a href="#" class="text-[10px] text-slate-500 hover:text-slate-300">Manage &gt;</a>
               </div>
               <div class="bg-card border border-dark rounded-lg p-3 flex justify-between items-center">
                 <span class="text-xs text-slate-400">Balance</span>
@@ -159,25 +339,23 @@
             </div>
           </div>
 
-          <!-- USER FOOTER -->
           <div class="pt-4 border-t border-dark flex items-center justify-between text-xs">
             <div>
               <div class="text-slate-200 font-medium truncate w-36">angel@corehost.one</div>
               <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">FREE</div>
             </div>
-            <i class="fa-solid fa-ellipsis-vertical text-slate-500 cursor-pointer"></i>
           </div>
         </aside>
 
-        <!-- CENTER PANEL (Interactive Workspace) -->
+        <!-- HQ CENTER CANVAS PANEL -->
         <main class="flex-1 flex flex-col min-w-0 bg-slate-950">
-          <!-- Top Banner: Sponsored & Limit Bar -->
+          
+          <!-- Top Banners -->
           <div class="p-3 border-b border-dark space-y-2 bg-slate-900/40">
             <div class="bg-slate-900 border border-dark rounded-lg p-2.5 flex items-center justify-between text-xs">
               <div class="flex items-center gap-3">
                 <span class="bg-amber-500/20 text-amber-400 text-[10px] font-bold px-1.5 py-0.5 rounded border border-amber-500/30">SPONSORED</span>
                 <span class="font-bold text-slate-200">Kaspr: B2B Contact Data Tool</span>
-                <span class="text-slate-400 truncate hidden md:inline">Automate your lead generation by finding and enriching verified contact data.</span>
               </div>
               <button class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1 rounded text-xs font-semibold shrink-0">Start Prospecting &rarr;</button>
             </div>
@@ -185,77 +363,59 @@
             <div class="bg-slate-900/80 border border-dark rounded-lg p-2 flex items-center justify-between text-xs">
               <div class="flex items-center gap-2">
                 <i class="fa-solid fa-arrows-rotate text-emerald-400"></i>
-                <div>
-                  <span class="font-bold text-slate-200">Your limit has reset</span>
-                  <p class="text-[11px] text-slate-400">Hit resume to carry on where you left off</p>
-                </div>
+                <span class="font-bold text-slate-200">Your limit has reset</span>
               </div>
-              <button class="bg-emerald-950 border border-emerald-600/50 text-emerald-400 hover:bg-emerald-900 px-3 py-1 rounded text-xs font-medium flex items-center gap-1.5">
-                <i class="fa-solid fa-play"></i> Resume
-              </button>
+              <button class="bg-emerald-950 border border-emerald-600/50 text-emerald-400 hover:bg-emerald-900 px-3 py-1 rounded text-xs font-medium">Resume</button>
             </div>
           </div>
 
-          <!-- View Switcher (Team / Site Bar) -->
+          <!-- View Toggle Bar -->
           <div class="px-4 py-2 border-b border-dark flex justify-between items-center text-xs bg-sidebar">
             <div class="flex items-center gap-4">
               <button onclick="toggleMainView('team')" id="btn-view-team" class="font-bold text-white flex items-center gap-1">TEAM</button>
               <button onclick="toggleMainView('site')" id="btn-view-site" class="font-medium text-slate-400 hover:text-white flex items-center gap-1">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block"></span> SITE
               </button>
-
-              <div id="org-view-controls" class="flex gap-1 ml-4 border-l border-dark pl-4">
-                <button onclick="setOrgLayout('chart')" id="btn-org-chart" class="bg-slate-800 text-slate-200 px-2.5 py-1 rounded flex items-center gap-1 text-[11px]">
-                  <i class="fa-solid fa-sitemap"></i> Org chart
-                </button>
-                <button onclick="setOrgLayout('grid')" id="btn-org-grid" class="text-slate-400 hover:text-white px-2.5 py-1 rounded flex items-center gap-1 text-[11px]">
-                  <i class="fa-solid fa-border-all"></i> Grid
-                </button>
-              </div>
             </div>
 
             <div class="flex items-center gap-4 text-slate-400 text-[11px]">
-              <span>USAGE: <span class="bg-slate-900 border border-dark px-1.5 py-0.5 rounded text-white">WEEKLY</span> <span class="bg-emerald-950 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-800">DAILY</span> 13%</span>
-              <button class="hover:text-white"><i class="fa-solid fa-eye"></i> View plan</button>
-              <button class="hover:text-white"><i class="fa-solid fa-user-plus"></i> Hire employee</button>
+              <span>USAGE: <span class="bg-emerald-950 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-800">DAILY</span> 13%</span>
             </div>
           </div>
 
-          <!-- VIEW A: TEAM ORG CANVAS -->
+          <!-- TEAM CANVAS -->
           <div id="view-team-canvas" class="flex-1 grid-bg p-6 relative overflow-y-auto custom-scrollbar flex flex-col justify-between">
-            <div id="layout-chart" class="flex flex-col items-center justify-center space-y-8 py-4">
-              <div class="relative group">
-                <div class="w-16 h-16 rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-300 text-xl font-bold shadow-lg cursor-pointer hover:border-emerald-500 transition">
-                  <i class="fa-solid fa-code"></i>
+            <div class="flex flex-col items-center justify-center space-y-6 py-4">
+              <!-- Lead Node -->
+              <div class="bg-card border border-dark p-4 rounded-xl flex items-center gap-4 shadow-xl">
+                <div class="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center text-amber-400 text-xl font-bold">
+                  <i class="fa-solid fa-crown"></i>
                 </div>
-                <div class="text-center mt-2">
-                  <div class="font-bold text-white text-xs">engineer</div>
-                  <div class="text-[10px] text-slate-400 flex items-center justify-center gap-1 mt-0.5">
-                    <i class="fa-solid fa-microchip text-slate-500"></i>
-                    <select class="bg-slate-900 border border-dark rounded text-slate-300 text-[10px] focus:outline-none">
-                      <option>DeepSeek V4 Flash 0731</option>
-                    </select>
-                  </div>
+                <div>
+                  <div class="font-bold text-white text-xs">lead</div>
+                  <select class="bg-slate-900 border border-dark rounded text-slate-300 text-[10px] mt-1">
+                    <option>DeepSeek V4 Flash 0731</option>
+                  </select>
                 </div>
               </div>
 
-              <div class="w-0.5 h-8 bg-slate-700"></div>
+              <div class="w-0.5 h-6 bg-slate-700"></div>
 
-              <div class="text-center">
-                <div class="w-16 h-16 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-300 text-xl font-bold shadow-lg">
-                  <i class="fa-solid fa-user-gear"></i>
+              <!-- Engineer Node -->
+              <div class="bg-card border border-dark p-4 rounded-xl flex items-center gap-4 shadow-xl">
+                <div class="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center text-indigo-400 text-xl font-bold">
+                  <i class="fa-solid fa-code"></i>
                 </div>
-                <div class="font-bold text-white text-xs mt-2">lead</div>
-                <div class="text-[10px] text-slate-400 flex items-center justify-center gap-1 mt-0.5">
-                  <i class="fa-solid fa-microchip text-slate-500"></i>
-                  <select class="bg-slate-900 border border-dark rounded text-slate-300 text-[10px] focus:outline-none">
+                <div>
+                  <div class="font-bold text-white text-xs">engineer</div>
+                  <select class="bg-slate-900 border border-dark rounded text-slate-300 text-[10px] mt-1">
                     <option>DeepSeek V4 Flash 0731</option>
                   </select>
                 </div>
               </div>
             </div>
 
-            <!-- BOTTOM LIVE ACTIVITY TERMINAL LOG -->
+            <!-- LIVE TERMINAL LOG -->
             <div class="bg-card border border-dark rounded-lg overflow-hidden font-mono text-[11px]">
               <div class="bg-slate-900 px-3 py-1.5 border-b border-dark flex justify-between items-center text-slate-400">
                 <span class="flex items-center gap-2"><i class="fa-solid fa-terminal text-emerald-400"></i> LIVE ACTIVITY</span>
@@ -267,24 +427,22 @@
             </div>
           </div>
 
-          <!-- VIEW B: LIVE SITE PREVIEW -->
+          <!-- LIVE SITE PREVIEW -->
           <div id="view-site-preview" class="flex-1 flex flex-col min-h-0 hidden bg-slate-900">
-            <div class="p-2 border-b border-dark flex items-center justify-between gap-2 text-xs bg-sidebar">
-              <div class="flex items-center gap-2 flex-1 max-w-xl bg-slate-950 border border-dark rounded px-3 py-1 text-slate-300 font-mono text-[11px]">
-                <i class="fa-solid fa-lock text-emerald-400"></i>
-                <span class="truncate">c748f4520c31cd252ba0d12ec9bb3125.ctonew.app</span>
-              </div>
+            <div class="p-2 border-b border-dark flex items-center gap-2 text-xs bg-sidebar">
+              <span class="text-slate-400 font-mono">c748f4520c31cd252ba0d12ec9bb3125.ctonew.app</span>
             </div>
             <div class="flex-1 bg-white text-slate-900 p-8 overflow-y-auto">
-              <div class="max-w-3xl mx-auto space-y-8 text-center py-10">
-                <h1 class="text-4xl font-extrabold text-slate-900">Gratis Google-synlighedstjek</h1>
-                <p class="text-slate-600 text-sm">Se hvor findbar din virksomhed er på Google på 30 sekunder.</p>
+              <div class="max-w-xl mx-auto text-center space-y-4 py-10">
+                <h1 class="text-3xl font-extrabold">Gratis Google-synlighedstjek</h1>
+                <p class="text-slate-600">Se hvor findbar din virksomhed er på Google på 30 sekunder.</p>
               </div>
             </div>
           </div>
+
         </main>
 
-        <!-- RIGHT CHAT PANEL FOR HQ -->
+        <!-- HQ RIGHT CHAT PANEL -->
         <aside class="w-80 border-l border-dark bg-sidebar flex flex-col justify-between shrink-0">
           <div class="p-3 border-b border-dark flex justify-between items-center text-xs">
             <span class="font-bold text-slate-200 flex items-center gap-1.5"><i class="fa-solid fa-crown text-amber-400"></i> Chief Lead Chat</span>
@@ -293,192 +451,99 @@
 
           <div class="flex-1 p-3 space-y-3 overflow-y-auto custom-scrollbar text-xs">
             <div class="bg-slate-900/60 border border-dark rounded-lg p-3 text-emerald-400 text-[11px] leading-relaxed">
-              Opret opgaver i Tasks eller bed mig om at scanne virksomheder. Jeg koordinerer direkte med Engineer for at bygge og afvikle dine produkter.
+              Opret opgaver i Tasks eller bed mig om at scanne virksomheder. Jeg koordinerer direkte med Engineer for at bygge dine produkter.
             </div>
           </div>
 
           <div class="p-3 border-t border-dark space-y-2 bg-slate-900/30">
-            <div class="flex items-center gap-2 text-xs text-slate-400">
-              <input type="checkbox" id="hire-eng" checked class="rounded border-dark bg-slate-950 text-emerald-500 focus:ring-0" />
-              <label for="hire-eng" class="text-[11px]">Hyr Engineer til opgaven</label>
-            </div>
             <div class="relative">
               <input type="text" placeholder="Skriv til Chief..." class="w-full bg-slate-950 border border-dark rounded-lg pl-3 pr-8 py-2 text-xs text-white focus:outline-none focus:border-slate-600" />
               <button class="absolute right-2 top-2 text-slate-500 hover:text-emerald-400"><i class="fa-solid fa-paper-plane"></i></button>
             </div>
           </div>
         </aside>
+
       </div>
 
-      <!-- SUBTAB 2: TASKS (KANBAN BOARD) -->
-      <div id="subtab-tasks" class="hidden flex-1 flex flex-col p-6 overflow-y-auto bg-slate-950">
-        <div class="text-xs text-slate-400 mb-6">
-          Chat with your lead to populate the backlog and delegate tasks to employees.
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 flex-1">
-          <!-- BACKLOG COLUMN -->
-          <div class="flex flex-col space-y-3">
-            <div class="flex justify-between items-center text-xs">
-              <span class="font-bold text-slate-300 flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-slate-500"></span> BACKLOG
-              </span>
-              <span class="text-slate-500 font-mono text-[11px]">2</span>
-            </div>
-            <p class="text-[11px] text-slate-500">What the lead has planned next, in priority order</p>
-
-            <div class="bg-card border border-dark rounded-xl p-4 space-y-3">
-              <div class="flex justify-between items-start">
-                <span class="text-[11px] text-slate-500 font-mono">#1</span>
-                <span class="bg-slate-800 text-slate-400 text-[10px] px-2 py-0.5 rounded font-mono font-bold">DRAFT</span>
-              </div>
-              <p class="text-xs text-slate-200 leading-relaxed">
-                Lead-agent: scan byer/brancher for virksomheder med svag eller ingen Google-tilstedeværelse og byg prioriteret lead-liste med personlige bookingslinks
-              </p>
-            </div>
-
-            <div class="bg-card border border-dark rounded-xl p-4 space-y-3">
-              <div class="flex justify-between items-start">
-                <span class="text-[11px] text-slate-500 font-mono">#2</span>
-                <span class="bg-slate-800 text-slate-400 text-[10px] px-2 py-0.5 rounded font-mono font-bold">DRAFT</span>
-              </div>
-              <p class="text-xs text-slate-200 leading-relaxed">
-                Betalt produkt: fuld optimeringsrapport som Stripe-produkt med betalingslink fra resultatsiden
-              </p>
-            </div>
+      <!-- SUBTAB 2: TASKS -->
+      <div id="subtab-tasks" class="hidden flex-1 p-6 overflow-y-auto bg-slate-950">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="space-y-3">
+            <div class="font-bold text-xs text-slate-300">BACKLOG</div>
+            <div class="bg-card border border-dark p-4 rounded-xl text-xs text-slate-200">Execute GoogleSyn's lead scan for frisører</div>
           </div>
-
-          <!-- WORKING COLUMN -->
-          <div class="flex flex-col space-y-3">
-            <div class="flex justify-between items-center text-xs">
-              <span class="font-bold text-slate-300 flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-amber-500"></span> WORKING
-              </span>
-              <span class="text-slate-500 font-mono text-[11px]">0</span>
-            </div>
-            <p class="text-[11px] text-slate-500">Tasks being worked on right now</p>
-
-            <div class="bg-card/40 border border-dark rounded-xl p-8 text-center text-xs text-slate-500">
-              No one is working right now.
-            </div>
+          <div class="space-y-3">
+            <div class="font-bold text-xs text-slate-300">WORKING</div>
+            <div class="bg-card/40 border border-dark p-6 rounded-xl text-xs text-slate-500 text-center">Ingen opgaver i gang</div>
           </div>
-
-          <!-- DONE COLUMN -->
-          <div class="flex flex-col space-y-3">
-            <div class="flex justify-between items-center text-xs">
-              <span class="font-bold text-slate-300 flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-emerald-500"></span> DONE
-              </span>
-              <span class="text-slate-500 font-mono text-[11px]">3</span>
-            </div>
-            <p class="text-[11px] text-slate-500">Finished tasks, newest first</p>
-
-            <div class="bg-card border border-dark rounded-xl p-4 space-y-3">
-              <div class="flex justify-between items-center text-[11px] text-slate-400 font-mono">
-                <span><i class="fa-regular fa-clock"></i> 5m 27s</span>
-                <span class="bg-amber-950 border border-amber-800/50 text-amber-400 text-[10px] px-1.5 py-0.5 rounded font-bold">STOPPED</span>
-              </div>
-              <p class="text-xs text-slate-200 font-medium">
-                Execute GoogleSyn's first real LEAD SCAN: "frisører i Odense"
-              </p>
-              <button class="text-emerald-400 hover:underline text-xs flex items-center gap-1.5 pt-1">
-                <i class="fa-regular fa-file-lines"></i> Read engineer's report &rarr;
-              </button>
-            </div>
-
-            <div class="bg-card border border-dark rounded-xl p-4 space-y-3">
-              <div class="flex justify-between items-center text-[11px] text-slate-400 font-mono">
-                <span><i class="fa-regular fa-clock"></i> 2m 53s</span>
-              </div>
-              <p class="text-xs text-slate-200 font-medium">
-                Run GoogleSyn's first LEAD SCAN (read-only research)
-              </p>
-              <button class="text-emerald-400 hover:underline text-xs flex items-center gap-1.5 pt-1">
-                <i class="fa-regular fa-file-lines"></i> Read engineer's report &rarr;
-              </button>
-            </div>
-
-            <div class="bg-card border border-dark rounded-xl p-4 space-y-3">
-              <div class="flex justify-between items-center text-[11px] text-slate-400 font-mono">
-                <span><i class="fa-regular fa-clock"></i> 13m 11s</span>
-              </div>
-              <p class="text-xs text-slate-200 font-medium">
-                Build GoogleSyn's MVP in /home/team/shared/site
-              </p>
-              <button class="text-emerald-400 hover:underline text-xs flex items-center gap-1.5 pt-1">
-                <i class="fa-regular fa-file-lines"></i> Read engineer's report &rarr;
-              </button>
-            </div>
+          <div class="space-y-3">
+            <div class="font-bold text-xs text-slate-300">DONE</div>
+            <div class="bg-card border border-dark p-4 rounded-xl text-xs text-slate-200">Build GoogleSyn MVP landing page</div>
           </div>
         </div>
       </div>
 
-      <!-- SUBTAB 3: FILES (EXPLORER) -->
-      <div id="subtab-files" class="hidden flex-1 flex min-h-0 bg-slate-950">
-        <div class="w-64 border-r border-dark flex flex-col justify-between p-3 bg-sidebar shrink-0">
-          <div>
-            <div class="flex justify-between items-center text-xs text-slate-400 pb-2 border-b border-dark mb-2">
-              <span class="font-mono">shared &gt; site</span>
-              <div class="flex items-center gap-2">
-                <i class="fa-solid fa-arrows-rotate hover:text-white cursor-pointer"></i>
-                <i class="fa-solid fa-arrow-up-from-bracket hover:text-white cursor-pointer"></i>
-              </div>
-            </div>
-
-            <div class="space-y-1 font-mono text-xs">
-              <div class="flex justify-between items-center p-1.5 rounded bg-slate-900/60 text-amber-400">
-                <span class="flex items-center gap-2"><i class="fa-solid fa-folder text-amber-500"></i> .run</span>
-                <span class="text-[10px] text-slate-500">11. aug.</span>
-              </div>
-              <div class="flex justify-between items-center p-1.5 rounded hover:bg-slate-900 text-amber-400 cursor-pointer">
-                <span class="flex items-center gap-2"><i class="fa-solid fa-folder text-amber-500"></i> .tanstack</span>
-                <span class="text-[10px] text-slate-500">11. aug.</span>
-              </div>
-              <div class="flex justify-between items-center p-1.5 rounded hover:bg-slate-900 text-amber-400 cursor-pointer">
-                <span class="flex items-center gap-2"><i class="fa-solid fa-folder text-amber-500"></i> dist</span>
-                <span class="text-[10px] text-slate-500">11. aug.</span>
-              </div>
-              <div class="flex justify-between items-center p-1.5 rounded hover:bg-slate-900 text-amber-400 cursor-pointer">
-                <span class="flex items-center gap-2"><i class="fa-solid fa-folder text-amber-500"></i> node_modules</span>
-                <span class="text-[10px] text-slate-500">11. aug.</span>
-              </div>
-              <div class="flex justify-between items-center p-1.5 rounded hover:bg-slate-900 text-amber-400 cursor-pointer">
-                <span class="flex items-center gap-2"><i class="fa-solid fa-folder text-amber-500"></i> src</span>
-                <span class="text-[10px] text-slate-500">11. aug.</span>
-              </div>
-              <div class="flex justify-between items-center p-1.5 rounded hover:bg-slate-900 text-slate-300 cursor-pointer">
-                <span class="flex items-center gap-2"><i class="fa-regular fa-file text-slate-500"></i> .gitignore</span>
-                <span class="text-[10px] text-slate-500">308 B</span>
-              </div>
-              <div class="flex justify-between items-center p-1.5 rounded hover:bg-slate-900 text-slate-300 cursor-pointer">
-                <span class="flex items-center gap-2"><i class="fa-regular fa-file text-slate-500"></i> SITE.md</span>
-                <span class="text-[10px] text-slate-500">3 KB</span>
-              </div>
-            </div>
-          </div>
-
-          <button class="text-xs text-slate-500 hover:text-white flex items-center gap-2 pt-3 border-t border-dark">
-            <i class="fa-solid fa-book"></i> Docs
-          </button>
+      <!-- SUBTAB 3: FILES -->
+      <div id="subtab-files" class="hidden flex-1 flex bg-slate-950">
+        <div class="w-64 border-r border-dark p-3 bg-sidebar text-xs font-mono space-y-2">
+          <div class="text-slate-400">shared &gt; site</div>
+          <div class="text-amber-400"><i class="fa-solid fa-folder"></i> src</div>
+          <div class="text-slate-300"><i class="fa-regular fa-file"></i> index.html</div>
         </div>
-
-        <div class="flex-1 flex flex-col items-center justify-center text-slate-600 space-y-3">
-          <i class="fa-regular fa-file-lines text-5xl"></i>
-          <span class="text-xs">Select a file to preview</span>
-        </div>
+        <div class="flex-1 flex items-center justify-center text-xs text-slate-600">Vælg en fil for at få vist indholdet</div>
       </div>
 
-      <!-- SUBTAB 4: INBOX / ADS / FINANCE / SETTINGS PLACEHOLDERS -->
-      <div id="subtab-inbox" class="hidden flex-1 p-8 text-slate-400 text-xs bg-slate-950">Inbox er låst eller tom.</div>
-      <div id="subtab-ads" class="hidden flex-1 p-8 text-slate-400 text-xs bg-slate-950">Ads er låst eller tom.</div>
-      <div id="subtab-finance" class="hidden flex-1 p-8 text-slate-400 text-xs bg-slate-950">Finance status $0.00.</div>
-      <div id="subtab-settings" class="hidden flex-1 p-8 text-slate-400 text-xs bg-slate-950">Virksomhedsindstillinger og konfiguration.</div>
+      <!-- PLACEHOLDERS FOR REMAINING TABS -->
+      <div id="subtab-inbox" class="hidden flex-1 p-8 text-slate-400 text-xs bg-slate-950">Inbox funktioner.</div>
+      <div id="subtab-ads" class="hidden flex-1 p-8 text-slate-400 text-xs bg-slate-950">Ads integrationer.</div>
+      <div id="subtab-finance" class="hidden flex-1 p-8 text-slate-400 text-xs bg-slate-950">Økonomi oversigt.</div>
+      <div id="subtab-settings" class="hidden flex-1 p-8 text-slate-400 text-xs bg-slate-950">Virksomhedsindstillinger.</div>
 
     </div>
   </div>
 
-  <!-- JAVASCRIPT FEJLSISKER ROUTING LOGIK -->
+  <!-- JAVASCRIPT APP ROUTING LOGIK -->
   <script>
+    // 1. Navigation på Global App Level (Sidebar)
+    function navigateGlobal(viewName) {
+      // Vis Global layout, skjul Workspace layout
+      document.getElementById('global-app-layout').classList.remove('hidden');
+      document.getElementById('workspace-app-layout').classList.add('hidden');
+
+      // Skjul alle globale visninger
+      ['launch', 'businesses', 'integrations'].forEach(v => {
+        const viewEl = document.getElementById(`view-${v}`);
+        const navBtn = document.getElementById(`nav-${v}`);
+        
+        if (viewEl) viewEl.classList.add('hidden');
+        if (navBtn) {
+          navBtn.classList.remove('text-emerald-400', 'bg-emerald-950/40', 'border', 'border-emerald-500/30');
+          navBtn.classList.add('text-slate-400');
+        }
+      });
+
+      // Vis den valgte visning
+      const targetView = document.getElementById(`view-${viewName}`);
+      const targetNav = document.getElementById(`nav-${viewName}`);
+
+      if (targetView) targetView.classList.remove('hidden');
+      if (targetNav) {
+        targetNav.classList.add('text-emerald-400', 'bg-emerald-950/40', 'border', 'border-emerald-500/30');
+        targetNav.classList.remove('text-slate-400');
+      }
+    }
+
+    // 2. Åbn en specifik Business (Går ind i HQ)
+    function openBusiness(businessName) {
+      document.getElementById('global-app-layout').classList.add('hidden');
+      document.getElementById('workspace-app-layout').classList.remove('hidden');
+      document.getElementById('workspace-business-name').innerText = businessName;
+      
+      // Sæt standard fane til HQ
+      switchTab('hq');
+    }
+
+    // 3. Navigation inde i selve Business Workspace (HQ, Tasks, Files osv.)
     function switchTab(tabId) {
       const allTabs = ['hq', 'tasks', 'files', 'inbox', 'ads', 'finance', 'settings'];
 
@@ -486,12 +551,9 @@
         const contentEl = document.getElementById(`subtab-${id}`);
         const tabBtn = document.getElementById(`tab-${id}`);
 
-        if (contentEl) {
-          contentEl.classList.add('hidden');
-        }
-
+        if (contentEl) contentEl.classList.add('hidden');
         if (tabBtn) {
-          tabBtn.classList.remove('active-nav-tab', 'text-emerald-400', 'font-semibold');
+          tabBtn.classList.remove('active-nav-tab', 'font-semibold');
           tabBtn.classList.add('text-slate-400');
         }
       });
@@ -499,57 +561,36 @@
       const activeContent = document.getElementById(`subtab-${tabId}`);
       const activeTabBtn = document.getElementById(`tab-${tabId}`);
 
-      if (activeContent) {
-        activeContent.classList.remove('hidden');
-      }
-
+      if (activeContent) activeContent.classList.remove('hidden');
       if (activeTabBtn) {
         activeTabBtn.classList.add('active-nav-tab', 'font-semibold');
         activeTabBtn.classList.remove('text-slate-400');
       }
     }
 
+    // 4. Skift mellem TEAM og SITE i HQ
     function toggleMainView(view) {
       const teamCanvas = document.getElementById('view-team-canvas');
       const sitePreview = document.getElementById('view-site-preview');
       const btnTeam = document.getElementById('btn-view-team');
       const btnSite = document.getElementById('btn-view-site');
-      const controls = document.getElementById('org-view-controls');
 
       if (view === 'team') {
         if (teamCanvas) teamCanvas.classList.remove('hidden');
         if (sitePreview) sitePreview.classList.add('hidden');
         if (btnTeam) btnTeam.className = 'font-bold text-white flex items-center gap-1';
         if (btnSite) btnSite.className = 'font-medium text-slate-400 hover:text-white flex items-center gap-1';
-        if (controls) controls.classList.remove('hidden');
       } else {
         if (teamCanvas) teamCanvas.classList.add('hidden');
         if (sitePreview) sitePreview.classList.remove('hidden');
         if (btnSite) btnSite.className = 'font-bold text-white flex items-center gap-1';
         if (btnTeam) btnTeam.className = 'font-medium text-slate-400 hover:text-white flex items-center gap-1';
-        if (controls) controls.classList.add('hidden');
       }
     }
 
-    function setOrgLayout(layout) {
-      const chart = document.getElementById('layout-chart');
-      const btnChart = document.getElementById('btn-org-chart');
-      const btnGrid = document.getElementById('btn-org-grid');
-
-      if (layout === 'chart') {
-        if (chart) chart.classList.remove('hidden');
-        if (btnChart) btnChart.className = 'bg-slate-800 text-slate-200 px-2.5 py-1 rounded flex items-center gap-1 text-[11px]';
-        if (btnGrid) btnGrid.className = 'text-slate-400 hover:text-white px-2.5 py-1 rounded flex items-center gap-1 text-[11px]';
-      } else {
-        if (chart) chart.classList.add('hidden');
-        if (btnGrid) btnGrid.className = 'bg-slate-800 text-slate-200 px-2.5 py-1 rounded flex items-center gap-1 text-[11px]';
-        if (btnChart) btnChart.className = 'text-slate-400 hover:text-white px-2.5 py-1 rounded flex items-center gap-1 text-[11px]';
-      }
-    }
-
-    // Sikr at første fane indlæses korrekt ved start
+    // Start på Launch-siden ved indlæsning
     document.addEventListener('DOMContentLoaded', () => {
-      switchTab('hq');
+      navigateGlobal('launch');
     });
   </script>
 </body>
