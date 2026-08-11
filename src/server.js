@@ -13,11 +13,17 @@ app.use(express.static(path.join(__dirname, "public")));
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-// MongoDB Forbindelse
-if (process.env.MONGODB_URI) {
-  mongoose.connect(process.env.MONGODB_URI)
-    .then(() => console.log("Opkoblet til MongoDB"))
-    .catch((err) => console.error("MongoDB fejl:", err));
+// Hjælpefunktion: Genbrug MongoDB-forbindelse i serverless miljø
+async function connectToDatabase() {
+  if (mongoose.connection.readyState >= 1) return;
+  if (process.env.MONGODB_URI) {
+    try {
+      await mongoose.connect(process.env.MONGODB_URI);
+      console.log("Opkoblet til MongoDB");
+    } catch (err) {
+      console.error("MongoDB fejl:", err);
+    }
+  }
 }
 
 // Task Schema i MongoDB
@@ -38,8 +44,12 @@ const ENGINEER_PROMPT = `Du er ENGINEER, en Worker Agent. Når du bygger, skal d
 // GET /api/tasks - Hent opgaver fra MongoDB
 app.get("/api/tasks", async (req, res) => {
   try {
-    const tasks = await Task.find().sort({ createdAt: -1 });
-    res.json(tasks);
+    await connectToDatabase();
+    if (mongoose.connection.readyState === 1) {
+      const tasks = await Task.find().sort({ createdAt: -1 });
+      return res.json(tasks);
+    }
+    res.json([]);
   } catch (err) {
     res.status(500).json({ error: "Kunne ikke hente tasks" });
   }
@@ -51,6 +61,8 @@ app.post("/api/agent", async (req, res) => {
   const selectedModel = model || "llama-3.3-70b-versatile";
 
   try {
+    await connectToDatabase();
+
     if (hireWorker) {
       const taskId = "TASK-" + Math.floor(1000 + Math.random() * 9000);
 
@@ -66,14 +78,16 @@ app.post("/api/agent", async (req, res) => {
 
       const workerOutput = workerCompletion.choices[0]?.message?.content || "Ingen output.";
 
-      // 2. Gem direkte i MongoDB
-      await Task.create({
-        taskId: taskId,
-        title: prompt.length > 50 ? prompt.substring(0, 47) + "..." : prompt,
-        assignedTo: "Engineer",
-        status: "DONE",
-        reportContent: workerOutput
-      });
+      // 2. Gem direkte i MongoDB hvis opkoblet
+      if (mongoose.connection.readyState === 1) {
+        await Task.create({
+          taskId: taskId,
+          title: prompt.length > 50 ? prompt.substring(0, 47) + "..." : prompt,
+          assignedTo: "Engineer",
+          status: "DONE",
+          reportContent: workerOutput
+        });
+      }
 
       // 3. Chief svarer Owner
       const chiefCompletion = await groq.chat.completions.create({
@@ -108,5 +122,11 @@ app.post("/api/agent", async (req, res) => {
     res.status(500).json({ error: "Serverfejl under afvikling." });
   }
 });
+
+// Kør kun app.listen lokalt (Vercel håndterer det automatisk i produktion)
+if (process.env.NODE_ENV !== "production") {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => console.log(`Server kører på port ${PORT}`));
+}
 
 export default app;
