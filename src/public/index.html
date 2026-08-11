@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>QuistLine.ai — AI Business Platform</title>
+  <title>QuistLine.ai — CTO AI Business Platform</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
@@ -11,345 +11,531 @@
     .bg-card { background-color: #111827; }
     .bg-sidebar { background-color: #070a11; }
     .border-dark { border-color: #1f293d; }
-    .accent-green { color: #10b981; }
-    .bg-accent-green { background-color: #10b981; }
-    .active-nav { background-color: #1e293b; color: #f8fafc; border-left: 3px solid #10b981; }
+    .grid-bg {
+      background-image: radial-gradient(#1f293d 1px, transparent 1px);
+      background-size: 16px 16px;
+    }
+    .active-nav-tab { color: #10b981; border-bottom: 2px solid #10b981; }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #1f293d; border-radius: 3px; }
   </style>
 </head>
 <body class="h-screen flex overflow-hidden">
 
-  <!-- LEFT SIDEBAR -->
-  <aside class="w-64 bg-sidebar border-r border-dark flex flex-col justify-between shrink-0">
-    <div>
-      <div class="p-4 flex items-center gap-3 border-b border-dark">
-        <div class="w-8 h-8 rounded bg-emerald-500/20 border border-emerald-500/50 flex items-center justify-center font-bold text-emerald-400">Q</div>
-        <span class="font-bold text-lg text-white tracking-wide">QuistLine<span class="text-emerald-400">.ai</span></span>
+  <!-- LEFT NAVIGATION BAR (Global App Context) -->
+  <aside class="w-16 bg-sidebar border-r border-dark flex flex-col justify-between items-center py-4 shrink-0">
+    <div class="space-y-6 text-center">
+      <div class="w-10 h-10 rounded-lg bg-emerald-500/20 border border-emerald-500/50 flex items-center justify-center font-bold text-emerald-400 text-xl cursor-pointer">cto</div>
+      <nav class="space-y-4 text-slate-400">
+        <button onclick="switchPage('launch')" class="block p-2 hover:text-white"><i class="fa-solid fa-rocket text-lg"></i></button>
+        <button onclick="switchPage('businesses')" class="block p-2 hover:text-white"><i class="fa-solid fa-building text-lg"></i></button>
+        <button onclick="switchPage('integrations')" class="block p-2 hover:text-white"><i class="fa-solid fa-plug text-lg"></i></button>
+      </nav>
+    </div>
+    <div class="text-slate-400 hover:text-white cursor-pointer">
+      <i class="fa-solid fa-circle-user text-xl"></i>
+    </div>
+  </aside>
+
+  <!-- WORKSPACE WRAPPER -->
+  <div class="flex-1 flex flex-col min-w-0">
+
+    <!-- TOP HEADER -->
+    <header class="h-12 bg-sidebar border-b border-dark flex items-center justify-between px-4 text-xs shrink-0">
+      <div class="flex items-center gap-3">
+        <span class="text-slate-400 font-bold tracking-wider">cto</span>
+        <span class="text-slate-600">/</span>
+        <div class="flex items-center gap-2 bg-slate-900 border border-dark px-2.5 py-1 rounded text-slate-200">
+          <i class="fa-solid fa-building-flag text-emerald-400"></i>
+          <span id="project-title" class="font-semibold">GoogleSyn</span>
+          <i class="fa-solid fa-pen text-[10px] text-slate-500 cursor-pointer"></i>
+          <i class="fa-solid fa-arrows-rotate text-[10px] text-slate-500 cursor-pointer ml-1"></i>
+        </div>
       </div>
 
-      <!-- Main Navigation -->
-      <nav class="p-2 space-y-1 text-sm font-medium">
-        <button onclick="switchPage('launch')" id="nav-launch" class="w-full flex items-center gap-3 px-3 py-2 rounded text-slate-300 hover:bg-slate-800/60 active-nav">
-          <i class="fa-solid fa-rocket text-emerald-400"></i> Launch new business
+      <!-- Top Nav Right -->
+      <div class="flex items-center gap-4 text-slate-400">
+        <a href="#" class="hover:text-white flex items-center gap-1"><i class="fa-solid fa-house"></i> Home</a>
+        <a href="#" class="hover:text-white flex items-center gap-1"><i class="fa-solid fa-store"></i> Marketplace</a>
+        <a href="#" class="hover:text-white flex items-center gap-1"><i class="fa-solid fa-book"></i> Documentation</a>
+        <button class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1 rounded-md font-medium text-xs flex items-center gap-1.5 transition">
+          <i class="fa-solid fa-shop"></i> Sell this business
         </button>
-        <button onclick="switchPage('businesses')" id="nav-businesses" class="w-full flex items-center gap-3 px-3 py-2 rounded text-slate-400 hover:bg-slate-800/60">
-          <i class="fa-solid fa-building"></i> Businesses
+        <button class="bg-indigo-600/30 border border-indigo-500/40 text-indigo-300 hover:bg-indigo-600/50 px-3 py-1 rounded-md font-medium text-xs flex items-center gap-1.5">
+          <i class="fa-brands fa-discord"></i> Discord
         </button>
-        <button onclick="switchPage('integrations')" id="nav-integrations" class="w-full flex items-center gap-3 px-3 py-2 rounded text-slate-400 hover:bg-slate-800/60">
-          <i class="fa-solid fa-plug"></i> Integrations
+        <button class="bg-purple-900/40 border border-purple-500/40 text-purple-200 hover:bg-purple-800/50 px-3 py-1 rounded-md font-medium text-xs flex items-center gap-1.5">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> Upgrade
         </button>
+      </div>
+    </header>
 
-        <div class="pt-4 pb-1 px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Marketplace</div>
-        <button onclick="switchPage('marketplace')" id="nav-marketplace" class="w-full flex items-center gap-3 px-3 py-2 rounded text-slate-400 hover:bg-slate-800/60">
-          <i class="fa-solid fa-store"></i> Marketplace
+    <!-- SUB HEADER (Workspace Tabs) -->
+    <div class="bg-sidebar border-b border-dark px-4 flex justify-between items-center text-xs shrink-0">
+      <nav class="flex gap-6">
+        <button onclick="switchTab('hq')" id="tab-hq" class="py-2.5 active-nav-tab font-semibold flex items-center gap-1.5">
+          <i class="fa-solid fa-gauge-high"></i> Headquarters
         </button>
-        <button onclick="switchPage('listings')" id="nav-listings" class="w-full flex items-center gap-3 px-3 py-2 rounded text-slate-400 hover:bg-slate-800/60">
-          <i class="fa-solid fa-layer-group"></i> My Listings
+        <button onclick="switchTab('tasks')" id="tab-tasks" class="py-2.5 text-slate-400 hover:text-white flex items-center gap-1.5">
+          <i class="fa-solid fa-list-check"></i> Tasks
+        </button>
+        <button onclick="switchTab('files')" id="tab-files" class="py-2.5 text-slate-400 hover:text-white flex items-center gap-1.5">
+          <i class="fa-solid fa-folder"></i> Files
+        </button>
+        <button onclick="switchTab('inbox')" id="tab-inbox" class="py-2.5 text-slate-400 hover:text-white flex items-center gap-1.5">
+          <i class="fa-solid fa-inbox"></i> Inbox <i class="fa-solid fa-lock text-[10px] text-slate-600"></i>
+        </button>
+        <button onclick="switchTab('ads')" id="tab-ads" class="py-2.5 text-slate-400 hover:text-white flex items-center gap-1.5">
+          <i class="fa-solid fa-bullhorn"></i> Ads <i class="fa-solid fa-lock text-[10px] text-slate-600"></i>
+        </button>
+        <button onclick="switchTab('finance')" id="tab-finance" class="py-2.5 text-slate-400 hover:text-white flex items-center gap-1.5">
+          <i class="fa-solid fa-wallet"></i> Finance <i class="fa-solid fa-lock text-[10px] text-slate-600"></i>
+        </button>
+        <button onclick="switchTab('settings')" id="tab-settings" class="py-2.5 text-slate-400 hover:text-white flex items-center gap-1.5">
+          <i class="fa-solid fa-gear"></i> Settings
         </button>
       </nav>
     </div>
 
-    <!-- Bottom Account & Upgrade -->
-    <div class="p-3 border-t border-dark space-y-3">
-      <div class="p-3 rounded-lg bg-indigo-950/40 border border-indigo-800/40 text-xs">
-        <div class="flex justify-between font-bold text-indigo-300 mb-1">
-          <span>Upgrade Plan</span>
-          <span class="text-xs text-indigo-400">PRO</span>
-        </div>
-        <p class="text-slate-400 text-[11px] mb-2">Configure lead agents, send emails & run multiple workers.</p>
-        <button class="w-full py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded font-medium transition">View Plans</button>
-      </div>
+    <!-- MAIN WORKSPACE LAYOUT -->
+    <div class="flex-1 flex min-h-0">
 
-      <div class="flex items-center gap-3 px-2 py-1 text-xs">
-        <div class="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 font-bold">A</div>
-        <div class="truncate">
-          <div class="text-slate-200 font-medium truncate">Angel</div>
-          <div class="text-slate-500 text-[10px]">FREE PLAN</div>
-        </div>
-      </div>
-    </div>
-  </aside>
-
-  <!-- MAIN CONTENT AREA -->
-  <main class="flex-1 flex flex-col min-w-0 bg-slate-950 overflow-y-auto" id="main-container">
-
-    <!-- PAGE 1: LAUNCH NEW BUSINESS -->
-    <section id="page-launch" class="p-8 max-w-4xl mx-auto w-full space-y-6">
-      <h1 class="text-2xl font-bold text-white text-center mb-8">What business do you want to launch?</h1>
-      
-      <div class="bg-card border border-dark rounded-xl p-4 flex items-center justify-between">
-        <div class="flex items-center gap-4">
-          <div class="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400"><i class="fa-solid fa-bolt"></i></div>
-          <div>
-            <div class="text-sm font-semibold text-white">QuistLine Sales & Dev Intelligence</div>
-            <div class="text-xs text-slate-400">Accelerate your prospecting with AI lead scanning and automated dev.</div>
-          </div>
-        </div>
-        <button class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-lg transition">Start Searching &rarr;</button>
-      </div>
-
-      <!-- Main Launch Prompt Box -->
-      <div class="bg-card border border-dark rounded-xl p-4 space-y-4">
-        <textarea id="launch-prompt" rows="6" class="w-full bg-transparent text-slate-200 placeholder-slate-500 text-sm focus:outline-none resize-none" placeholder="Who's it for? What does it do? How will it make money? Rough notes are perfect..."></textarea>
-        <div class="flex justify-between items-center pt-2 border-t border-dark">
-          <select id="launch-model" class="bg-slate-900 border border-dark text-xs text-slate-300 rounded px-2 py-1 focus:outline-none">
-            <option value="llama-3.3-70b-versatile">Auto model (Llama-3.3-70B)</option>
-            <option value="llama3-8b-8192">Fast model (Llama-3.8B)</option>
-          </select>
-          <button onclick="launchBusiness()" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-lg transition flex items-center gap-2">
-            <i class="fa-solid fa-paper-plane"></i> Launch business
+      <!-- LEFT CONTROL PANEL -->
+      <aside class="w-64 bg-sidebar border-r border-dark p-3 flex flex-col justify-between shrink-0 custom-scrollbar overflow-y-auto">
+        <div class="space-y-5">
+          <!-- Resume Business Button -->
+          <button class="w-full py-2 bg-emerald-950/40 hover:bg-emerald-900/50 border border-emerald-600/50 text-emerald-400 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 transition">
+            <i class="fa-solid fa-play"></i> Resume business
           </button>
-        </div>
-      </div>
-    </section>
 
-    <!-- PAGE 2: BUSINESSES LIST -->
-    <section id="page-businesses" class="p-8 max-w-5xl mx-auto w-full space-y-6 hidden">
-      <div class="flex justify-between items-center border-b border-dark pb-4">
-        <div>
-          <h1 class="text-2xl font-bold text-white">Businesses</h1>
-          <p class="text-xs text-slate-400">Manage the businesses you're building with QuistLine.ai</p>
-        </div>
-        <button onclick="switchPage('launch')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-lg transition">+ Launch new business</button>
-      </div>
-
-      <div class="bg-card border border-dark rounded-xl p-5 flex items-center justify-between">
-        <div class="flex items-center gap-4">
-          <div class="w-12 h-12 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-xl font-bold text-white">G</div>
+          <!-- MY TODO LIST -->
           <div>
-            <div class="flex items-center gap-2">
-              <h2 class="text-base font-bold text-white">GoogleSyn</h2>
-              <span class="w-2 h-2 rounded-full bg-amber-500" title="Paused"></span>
+            <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <i class="fa-solid fa-circle-check text-emerald-500"></i> MY TODO LIST
             </div>
-            <div class="text-xs text-slate-400">Employees: Chief, Engineer | Active 1h ago</div>
+            <div class="bg-card border border-dark rounded-lg p-6 text-center text-slate-500 text-xs">
+              <i class="fa-solid fa-circle-check text-2xl mb-2 text-slate-600"></i>
+              <p>All caught up</p>
+            </div>
+          </div>
+
+          <!-- LATEST TASKS -->
+          <div>
+            <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <i class="fa-solid fa-[bars-staggered]"></i> LATEST TASKS
+            </div>
+            <div class="bg-card border border-dark rounded-lg p-6 text-center text-slate-500 text-xs">
+              <i class="fa-solid fa-pause text-xl mb-2 text-slate-600"></i>
+              <p>Business is paused</p>
+            </div>
+          </div>
+
+          <!-- ADS -->
+          <div>
+            <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <i class="fa-solid fa-bullhorn text-slate-500"></i> ADS <i class="fa-solid fa-lock text-[10px] text-slate-600"></i>
+            </div>
+            <button class="w-full py-2 bg-slate-900 border border-emerald-500/40 text-emerald-400 hover:bg-slate-800 rounded-lg text-xs font-medium flex items-center justify-center gap-2">
+              <i class="fa-solid fa-robot"></i> Promote on ChatGPT
+            </button>
+          </div>
+
+          <!-- FINANCE -->
+          <div>
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                <i class="fa-solid fa-wallet text-slate-500"></i> FINANCE <i class="fa-solid fa-lock text-[10px] text-slate-600"></i>
+              </span>
+              <a href="#" class="text-[10px] text-slate-500 hover:text-slate-300">Manage &gt;</a>
+            </div>
+            <div class="bg-card border border-dark rounded-lg p-3 flex justify-between items-center">
+              <span class="text-xs text-slate-400">Balance</span>
+              <span class="text-sm font-bold text-white">$0.00</span>
+            </div>
           </div>
         </div>
-        <div class="flex items-center gap-3">
-          <button onclick="openWorkspace('GoogleSyn')" class="px-4 py-2 bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/30 border border-emerald-500/30 text-xs font-semibold rounded-lg transition">Open Workspace &rarr;</button>
-        </div>
-      </div>
-    </section>
 
-    <!-- PAGE 3: WORKSPACE / HEADQUARTERS (FULL CTO DASHBOARD) -->
-    <section id="page-workspace" class="flex-1 flex flex-col min-h-0 hidden">
-      <!-- Top Sub-Header Navigation -->
-      <div class="bg-sidebar border-b border-dark px-6 py-3 flex justify-between items-center text-xs">
-        <div class="flex items-center gap-6">
-          <span class="font-bold text-white flex items-center gap-2"><i class="fa-solid fa-briefcase text-emerald-400"></i> <span id="ws-title">GoogleSyn</span></span>
-          <nav class="flex gap-4 border-l border-dark pl-6">
-            <button onclick="switchTab('hq')" id="tab-hq" class="text-emerald-400 font-semibold border-b-2 border-emerald-400 pb-1">Headquarters</button>
-            <button onclick="switchTab('tasks')" id="tab-tasks" class="text-slate-400 hover:text-white pb-1">Tasks</button>
-            <button onclick="switchTab('files')" id="tab-files" class="text-slate-400 hover:text-white pb-1">Files</button>
-            <button onclick="switchTab('settings')" id="tab-settings" class="text-slate-400 hover:text-white pb-1">Settings</button>
-          </nav>
+        <!-- USER FOOTER -->
+        <div class="pt-4 border-t border-dark flex items-center justify-between text-xs">
+          <div>
+            <div class="text-slate-200 font-medium truncate w-36">angel@corehost.one</div>
+            <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">FREE</div>
+          </div>
+          <i class="fa-solid fa-ellipsis-vertical text-slate-500 cursor-pointer"></i>
         </div>
-      </div>
+      </aside>
 
-      <!-- Tab Content Area -->
-      <div class="flex-1 flex min-h-0">
-        <!-- Main Workspace Pane -->
-        <div class="flex-1 p-6 overflow-y-auto space-y-6">
+      <!-- CENTER PANEL (Interactive Workspace) -->
+      <main class="flex-1 flex flex-col min-w-0 bg-slate-950">
+
+        <!-- HQ SUB TAB CONTENT -->
+        <div id="subtab-hq" class="flex-1 flex flex-col min-h-0">
+
+          <!-- Top Banner: Sponsored & Limit Bar -->
+          <div class="p-3 border-b border-dark space-y-2 bg-slate-900/40">
+            <!-- Sponsored Bar -->
+            <div class="bg-slate-900 border border-dark rounded-lg p-2.5 flex items-center justify-between text-xs">
+              <div class="flex items-center gap-3">
+                <span class="bg-amber-500/20 text-amber-400 text-[10px] font-bold px-1.5 py-0.5 rounded border border-amber-500/30">SPONSORED</span>
+                <span class="font-bold text-slate-200">Kaspr: B2B Contact Data Tool</span>
+                <span class="text-slate-400 truncate hidden md:inline">Automate your lead generation by finding and enriching verified contact data.</span>
+              </div>
+              <button class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1 rounded text-xs font-semibold shrink-0">Start Prospecting &rarr;</button>
+            </div>
+
+            <!-- Limit Warning Bar -->
+            <div class="bg-slate-900/80 border border-dark rounded-lg p-2 flex items-center justify-between text-xs">
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-arrows-rotate text-emerald-400"></i>
+                <div>
+                  <span class="font-bold text-slate-200">Your limit has reset</span>
+                  <p class="text-[11px] text-slate-400">Hit resume to carry on where you left off</p>
+                </div>
+              </div>
+              <button class="bg-emerald-950 border border-emerald-600/50 text-emerald-400 hover:bg-emerald-900 px-3 py-1 rounded text-xs font-medium flex items-center gap-1.5">
+                <i class="fa-solid fa-play"></i> Resume
+              </button>
+            </div>
+          </div>
+
+          <!-- View Switcher (Team / Site Bar) -->
+          <div class="px-4 py-2 border-b border-dark flex justify-between items-center text-xs bg-sidebar">
+            <div class="flex items-center gap-4">
+              <button onclick="toggleMainView('team')" id="btn-view-team" class="font-bold text-white flex items-center gap-1">
+                TEAM
+              </button>
+              <button onclick="toggleMainView('site')" id="btn-view-site" class="font-medium text-slate-400 hover:text-white flex items-center gap-1">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block"></span> SITE
+              </button>
+
+              <div id="org-view-controls" class="flex gap-1 ml-4 border-l border-dark pl-4">
+                <button onclick="setOrgLayout('chart')" id="btn-org-chart" class="bg-slate-800 text-slate-200 px-2.5 py-1 rounded flex items-center gap-1 text-[11px]">
+                  <i class="fa-solid fa-sitemap"></i> Org chart
+                </button>
+                <button onclick="setOrgLayout('grid')" id="btn-org-grid" class="text-slate-400 hover:text-white px-2.5 py-1 rounded flex items-center gap-1 text-[11px]">
+                  <i class="fa-solid fa-border-all"></i> Grid
+                </button>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-4 text-slate-400 text-[11px]">
+              <span>USAGE: <span class="bg-slate-900 border border-dark px-1.5 py-0.5 rounded text-white">WEEKLY</span> <span class="bg-emerald-950 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-800">DAILY</span> 13%</span>
+              <button class="hover:text-white"><i class="fa-solid fa-eye"></i> View plan</button>
+              <button class="hover:text-white"><i class="fa-solid fa-user-plus"></i> Hire employee</button>
+            </div>
+          </div>
+
+          <!-- VIEW A: TEAM ORG CANVAS -->
+          <div id="view-team-canvas" class="flex-1 grid-bg p-6 relative overflow-y-auto custom-scrollbar flex flex-col justify-between">
+            
+            <!-- ORG CHART MODE -->
+            <div id="layout-chart" class="flex flex-col items-center justify-center space-y-8 py-4">
+              
+              <!-- Engineer Node -->
+              <div class="relative group">
+                <div class="w-16 h-16 rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-300 text-xl font-bold shadow-lg cursor-pointer hover:border-emerald-500 transition">
+                  <i class="fa-solid fa-code"></i>
+                </div>
+                <div class="text-center mt-2">
+                  <div class="font-bold text-white text-xs">engineer</div>
+                  <div class="text-[10px] text-slate-400 flex items-center justify-center gap-1 mt-0.5">
+                    <i class="fa-solid fa-microchip text-slate-500"></i>
+                    <select class="bg-slate-900 border border-dark rounded text-slate-300 text-[10px] focus:outline-none">
+                      <option>DeepSeek V4 Flash 0731</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Hover Card Preview -->
+                <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 bg-slate-900 border border-dark rounded-lg p-3 text-xs hidden group-hover:block z-20 shadow-xl">
+                  <div class="font-bold text-white mb-1">engineer</div>
+                  <p class="text-[11px] text-slate-400 mb-2">Full-stack engineer: bygger og deployer GoogleSyns MVP - dansk landingsside, bookingsformular, synlighedstjek-motor...</p>
+                  <div class="text-[10px] text-emerald-400 mb-3 flex items-center gap-1"><i class="fa-solid fa-robot"></i> DeepSeek V4 Flash 0731</div>
+                  <div class="flex gap-2">
+                    <button class="flex-1 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-center border border-dark"><i class="fa-solid fa-terminal"></i> Logs</button>
+                    <button class="flex-1 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-center border border-dark"><i class="fa-solid fa-gear"></i> Settings</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Connecting Line -->
+              <div class="w-0.5 h-8 bg-slate-700"></div>
+
+              <!-- Lead Node -->
+              <div class="text-center">
+                <div class="w-16 h-16 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-300 text-xl font-bold shadow-lg">
+                  <i class="fa-solid fa-user-gear"></i>
+                </div>
+                <div class="font-bold text-white text-xs mt-2">lead</div>
+                <div class="text-[10px] text-slate-400 flex items-center justify-center gap-1 mt-0.5">
+                  <i class="fa-solid fa-microchip text-slate-500"></i>
+                  <select class="bg-slate-900 border border-dark rounded text-slate-300 text-[10px] focus:outline-none">
+                    <option>DeepSeek V4 Flash 0731</option>
+                  </select>
+                </div>
+                <button class="mt-2 px-3 py-1 bg-emerald-950 border border-emerald-600/50 text-emerald-400 hover:bg-emerald-900 rounded text-xs font-medium flex items-center gap-1 mx-auto">
+                  <i class="fa-solid fa-play"></i> Resume business
+                </button>
+              </div>
+
+            </div>
+
+            <!-- GRID MODE (Hidden by default) -->
+            <div id="layout-grid" class="hidden space-y-4">
+              <!-- Lead Box -->
+              <div class="bg-card border border-dark rounded-xl p-4 flex justify-between items-start">
+                <div class="flex items-start gap-3">
+                  <div class="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-white">L</div>
+                  <div>
+                    <div class="font-bold text-white text-sm">lead</div>
+                    <div class="text-xs text-slate-400">Team management, task planning, delegation, and monitoring</div>
+                    <div class="mt-2 flex items-center gap-2">
+                      <select class="bg-slate-900 border border-dark text-slate-300 text-xs rounded px-2 py-1">
+                        <option>DeepSeek V4 Flash 0731</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <button class="px-3 py-1 bg-emerald-950 border border-emerald-600/50 text-emerald-400 rounded text-xs"><i class="fa-solid fa-play"></i> Resume business</button>
+              </div>
+
+              <!-- Engineer Box -->
+              <div class="bg-card border border-dark rounded-xl p-4 flex justify-between items-start">
+                <div class="flex items-start gap-3">
+                  <div class="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-white">E</div>
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <span class="font-bold text-white text-sm">engineer</span>
+                      <span class="bg-slate-800 text-slate-400 text-[10px] px-1.5 py-0.5 rounded font-mono">PAUSED</span>
+                    </div>
+                    <div class="text-xs text-slate-400">Full-stack engineer: bygger og deployer GoogleSyns MVP</div>
+                    <div class="text-xs text-slate-500 mt-1">No active task</div>
+                    <div class="mt-2 flex items-center gap-2">
+                      <select class="bg-slate-900 border border-dark text-slate-300 text-xs rounded px-2 py-1">
+                        <option>DeepSeek V4 Flash 0731</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <button class="text-xs text-slate-500 hover:text-red-400"><i class="fa-solid fa-user-xmark"></i> Fire</button>
+              </div>
+            </div>
+
+            <!-- BOTTOM LIVE ACTIVITY TERMINAL LOG -->
+            <div class="bg-card border border-dark rounded-lg overflow-hidden font-mono text-[11px]">
+              <div class="bg-slate-900 px-3 py-1.5 border-b border-dark flex justify-between items-center text-slate-400">
+                <span class="flex items-center gap-2"><i class="fa-solid fa-terminal text-emerald-400"></i> LIVE ACTIVITY</span>
+                <div class="flex items-center gap-2">
+                  <i class="fa-solid fa-expand hover:text-white cursor-pointer"></i>
+                  <i class="fa-solid fa-chevron-down hover:text-white cursor-pointer"></i>
+                </div>
+              </div>
+              <div class="p-3 space-y-1 text-slate-400 bg-slate-950/80">
+                <div><span class="text-slate-600">[aug. 11 01:34:08 CEST]</span> <span class="text-indigo-400">TOOL</span> — engineer: Terminal</div>
+                <div><span class="text-slate-600">[aug. 11 01:34:15 CEST]</span> <span class="text-indigo-400">TOOL</span> — engineer: Terminal</div>
+                <div><span class="text-slate-600">[aug. 11 01:34:18 CEST]</span> <span class="text-amber-500">PAUSED</span> — Team paused: usage limit reached</div>
+                <div><span class="text-slate-600">[aug. 11 01:34:20 CEST]</span> <span class="text-amber-500">PAUSED</span> — Team paused: usage limit reached</div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- VIEW B: LIVE SITE PREVIEW (Hidden by default) -->
+          <div id="view-site-preview" class="flex-1 flex flex-col min-h-0 hidden bg-slate-900">
+            <div class="p-2 border-b border-dark flex items-center justify-between gap-2 text-xs bg-sidebar">
+              <div class="flex items-center gap-2 flex-1 max-w-xl bg-slate-950 border border-dark rounded px-3 py-1 text-slate-300 font-mono text-[11px]">
+                <i class="fa-solid fa-lock text-emerald-400"></i>
+                <span class="truncate">c748f4520c31cd252ba0d12ec9bb3125.ctonew.app</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <button class="p-1 text-slate-400 hover:text-white"><i class="fa-solid fa-copy"></i></button>
+                <button class="p-1 text-slate-400 hover:text-white"><i class="fa-solid fa-arrow-up-right-from-square"></i></button>
+                <button class="bg-slate-800 border border-dark text-slate-300 px-3 py-1 rounded text-xs hover:bg-slate-700 flex items-center gap-1">
+                  <i class="fa-solid fa-pen-to-square"></i> Customize URL
+                </button>
+              </div>
+            </div>
+
+            <!-- Embedded Live Website -->
+            <div class="flex-1 bg-white text-slate-900 p-8 overflow-y-auto">
+              <div class="max-w-3xl mx-auto space-y-8">
+                <header class="flex justify-between items-center pb-6 border-b">
+                  <div class="flex items-center gap-2 font-bold text-xl text-blue-600">
+                    <span class="bg-blue-600 text-white w-8 h-8 rounded flex items-center justify-center">G</span> GoogleSyn
+                  </div>
+                  <button class="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold text-xs">Start tjekket</button>
+                </header>
+
+                <div class="text-center py-10 space-y-4">
+                  <span class="bg-emerald-100 text-emerald-800 text-xs font-semibold px-3 py-1 rounded-full">Gratis · Ingen tilmelding · Resultat på få sekunder</span>
+                  <h1 class="text-4xl font-extrabold text-slate-900">Gratis Google-synlighedstjek</h1>
+                  <p class="text-slate-600 text-sm">Se hvor findbar din virksomhed er på Google på 30 sekunder.</p>
+                </div>
+
+                <div class="bg-slate-50 border rounded-xl p-6 max-w-md mx-auto space-y-3">
+                  <h3 class="font-bold text-slate-800 text-sm">Tjek din virksomhed nu</h3>
+                  <input type="text" placeholder="Virksomhedsnavn..." class="w-full border rounded px-3 py-2 text-xs" />
+                  <button class="w-full bg-blue-600 text-white py-2 rounded text-xs font-semibold">Analyser synlighed</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- OTHER TABS CONTENT (Placeholders) -->
+        <div id="subtab-tasks" class="hidden p-6 text-xs text-slate-300">Kanban Board for opgaver.</div>
+        <div id="subtab-files" class="hidden p-6 text-xs text-slate-300">Projektfiler og mapper.</div>
+        <div id="subtab-settings" class="hidden p-6 text-xs text-slate-300">Virksomhedsindstillinger.</div>
+
+      </main>
+
+      <!-- RIGHT CHAT & SPONSORED PANEL -->
+      <aside class="w-80 border-l border-dark bg-sidebar flex flex-col justify-between shrink-0">
+        
+        <!-- Top Lead Header -->
+        <div class="p-3 border-b border-dark flex justify-between items-center text-xs">
+          <span class="font-bold text-slate-200 flex items-center gap-1.5"><i class="fa-solid fa-crown text-amber-400"></i> lead</span>
+          <div class="flex items-center gap-2 text-slate-400 text-[11px]">
+            <button class="hover:text-white flex items-center gap-1"><i class="fa-solid fa-circle-info"></i> Unread plan</button>
+            <button class="hover:text-white"><i class="fa-solid fa-expand"></i></button>
+          </div>
+        </div>
+
+        <!-- Scrollable Messages Area -->
+        <div class="flex-1 p-3 space-y-4 overflow-y-auto custom-scrollbar text-xs">
           
-          <!-- HQ TAB -->
-          <div id="subtab-hq" class="space-y-6">
-            <div class="flex justify-between items-center">
-              <h2 class="text-lg font-bold text-white">Org Chart & Active Agents</h2>
-              <button class="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-xs">Resume Business</button>
-            </div>
-            <div class="grid grid-cols-2 gap-4">
-              <div class="bg-card border border-dark rounded-xl p-4 text-center">
-                <div class="w-12 h-12 mx-auto rounded-full bg-indigo-600/20 text-indigo-400 flex items-center justify-center font-bold text-lg mb-2">C</div>
-                <div class="font-bold text-white text-sm">CHIEF (Lead Agent)</div>
-                <div class="text-xs text-slate-400">Orchestrator</div>
-              </div>
-              <div class="bg-card border border-dark rounded-xl p-4 text-center">
-                <div class="w-12 h-12 mx-auto rounded-full bg-emerald-600/20 text-emerald-400 flex items-center justify-center font-bold text-lg mb-2">E</div>
-                <div class="font-bold text-white text-sm">ENGINEER (Worker)</div>
-                <div class="text-xs text-slate-400">Execution & Reports</div>
-              </div>
+          <!-- Lead Message 1 -->
+          <div class="space-y-1">
+            <div class="text-slate-300 bg-slate-900/60 border border-dark rounded-lg p-3">
+              Det var blot den forsinkede leveringsbesked for den gamle read-only-scan (den jeg allerede har behandlet). Den nye lead-scan med netværksadgang kører stadig - jeg melder tilbage, når den lander.
             </div>
           </div>
 
-          <!-- TASKS TAB (KANBAN) -->
-          <div id="subtab-tasks" class="hidden space-y-4">
-            <h2 class="text-lg font-bold text-white">Task Board</h2>
-            <div class="grid grid-cols-3 gap-4">
-              <!-- BACKLOG -->
-              <div class="bg-card border border-dark rounded-xl p-3">
-                <h3 class="text-xs font-bold text-slate-400 uppercase mb-3">Backlog</h3>
-                <div class="space-y-2" id="backlog-tasks"></div>
-              </div>
-              <!-- WORKING -->
-              <div class="bg-card border border-dark rounded-xl p-3">
-                <h3 class="text-xs font-bold text-amber-400 uppercase mb-3">Working</h3>
-                <div class="space-y-2" id="working-tasks"></div>
-              </div>
-              <!-- DONE -->
-              <div class="bg-card border border-dark rounded-xl p-3">
-                <h3 class="text-xs font-bold text-emerald-400 uppercase mb-3">Done</h3>
-                <div class="space-y-2" id="done-tasks"></div>
-              </div>
-            </div>
+          <!-- System Message -->
+          <div class="bg-slate-950 border border-dark rounded-lg p-3 text-slate-400 space-y-1">
+            <div class="text-[10px] font-bold text-slate-500 uppercase">SYSTEM</div>
+            <p class="text-[11px]">Your requested tool actions have been reviewed. Process the approval decisions and continue.</p>
           </div>
 
-          <!-- FILES TAB -->
-          <div id="subtab-files" class="hidden space-y-4">
-            <h2 class="text-lg font-bold text-white">Project Files</h2>
-            <div class="bg-card border border-dark rounded-xl p-4 font-mono text-xs text-slate-300">
-              <div class="flex items-center gap-2 py-1"><i class="fa-solid fa-folder text-amber-400"></i> /src</div>
-              <div class="flex items-center gap-2 py-1 pl-4"><i class="fa-solid fa-file-code text-blue-400"></i> server.js</div>
-              <div class="flex items-center gap-2 py-1"><i class="fa-solid fa-folder text-amber-400"></i> /reports</div>
-              <div class="flex items-center gap-2 py-1"><i class="fa-solid fa-file-gear text-emerald-400"></i> vercel.json</div>
-            </div>
-          </div>
-
-          <!-- SETTINGS TAB -->
-          <div id="subtab-settings" class="hidden space-y-4">
-            <h2 class="text-lg font-bold text-white">Business Settings</h2>
-            <div class="bg-card border border-dark rounded-xl p-4 space-y-4 max-w-md">
+          <!-- Sponsored Box in Chat -->
+          <div class="bg-slate-900 border border-dark rounded-xl p-3 space-y-2">
+            <div class="flex items-center gap-2">
+              <div class="w-6 h-6 rounded bg-indigo-600/20 text-indigo-400 flex items-center justify-center font-bold text-xs">B</div>
               <div>
-                <label class="block text-xs font-semibold mb-1">Business Name</label>
-                <input type="text" value="GoogleSyn" class="w-full bg-slate-900 border border-dark rounded px-3 py-1.5 text-xs text-white" />
+                <span class="text-[9px] font-bold text-amber-400 uppercase">SPONSORED</span>
+                <div class="font-bold text-slate-200 text-xs">Blinq</div>
               </div>
-              <button class="px-4 py-1.5 bg-emerald-600 text-white rounded text-xs">Save Settings</button>
+            </div>
+            <p class="text-[11px] text-slate-400">Capture leads and sync contacts directly to your CRM with Blinq's digital business cards.</p>
+            <button class="w-full py-1 bg-emerald-950 border border-emerald-600/40 text-emerald-400 rounded text-xs font-medium hover:bg-emerald-900">Start Capturing &rarr;</button>
+          </div>
+
+          <!-- Lead Message 2 -->
+          <div class="text-slate-300 bg-slate-900/60 border border-dark rounded-lg p-3">
+            Status uændret: lead-scanningen kører i baggrunden (frisører i Odense &rarr; prioriteret liste med tjek-links). Jeg vender tilbage, så snart rapporten er klar.
+          </div>
+
+        </div>
+
+        <!-- Chat Input & Model Reset Box -->
+        <div class="p-3 border-t border-dark space-y-3 bg-slate-900/30">
+          
+          <!-- Limit Reset Card -->
+          <div class="bg-slate-900 border border-dark rounded-lg p-3 flex justify-between items-center text-xs">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-arrows-rotate text-emerald-400"></i>
+              <div>
+                <div class="font-bold text-slate-200">Your limit has reset</div>
+                <div class="text-[10px] text-slate-400">Hit resume to carry on where you left off</div>
+              </div>
+            </div>
+            <button class="bg-emerald-950 border border-emerald-600/50 text-emerald-400 hover:bg-emerald-900 px-3 py-1 rounded text-xs font-medium flex items-center gap-1">
+              <i class="fa-solid fa-play"></i> Resume
+            </button>
+          </div>
+
+          <!-- Chat Bar -->
+          <div class="space-y-2">
+            <div class="flex justify-between items-center text-[10px] text-slate-500">
+              <button class="hover:text-slate-300 flex items-center gap-1"><i class="fa-solid fa-rotate-left"></i> Reset chat</button>
+              <select class="bg-transparent text-slate-400 focus:outline-none text-[10px]">
+                <option>DeepSeek V4 Flash 0731</option>
+              </select>
+            </div>
+            <div class="relative">
+              <input type="text" placeholder="Send besked til lead..." class="w-full bg-slate-950 border border-dark rounded-lg pl-3 pr-8 py-2 text-xs text-white focus:outline-none focus:border-slate-600" />
+              <button class="absolute right-2 top-2 text-slate-500 hover:text-emerald-400"><i class="fa-solid fa-arrow-up"></i></button>
             </div>
           </div>
 
         </div>
 
-        <!-- RIGHT CHAT PANEL -->
-        <div class="w-80 border-l border-dark bg-sidebar flex flex-col justify-between">
-          <div class="p-3 border-b border-dark font-semibold text-xs text-slate-300 flex items-center justify-between">
-            <span><i class="fa-solid fa-comments text-emerald-400"></i> Chief Lead Chat</span>
-            <span class="text-[10px] bg-emerald-950 text-emerald-400 px-2 py-0.5 rounded border border-emerald-800">ONLINE</span>
-          </div>
+      </aside>
 
-          <div id="chat-messages" class="flex-1 p-3 overflow-y-auto space-y-3 text-xs">
-            <div class="bg-slate-900 border border-dark rounded p-2 text-slate-300">
-              <span class="font-bold text-emerald-400">Chief:</span> Velkommen! Hvad er næste opgave for virksomheden?
-            </div>
-          </div>
-
-          <div class="p-3 border-t border-dark space-y-2">
-            <div class="flex items-center gap-2 text-[11px] text-slate-400">
-              <input type="checkbox" id="hire-engineer" />
-              <label for="hire-engineer">Hyr Engineer til opgaven</label>
-            </div>
-            <div class="flex gap-2">
-              <input id="chat-input" type="text" placeholder="Skriv til Chief..." class="flex-1 bg-slate-900 border border-dark rounded px-2 py-1.5 text-xs text-white focus:outline-none" onkeydown="if(event.key==='Enter') sendChatMessage()" />
-              <button onclick="sendChatMessage()" class="px-3 py-1.5 bg-emerald-600 text-white rounded text-xs"><i class="fa-solid fa-paper-plane"></i></button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- OTHER PAGES (Integrations, Marketplace, etc.) -->
-    <section id="page-integrations" class="p-8 max-w-4xl mx-auto w-full hidden">
-      <h1 class="text-2xl font-bold text-white mb-4">Integrations</h1>
-      <div class="bg-card border border-dark rounded-xl p-4 flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <i class="fa-brands fa-github text-2xl text-white"></i>
-          <div>
-            <div class="font-bold text-white text-sm">GitHub Integration</div>
-            <div class="text-xs text-slate-400">Connect GitHub to push code automatically</div>
-          </div>
-        </div>
-        <button class="px-3 py-1.5 bg-slate-800 text-xs rounded text-slate-300 hover:text-white">Connect GitHub</button>
-      </div>
-    </section>
-
-    <section id="page-marketplace" class="p-8 max-w-4xl mx-auto w-full hidden">
-      <h1 class="text-2xl font-bold text-white mb-4">Marketplace</h1>
-      <p class="text-xs text-slate-400">Buy ready-to-run AI businesses or sell your own.</p>
-    </section>
-
-    <section id="page-listings" class="p-8 max-w-4xl mx-auto w-full hidden">
-      <h1 class="text-2xl font-bold text-white mb-4">My Listings</h1>
-      <p class="text-xs text-slate-400">No active marketplace listings.</p>
-    </section>
-
-  </main>
+    </div>
+  </div>
 
   <script>
-    function switchPage(pageId) {
-      document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
-      document.getElementById(`page-${pageId}`).classList.remove('hidden');
-      
-      document.querySelectorAll('nav button').forEach(b => b.classList.remove('active-nav'));
-      const activeNav = document.getElementById(`nav-${pageId}`);
-      if (activeNav) activeNav.classList.add('active-nav');
-    }
-
-    function openWorkspace(name) {
-      document.getElementById('ws-title').innerText = name;
-      switchPage('workspace');
-      loadTasks();
-    }
-
     function switchTab(tabId) {
-      ['hq', 'tasks', 'files', 'settings'].forEach(t => {
-        document.getElementById(`subtab-${t}`).classList.add('hidden');
-        document.getElementById(`tab-${t}`).classList.remove('text-emerald-400', 'border-b-2', 'border-emerald-400');
-        document.getElementById(`tab-${t}`).classList.add('text-slate-400');
+      ['hq', 'tasks', 'files', 'inbox', 'ads', 'finance', 'settings'].forEach(t => {
+        const el = document.getElementById(`subtab-${t}`);
+        const tabBtn = document.getElementById(`tab-${t}`);
+        if (el) el.classList.add('hidden');
+        if (tabBtn) {
+          tabBtn.classList.remove('active-nav-tab', 'text-emerald-400', 'font-semibold');
+          tabBtn.classList.add('text-slate-400');
+        }
       });
-      document.getElementById(`subtab-${tabId}`).classList.remove('hidden');
-      document.getElementById(`tab-${tabId}`).classList.add('text-emerald-400', 'border-b-2', 'border-emerald-400');
-    }
 
-    async function launchBusiness() {
-      const prompt = document.getElementById('launch-prompt').value;
-      if (!prompt) return alert('Skriv en idé først!');
-      
-      openWorkspace('New AI Business');
-      document.getElementById('chat-messages').innerHTML += `
-        <div class="bg-emerald-950/40 border border-emerald-800/40 rounded p-2 text-emerald-300">
-          <strong>Starter virksomhed:</strong> ${prompt}
-        </div>
-      `;
-    }
-
-    async function sendChatMessage() {
-      const input = document.getElementById('chat-input');
-      const prompt = input.value;
-      const hireWorker = document.getElementById('hire-engineer').checked;
-      if (!prompt) return;
-
-      const chatBox = document.getElementById('chat-messages');
-      chatBox.innerHTML += `<div class="bg-slate-800 rounded p-2 text-slate-200"><strong>Du:</strong> ${prompt}</div>`;
-      input.value = '';
-
-      try {
-        const res = await fetch('/api/agent', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ prompt, hireWorker, projectName: document.getElementById('ws-title').innerText })
-        });
-        const data = await res.json();
-        
-        chatBox.innerHTML += `<div class="bg-slate-900 border border-dark rounded p-2 text-emerald-400"><strong>Chief:</strong> ${data.reply}</div>`;
-        chatBox.scrollTop = chatBox.scrollHeight;
-        loadTasks();
-      } catch (e) {
-        chatBox.innerHTML += `<div class="text-red-400">Fejl under opkobling.</div>`;
+      const activeEl = document.getElementById(`subtab-${tabId}`);
+      const activeTabBtn = document.getElementById(`tab-${tabId}`);
+      if (activeEl) activeEl.classList.remove('hidden');
+      if (activeTabBtn) {
+        activeTabBtn.classList.add('active-nav-tab', 'font-semibold');
+        activeTabBtn.classList.remove('text-slate-400');
       }
     }
 
-    async function loadTasks() {
-      try {
-        const res = await fetch('/api/tasks');
-        const tasks = await res.json();
-        const doneBox = document.getElementById('done-tasks');
-        doneBox.innerHTML = '';
+    function toggleMainView(view) {
+      const teamCanvas = document.getElementById('view-team-canvas');
+      const sitePreview = document.getElementById('view-site-preview');
+      const btnTeam = document.getElementById('btn-view-team');
+      const btnSite = document.getElementById('btn-view-site');
+      const controls = document.getElementById('org-view-controls');
 
-        tasks.forEach(t => {
-          doneBox.innerHTML += `
-            <div class="bg-slate-900 border border-dark rounded p-2 text-xs">
-              <div class="font-bold text-slate-200">${t.title}</div>
-              <div class="text-[10px] text-emerald-400 mt-1">${t.assignedTo} • ${t.taskId}</div>
-            </div>
-          `;
-        });
-      } catch (e) {}
+      if (view === 'team') {
+        teamCanvas.classList.remove('hidden');
+        sitePreview.classList.add('hidden');
+        btnTeam.className = 'font-bold text-white flex items-center gap-1';
+        btnSite.className = 'font-medium text-slate-400 hover:text-white flex items-center gap-1';
+        controls.classList.remove('hidden');
+      } else {
+        teamCanvas.classList.add('hidden');
+        sitePreview.classList.remove('hidden');
+        btnSite.className = 'font-bold text-white flex items-center gap-1';
+        btnTeam.className = 'font-medium text-slate-400 hover:text-white flex items-center gap-1';
+        controls.classList.add('hidden');
+      }
+    }
+
+    function setOrgLayout(layout) {
+      const chart = document.getElementById('layout-chart');
+      const grid = document.getElementById('layout-grid');
+      const btnChart = document.getElementById('btn-org-chart');
+      const btnGrid = document.getElementById('btn-org-grid');
+
+      if (layout === 'chart') {
+        chart.classList.remove('hidden');
+        grid.classList.add('hidden');
+        btnChart.className = 'bg-slate-800 text-slate-200 px-2.5 py-1 rounded flex items-center gap-1 text-[11px]';
+        btnGrid.className = 'text-slate-400 hover:text-white px-2.5 py-1 rounded flex items-center gap-1 text-[11px]';
+      } else {
+        chart.classList.add('hidden');
+        grid.classList.remove('hidden');
+        btnGrid.className = 'bg-slate-800 text-slate-200 px-2.5 py-1 rounded flex items-center gap-1 text-[11px]';
+        btnChart.className = 'text-slate-400 hover:text-white px-2.5 py-1 rounded flex items-center gap-1 text-[11px]';
+      }
     }
   </script>
 </body>
