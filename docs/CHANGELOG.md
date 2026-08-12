@@ -25,6 +25,7 @@
 ### Ændret
 - **Budgetkuvert/budget-værn måles nu i tokens, ikke kroner** (lukker åbent spørgsmål #17, spec pkt. 95). `checkBudgetGuard` i `src/guards.js` omdøbt `spentDkk/estimateDkk` → `spentTokens/estimateTokens`, fallback-loft 25 kr → 20.000 tokens pr. task.
 - Opgavekort i Opgaver-fanen er nu klikbare (hopper til tråden i aktivitets-strømmen) og viser Godkend/Afvis eller Fortsæt/Stop direkte på kortet, når opgaven afventer en beslutning.
+- **Chief har nu individuel samtalehukommelse pr. business** (`getChiefConversationHistory`) — et projekt husker sin egen samtale (seneste 20 beskeder), et nyt projekt starter helt forfra, ingen historik lækker mellem projekter.
 ### Fjernet
 - Mongoose/MongoDB — erstattet af Postgres som system of record (spec pkt. 83).
 - `src/tasks.json` — dødt seed-data, blev ikke brugt af nogen kode.
