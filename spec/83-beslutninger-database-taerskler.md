@@ -77,7 +77,7 @@ beslutning mærket *strukturel/dyr at ændre* (pkt. 30.9).
 | **Masse-sletning** | >50 fjernede linjer i én fil, eller >150 i én task | Stop, kræv menneskeligt blik | Målrettede ændringer (pkt. 8) rammer sjældent over 50 linjer |
 | **Filsletning** | Enhver sletning af en hel fil | Stop — rød klasse (pkt. 56.1) | Sletning er irreversibel, uanset omfang |
 | **Løkke-værn** | 3 identiske tool-kald i træk (samme tool, samme argumenter) | Stop, markér som løkke | Retry-loftet er allerede 3 (pkt. 7); det tredje identiske kald er mistænkeligt |
-| **Budget-værn** | 2× tørkørslens estimat (pkt. 58.3). Uden estimat: 25 kr pr. task | Stop, bed om nyt loft | Relativt loft er bedre end absolut — en stor opgave må koste mere, bare ikke det dobbelte af det lovede |
+| **Budget-værn** | ~~2× tørkørslens estimat (pkt. 58.3). Uden estimat: 25 kr pr. task~~ **Overskrevet af pkt. 95**: 2× tørkørslens estimat (i tokens). Uden estimat: 20.000 tokens pr. task | Stop, bed om nyt loft | Relativt loft er bedre end absolut — en stor opgave må koste mere, bare ikke det dobbelte af det lovede |
 | **Timeout-værn** | 2× estimeret varighed. Absolut loft: 45 min uden tilstandsskift | Stop, markér som hængende | Fanger agenter der står stille uden at fejle |
 | **Sti-værn** | Skrivning uden for projektets tilladte mapper | Blokér altid | Ingen acceptabel mængde |
 | **Hemmeligheds-scanner** | Ethvert match på nøglemønster på vej i fil/commit | Blokér altid | Ingen acceptabel mængde |

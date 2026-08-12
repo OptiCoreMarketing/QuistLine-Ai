@@ -35,12 +35,12 @@ assert.strictEqual(
 );
 console.log("✓ checkLoopGuard opdager præcis 3 identiske kald i træk, ikke færre eller forskellige");
 
-// --- Budget-værn: 2x estimat, ellers 25 kr fallback ---
-assert.strictEqual(checkBudgetGuard({ spentDkk: 10, estimateDkk: 10 }).violated, false, "2x estimatet er grænsen, ikke over den");
-assert.strictEqual(checkBudgetGuard({ spentDkk: 21, estimateDkk: 10 }).violated, true, "Over 2x estimatet skal blokeres");
-assert.strictEqual(checkBudgetGuard({ spentDkk: 25 }).violated, false, "25 kr uden estimat er fallback-grænsen, ikke over den");
-assert.strictEqual(checkBudgetGuard({ spentDkk: 26 }).violated, true, "Over 25 kr uden estimat skal blokeres");
-console.log("✓ checkBudgetGuard bruger 2x-multiplikator med estimat og 25 kr-fallback uden");
+// --- Budget-værn: 2x estimat (i tokens), ellers 20.000 tokens fallback (pkt.95) ---
+assert.strictEqual(checkBudgetGuard({ spentTokens: 1000, estimateTokens: 1000 }).violated, false, "2x estimatet er grænsen, ikke over den");
+assert.strictEqual(checkBudgetGuard({ spentTokens: 2001, estimateTokens: 1000 }).violated, true, "Over 2x estimatet skal blokeres");
+assert.strictEqual(checkBudgetGuard({ spentTokens: 20_000 }).violated, false, "20.000 tokens uden estimat er fallback-grænsen, ikke over den");
+assert.strictEqual(checkBudgetGuard({ spentTokens: 20_001 }).violated, true, "Over 20.000 tokens uden estimat skal blokeres");
+console.log("✓ checkBudgetGuard bruger 2x-multiplikator med estimat og 20.000 tokens-fallback uden (pkt.95)");
 
 // --- Timeout-værn: 2x estimeret varighed, absolut loft 45 min ---
 assert.strictEqual(checkTimeoutGuard({ elapsedMs: 20_000, estimatedMs: 10_000 }).violated, false, "2x estimeret varighed er grænsen, ikke over den");

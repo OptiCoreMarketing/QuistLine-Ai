@@ -11,7 +11,7 @@ const MASS_DELETE_LINES_PER_FILE = 50;
 const MASS_DELETE_LINES_PER_TASK = 150;
 const LOOP_GUARD_REPEAT_COUNT = 3;
 const BUDGET_GUARD_MULTIPLIER = 2;
-const BUDGET_GUARD_FALLBACK_DKK = 25;
+const BUDGET_GUARD_FALLBACK_TOKENS = 20_000;
 const TIMEOUT_GUARD_MULTIPLIER = 2;
 const TIMEOUT_GUARD_ABSOLUTE_MS = 45 * 60 * 1000;
 
@@ -64,27 +64,25 @@ export function checkLoopGuard(recentToolCalls = []) {
   return ok("loop_guard");
 }
 
-// NB: tærsklen i pkt. 84 er angivet i kroner, ikke i USD (cost_usd-kolonnen
-// i event-tabellen). Åbent spørgsmål #17 (kr. vs. tokens) handler om den
-// generelle budgetkuverte i trin 4 — denne specifikke Vagtpost-tærskel er
-// allerede besluttet i kr. uafhængigt af det. Caller er ansvarlig for at
-// konvertere, indtil en rigtig prismodel findes (cost_usd er stadig `null`
-// i praksis, jf. trin 1a-rapporten).
-export function checkBudgetGuard({ spentDkk = 0, estimateDkk = null }) {
-  if (estimateDkk !== null && estimateDkk !== undefined) {
-    const limit = estimateDkk * BUDGET_GUARD_MULTIPLIER;
-    if (spentDkk > limit) {
+// Måles i tokens, ikke kroner (pkt. 95, lukker åbent spørgsmål #17).
+// Tokens er den enhed, provideren selv rapporterer (tokens_in/tokens_out
+// på hver event, pkt. 40) — ingen prisomregning nødvendig, og ingen
+// risiko for at regne forkert, hvis en providers pris ændrer sig.
+export function checkBudgetGuard({ spentTokens = 0, estimateTokens = null }) {
+  if (estimateTokens !== null && estimateTokens !== undefined) {
+    const limit = estimateTokens * BUDGET_GUARD_MULTIPLIER;
+    if (spentTokens > limit) {
       return violation(
         "budget_guard",
-        `Forbrug ${spentDkk} kr overstiger ${BUDGET_GUARD_MULTIPLIER}x tørkørslens estimat (${limit} kr)`
+        `Forbrug ${spentTokens} tokens overstiger ${BUDGET_GUARD_MULTIPLIER}x tørkørslens estimat (${limit} tokens)`
       );
     }
     return ok("budget_guard");
   }
-  if (spentDkk > BUDGET_GUARD_FALLBACK_DKK) {
+  if (spentTokens > BUDGET_GUARD_FALLBACK_TOKENS) {
     return violation(
       "budget_guard",
-      `Forbrug ${spentDkk} kr overstiger standardloftet på ${BUDGET_GUARD_FALLBACK_DKK} kr pr. task (intet estimat sat)`
+      `Forbrug ${spentTokens} tokens overstiger standardloftet på ${BUDGET_GUARD_FALLBACK_TOKENS} tokens pr. task (intet estimat sat)`
     );
   }
   return ok("budget_guard");
