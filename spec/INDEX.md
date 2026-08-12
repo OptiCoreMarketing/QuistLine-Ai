@@ -3,8 +3,9 @@
 *Jf. pkt. 30.2. Dette er indgangen til hele specen. Læs denne først.*
 *Sidst opdateret: 12. august 2026*
 
-**Projektstatus: PLANLÆGNING.** Ingen produktionskode bygget. Repoet
-indeholder en visuel skitse med fremmed branding, som skal renses (trin 0).
+**Projektstatus: BYGGERI I GANG.** Trin 0 (repo-oprydning) og trin 1a
+(datamodel + event-log med hash-kæde, Postgres) er gennemført og pushet.
+Se byggerækkefølgen nedenfor for status pr. trin.
 
 ---
 
@@ -63,10 +64,10 @@ til "pkt. 56.1" findes altid ét og kun ét sted.
 
 | # | Trin | Status |
 |---|---|---|
-| 0 | Rens repoet for cto.new-branding | **Færdig** — se rapport 2026-08-12, afventer push til GitHub |
-| 1a | Datamodel: business/task/event + hash-kæde fra start | Næste |
+| 0 | Rens repoet for cto.new-branding | **Færdig** — pushet 2026-08-12 |
+| 1a | Datamodel: business/task/event + hash-kæde fra start | **Færdig** — se rapport 2026-08-12_trin1a, pushet til GitHub. Migration ikke afprøvet mod rigtig Postgres endnu, se rapportens forbehold |
 | 1b | + stamtavle, artifacts, agent_trust, provenance | Efter 1a, kan ikke starte før 1a virker |
-| 2 | Orchestrator + kø + tilstandsmaskine + Vagtposten | Kan starte når 1a er færdig, kræver ikke 1b |
+| 2 | Orchestrator + kø + tilstandsmaskine + Vagtposten | **Næste** — kan påbegyndes, kræver ikke 1b |
 | 3 | Chief-chat + aktivitets-stream + designretning | Ikke påbegyndt |
 | 4 | Godkendelses-gates + risikoklasser + budgetkuvert + trust-niveauer | Ikke påbegyndt |
 | 5 | GitHub + Vercel preview | Ikke påbegyndt |
@@ -100,7 +101,6 @@ Tilføjet senere:
 
 | # | Spørgsmål | Fra |
 |---|---|---|
-| 8 | *(ledig)* | — |
 | 9 | Dynamisk eller statisk modelliste i v1? | pkt. 19 |
 | 10 | Tool-godkendelse pr. task eller permanent? | **Lukket** — stående godkendelser m. udløb, pkt. 56.2 |
 | 11 | Worker-roller: lukket liste eller fri definition? | pkt. 36 |

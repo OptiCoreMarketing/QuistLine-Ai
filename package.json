@@ -6,11 +6,12 @@
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
-    "test": "node tests/server.test.js"
+    "test": "node tests/server.test.js",
+    "migrate": "node scripts/migrate.js"
   },
   "dependencies": {
     "express": "^4.19.2",
     "groq-sdk": "^0.5.0",
-    "mongoose": "^8.2.0"
+    "pg": "^8.13.0"
   }
 }

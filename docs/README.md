@@ -14,7 +14,12 @@ Komplet Agent Workspace med Chief (Lead Agent) og Engineer (Worker) drevet af Gr
    cp .env.example .env
    ```
 
-3. Start serveren lokalt:
+3. Kør migrationerne mod din Postgres-database (Railway eller lokal):
+   ```bash
+   npm run migrate
+   ```
+
+4. Start serveren lokalt:
    ```bash
    npm start
    ```
@@ -24,8 +29,13 @@ Serveren kører derefter på `http://localhost:3000` (eller den port, du har sat
 ## Status
 
 Se `/spec/INDEX.md` for den fulde, aktuelle spec-status. Kort version:
-frontend (`src/public/index.html`) og backend (`src/server.js`) er endnu
-ikke forbundet — se addendum "repo-status-gap" for detaljer.
+- Trin 0 (branding) og trin 1a (datamodel + event-log med hash-kæde,
+  Postgres) er gennemført.
+- Frontend (`src/public/index.html`) og backend (`src/server.js`) er
+  fortsat ikke forbundet — se addendum "repo-status-gap" for detaljer.
+- `npm run migrate` er ikke afprøvet mod en rigtig Postgres-instans i denne
+  session (ingen tilgængelig i byggemiljøet) — kør den selv og meld tilbage,
+  hvis noget fejler.
 
 ## Sikkerhed
 
