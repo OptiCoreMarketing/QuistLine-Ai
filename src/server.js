@@ -124,6 +124,25 @@ app.get("/api/tasks", requireOwnerKey, requireDatabase, async (req, res) => {
   }
 });
 
+// POST /api/tasks/:taskId/transition - Blotlægger tilstandsmaskinen (pkt.41.3)
+// direkte for Owner. Ingen ny risikoklasse-/budget-logik her (det er trin 4) —
+// dette er kun det, der kræves for at komme videre fra en Vagtpost-stop, jf.
+// side 3.2-rapporten.
+app.post("/api/tasks/:taskId/transition", requireOwnerKey, requireDatabase, async (req, res) => {
+  const { taskId } = req.params;
+  const { toStatus, reason } = req.body;
+  if (!toStatus) {
+    return res.status(400).json({ error: "toStatus er påkrævet." });
+  }
+  try {
+    const event = await transitionTask({ taskId, toStatus, agentId: "owner", reason: reason || null });
+    res.json({ event });
+  } catch (err) {
+    console.error("Tilstandsovergang fejlede (POST /api/tasks/:taskId/transition):", err);
+    res.status(400).json({ error: err.message });
+  }
+});
+
 // GET /api/events?businessId=... - Læs event-loggen (kæden) for en business
 app.get("/api/events", requireOwnerKey, requireDatabase, async (req, res) => {
   const { businessId } = req.query;

@@ -334,6 +334,17 @@
     QuistLine.ai
   </div>
 
+  <!-- "HVORFOR?"-MODAL (spec pkt.58.2 — kæden op til Owners oprindelige besked) -->
+  <div id="chain-modal" class="hidden fixed inset-0" style="background:rgba(0,0,0,.5); z-index:60;" onclick="if(event.target.id==='chain-modal') closeChain()">
+    <div class="ql-card border rounded-xl p-4 mx-auto" style="max-width:32rem; margin-top:8vh; max-height:78vh; overflow-y:auto;">
+      <div class="flex justify-between items-center mb-3">
+        <div class="font-bold text-sm ql-accent"><i class="fa-solid fa-link"></i> Hvorfor? — kæden til denne hændelse</div>
+        <button onclick="closeChain()" class="ql-text-muted hover:opacity-70"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div id="chain-modal-body" class="text-xs"></div>
+    </div>
+  </div>
+
   <script>
     // ---------------------------------------------------------------
     // Læsemiljø (Dæk/Nat, spec brainstorm B3) — ikke light/dark mode,
@@ -509,6 +520,8 @@
     // Workspace — chat (skibsjournalen) + opgaver, begge fra rigtige endpoints
     // ---------------------------------------------------------------
     let CURRENT_BUSINESS = null;
+    let CURRENT_EVENTS = [];
+    let CURRENT_TASKS = [];
 
     function openBusiness(businessId, businessName) {
       CURRENT_BUSINESS = { id: businessId, name: businessName };
@@ -526,33 +539,98 @@
 
     function renderEvent(ev) {
       const time = new Date(ev.created_at).toLocaleString('da-DK', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short' });
+      const chainBtn = `<button onclick="event.stopPropagation(); showChain('${ev.id}')" class="ql-text-muted hover:opacity-70" style="float:right;" title="Hvorfor? Vis kæden til denne hændelse"><i class="fa-solid fa-link"></i></button>`;
+      const taskAttr = ev.task_id ? ` data-task-id="${ev.task_id}"` : '';
+
       if (ev.type === 'message' && ev.agent_id === 'owner') {
-        return `<div class="ql-msg ql-msg-owner"><div class="ql-meta" style="margin-bottom:6px;">DIG · ${time}</div><div class="ql-prose">${escapeHtml(ev.payload?.prompt)}</div></div>`;
+        return `<div class="ql-msg ql-msg-owner"${taskAttr}><div class="ql-meta" style="margin-bottom:6px;">${chainBtn}DIG · ${time}</div><div class="ql-prose">${escapeHtml(ev.payload?.prompt)}</div></div>`;
       }
       if (ev.type === 'message') {
-        return `<div class="ql-msg ql-msg-chief"><div class="ql-meta" style="margin-bottom:6px;"><i class="fa-solid fa-crown ql-accent"></i> CHIEF · ${time}</div><div class="ql-prose">${escapeHtml(ev.payload?.content)}</div></div>`;
+        return `<div class="ql-msg ql-msg-chief"${taskAttr}><div class="ql-meta" style="margin-bottom:6px;">${chainBtn}<i class="fa-solid fa-crown ql-accent"></i> CHIEF · ${time}</div><div class="ql-prose">${escapeHtml(ev.payload?.content)}</div></div>`;
       }
       if (ev.type === 'report') {
-        return `<div class="ql-msg ql-msg-report"><div class="ql-meta" style="margin-bottom:6px;"><i class="fa-solid fa-code"></i> ENGINEER-RAPPORT · ${time}</div><pre class="ql-prose" style="white-space:pre-wrap; font-size:14px; margin:0;">${escapeHtml(ev.payload?.content)}</pre></div>`;
+        return `<div class="ql-msg ql-msg-report"${taskAttr}><div class="ql-meta" style="margin-bottom:6px;">${chainBtn}<i class="fa-solid fa-code"></i> ENGINEER-RAPPORT · ${time}</div><pre class="ql-prose" style="white-space:pre-wrap; font-size:14px; margin:0;">${escapeHtml(ev.payload?.content)}</pre></div>`;
       }
       if (ev.type === 'guard_violation') {
-        return `<div class="ql-msg ql-msg-error"><div class="ql-meta" style="margin-bottom:4px;"><i class="fa-solid fa-triangle-exclamation"></i> VAGTPOST STOPPEDE OPGAVEN · ${time}</div><div class="ql-meta">${escapeHtml(ev.payload?.rule)}: ${escapeHtml(ev.payload?.detail)}</div></div>`;
+        const taskId = ev.task_id || '';
+        return `<div class="ql-msg ql-msg-error"${taskAttr}>
+          <div class="ql-meta" style="margin-bottom:4px;">${chainBtn}<i class="fa-solid fa-triangle-exclamation"></i> VAGTPOST STOPPEDE OPGAVEN · ${time}</div>
+          <div class="ql-meta" style="margin-bottom:8px;">${escapeHtml(ev.payload?.rule)}: ${escapeHtml(ev.payload?.detail)}</div>
+          ${taskId ? `<div class="flex gap-2">
+            <button onclick="resolveGuardTask('${taskId}','RUNNING')" class="ql-accent-bg text-[11px] px-3 py-1 rounded">Fortsæt opgaven</button>
+            <button onclick="resolveGuardTask('${taskId}','KILLED')" class="ql-input text-[11px] px-3 py-1 rounded" style="color:var(--signal-killed);">Stop opgaven</button>
+          </div>` : ''}
+        </div>`;
       }
       if (ev.type === 'state_transition') {
-        return `<div class="ql-msg-status"><i class="fa-solid fa-arrow-right-long"></i> ${escapeHtml(ev.payload?.from || '–')} → ${escapeHtml(ev.payload?.to)} · ${time}</div>`;
+        return `<div class="ql-msg-status"${taskAttr}>${chainBtn}<i class="fa-solid fa-arrow-right-long"></i> ${escapeHtml(ev.payload?.from || '–')} → ${escapeHtml(ev.payload?.to)} · ${time}</div>`;
       }
-      return `<div class="ql-msg-status">${escapeHtml(ev.type)} · ${time}</div>`;
+      return `<div class="ql-msg-status"${taskAttr}>${chainBtn}${escapeHtml(ev.type)} · ${time}</div>`;
+    }
+
+    // ---------------------------------------------------------------
+    // "Hvorfor?" — kæden op til Owners oprindelige besked (pkt.58.2)
+    // ---------------------------------------------------------------
+    function buildChain(eventId) {
+      const byId = new Map(CURRENT_EVENTS.map((e) => [e.id, e]));
+      const chain = [];
+      let current = byId.get(eventId);
+      while (current) {
+        chain.unshift(current);
+        current = current.parent_event_id ? byId.get(current.parent_event_id) : null;
+      }
+      return chain;
+    }
+    function showChain(eventId) {
+      const chain = buildChain(eventId);
+      document.getElementById('chain-modal-body').innerHTML = chain.length
+        ? chain.map(renderEvent).join('')
+        : `<div class="ql-meta">Denne hændelse har ingen forældre — den er kædens start.</div>`;
+      const modal = document.getElementById('chain-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+    function closeChain() {
+      const modal = document.getElementById('chain-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    // ---------------------------------------------------------------
+    // Løs en Vagtpost-overtrædelse — blotlægger tilstandsmaskinen direkte
+    // (ingen risikoklasse-logik her, det er trin 4)
+    // ---------------------------------------------------------------
+    async function resolveGuardTask(taskId, toStatus) {
+      if (!taskId) return;
+      try {
+        await api(`/api/tasks/${encodeURIComponent(taskId)}/transition`, { method: 'POST', body: { toStatus, reason: 'owner_resolved_guard_violation' } });
+        await refreshWorkspace();
+      } catch (err) {
+        alert('Kunne ikke opdatere opgaven: ' + err.message);
+      }
+    }
+
+    function jumpToTask(taskId) {
+      if (!taskId) return;
+      switchTab('hq');
+      const target = document.querySelector(`#chat-feed [data-task-id="${taskId}"]`);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        target.style.outline = '2px solid var(--signal-awaiting)';
+        setTimeout(() => { target.style.outline = ''; }, 2000);
+      }
     }
 
     async function loadEvents() {
       const feed = document.getElementById('chat-feed');
       try {
-        const events = await api(`/api/events?businessId=${encodeURIComponent(CURRENT_BUSINESS.id)}`);
-        feed.innerHTML = events.length
-          ? events.map(renderEvent).join('')
+        CURRENT_EVENTS = await api(`/api/events?businessId=${encodeURIComponent(CURRENT_BUSINESS.id)}`);
+        feed.innerHTML = CURRENT_EVENTS.length
+          ? CURRENT_EVENTS.map(renderEvent).join('')
           : `<div class="ql-meta" style="padding:16px;">Ingen beskeder endnu i skibsjournalen for dette skib.</div>`;
         feed.scrollTop = feed.scrollHeight;
       } catch (err) {
+        CURRENT_EVENTS = [];
         feed.innerHTML = `<div class="ql-msg ql-msg-error ql-meta">Kunne ikke hente skibsjournalen: ${escapeHtml(err.message)}</div>`;
       }
     }
@@ -600,7 +678,7 @@
       const hqLatest = document.getElementById('hq-latest');
       if (hqAwaiting) {
         hqAwaiting.innerHTML = buckets.awaiting.length
-          ? buckets.awaiting.map((t) => `<div class="text-left text-xs mb-2"><span class="ql-dot awaiting"></span> ${escapeHtml(t.title)}</div>`).join('')
+          ? buckets.awaiting.map((t) => `<div onclick="jumpToTask('${t.id}')" class="text-left text-xs mb-2 cursor-pointer hover:opacity-80" title="Gå til hændelsen i skibsjournalen"><span class="ql-dot awaiting"></span> ${escapeHtml(t.title)}</div>`).join('')
           : 'Intet afventer dig';
         hqAwaiting.className = buckets.awaiting.length ? 'text-xs' : 'ql-card border rounded-lg p-4 text-center ql-text-muted text-xs';
       }
@@ -617,9 +695,10 @@
       const board = document.getElementById('task-board');
       try {
         const allTasks = await api('/api/tasks');
-        const tasks = allTasks.filter((t) => t.business_id === CURRENT_BUSINESS.id);
-        renderTaskBoard(tasks);
+        CURRENT_TASKS = allTasks.filter((t) => t.business_id === CURRENT_BUSINESS.id);
+        renderTaskBoard(CURRENT_TASKS);
       } catch (err) {
+        CURRENT_TASKS = [];
         board.innerHTML = `<div class="ql-meta">Kunne ikke hente opgaver: ${escapeHtml(err.message)}</div>`;
       }
     }
