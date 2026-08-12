@@ -115,6 +115,54 @@ app.get("/api/businesses", requireOwnerKey, requireDatabase, async (req, res) =>
   }
 });
 
+// PATCH /api/businesses/:businessId - Omdøb og/eller pause/genoptag et
+// projekt. Feltet business.status har eksisteret siden trin 1a uden at
+// noget nogensinde koblede sig på det — dette er den funktion.
+app.patch("/api/businesses/:businessId", requireOwnerKey, requireDatabase, async (req, res) => {
+  const { businessId } = req.params;
+  const { name, status } = req.body;
+
+  const updates = [];
+  const values = [];
+
+  if (name !== undefined) {
+    const trimmedName = String(name).trim();
+    if (!trimmedName) {
+      return res.status(400).json({ error: "Navn må ikke være tomt." });
+    }
+    values.push(trimmedName);
+    updates.push(`name = $${values.length}`);
+  }
+  if (status !== undefined) {
+    if (!["active", "paused"].includes(status)) {
+      return res.status(400).json({ error: "status skal være 'active' eller 'paused'." });
+    }
+    values.push(status);
+    updates.push(`status = $${values.length}`);
+  }
+  if (updates.length === 0) {
+    return res.status(400).json({ error: "Angiv name og/eller status." });
+  }
+
+  values.push(businessId);
+  try {
+    const { rows } = await pool.query(
+      `UPDATE business SET ${updates.join(", ")} WHERE id = $${values.length} RETURNING *`,
+      values
+    );
+    if (!rows[0]) {
+      return res.status(404).json({ error: "Business findes ikke." });
+    }
+    res.json(rows[0]);
+  } catch (err) {
+    if (err.code === "23505") {
+      return res.status(409).json({ error: "Et projekt med det navn findes allerede." });
+    }
+    console.error("Postgres-fejl (PATCH /api/businesses/:businessId):", err);
+    res.status(500).json({ error: "Kunne ikke opdatere business" });
+  }
+});
+
 // GET /api/tasks - Hent opgaver fra Postgres, nyeste først
 app.get("/api/tasks", requireOwnerKey, requireDatabase, async (req, res) => {
   try {

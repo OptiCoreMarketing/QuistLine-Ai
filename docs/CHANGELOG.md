@@ -1,5 +1,11 @@
 # Changelog · QuistLine.ai
 
+## [Unreleased] - 2026-08-13
+### Tilføjet
+- `PATCH /api/businesses/:businessId` — omdøb og/eller pause/genoptag et skib. `migrations/003_business_status.sql` giver `business.status` en håndhævet CHECK (`active`/`paused`), samme mønster som `task.status`.
+- Omdøb-blyant og Pause/Genoptag-knap i workspace-headeren; Flåden-listens statuspunkt viser nu korrekt aktiv/pauset (viste tidligere altid grøn uanset faktisk status).
+- HQ-sidebarens "Seneste opgaver"-liste er nu klikbar (samme mønster som "Afventer dig").
+
 ## [Unreleased] - 2026-08-12
 ### Tilføjet
 - Trin 0: fjernet cto.new-branding fra `index.html` og `branding/badge.json`.

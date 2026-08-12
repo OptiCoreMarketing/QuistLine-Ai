@@ -195,12 +195,15 @@
         <div class="flex items-center gap-2 ql-input px-2.5 py-1 rounded">
           <i class="fa-solid fa-ship ql-accent"></i>
           <span id="workspace-business-name" class="font-semibold"></span>
+          <i onclick="renameCurrentBusiness()" class="fa-solid fa-pen text-[10px] ql-text-muted hover:opacity-70 cursor-pointer" title="Omdøb skibet"></i>
+          <span id="workspace-business-status" class="ql-meta"></span>
         </div>
       </div>
 
       <div class="flex items-center gap-4 ql-text-muted">
         <button onclick="navigateGlobal('launch')" class="hover:opacity-70 flex items-center gap-1"><i class="fa-solid fa-house"></i> Hjem</button>
         <button onclick="toggleMiljo()" class="hover:opacity-70 flex items-center gap-1"><i class="fa-solid fa-compass"></i> <span data-miljo-label>Nat</span></button>
+        <button id="pause-resume-btn" onclick="togglePauseBusiness()" class="ql-input px-3 py-1 rounded-md font-medium text-xs flex items-center gap-1.5"></button>
         <button class="ql-input px-3 py-1 rounded-md font-medium text-xs flex items-center gap-1.5 ql-disabled" disabled title="Ikke bygget endnu — trin 10">
           <i class="fa-solid fa-scroll"></i> Sælg dette skib
         </button>
@@ -488,12 +491,12 @@
         const businesses = await api('/api/businesses');
         const html = businesses.length
           ? businesses.map((b) => `
-              <div onclick="openBusiness('${b.id}', '${escapeHtml(b.name).replace(/'/g, "\\'")}')" class="ql-card border rounded-xl p-4 flex justify-between items-center cursor-pointer transition group">
+              <div onclick="openBusiness('${b.id}', '${escapeHtml(b.name).replace(/'/g, "\\'")}', '${b.status}')" class="ql-card border rounded-xl p-4 flex justify-between items-center cursor-pointer transition group">
                 <div class="flex items-center gap-3">
                   <div class="w-9 h-9 rounded-lg flex items-center justify-center font-bold ql-accent" style="background-color: var(--bg-input);">${escapeHtml(b.name[0] || '?').toUpperCase()}</div>
                   <div>
                     <div class="font-bold text-sm">${escapeHtml(b.name)}</div>
-                    <div class="text-xs ql-text-muted flex items-center gap-2"><span class="ql-dot done"></span> ${escapeHtml(b.status)}</div>
+                    <div class="text-xs ql-text-muted flex items-center gap-2"><span class="ql-dot ${b.status === 'paused' ? 'awaiting' : 'done'}"></span> ${b.status === 'paused' ? 'Pauset' : 'Aktiv'}</div>
                   </div>
                 </div>
                 <i class="fa-solid fa-chevron-right ql-text-muted"></i>
@@ -536,13 +539,50 @@
     let CURRENT_EVENTS = [];
     let CURRENT_TASKS = [];
 
-    function openBusiness(businessId, businessName) {
-      CURRENT_BUSINESS = { id: businessId, name: businessName };
+    function openBusiness(businessId, businessName, status) {
+      CURRENT_BUSINESS = { id: businessId, name: businessName, status: status || 'active' };
       document.getElementById('global-app-layout').classList.add('hidden');
       document.getElementById('workspace-app-layout').classList.remove('hidden');
       document.getElementById('workspace-business-name').innerText = businessName;
+      renderWorkspaceStatus();
       switchTab('hq');
       refreshWorkspace();
+    }
+
+    function renderWorkspaceStatus() {
+      const statusEl = document.getElementById('workspace-business-status');
+      const btn = document.getElementById('pause-resume-btn');
+      if (!CURRENT_BUSINESS) return;
+      const paused = CURRENT_BUSINESS.status === 'paused';
+      statusEl.innerHTML = paused ? '<span class="ql-signal-awaiting">· pauset</span>' : '';
+      btn.innerHTML = paused
+        ? '<i class="fa-solid fa-play"></i> Genoptag'
+        : '<i class="fa-solid fa-pause"></i> Pause skib';
+    }
+
+    async function renameCurrentBusiness() {
+      if (!CURRENT_BUSINESS) return;
+      const newName = prompt('Nyt navn til skibet:', CURRENT_BUSINESS.name);
+      if (!newName || !newName.trim() || newName.trim() === CURRENT_BUSINESS.name) return;
+      try {
+        const updated = await api(`/api/businesses/${encodeURIComponent(CURRENT_BUSINESS.id)}`, { method: 'PATCH', body: { name: newName.trim() } });
+        CURRENT_BUSINESS.name = updated.name;
+        document.getElementById('workspace-business-name').innerText = updated.name;
+      } catch (err) {
+        alert('Kunne ikke omdøbe: ' + err.message);
+      }
+    }
+
+    async function togglePauseBusiness() {
+      if (!CURRENT_BUSINESS) return;
+      const newStatus = CURRENT_BUSINESS.status === 'paused' ? 'active' : 'paused';
+      try {
+        const updated = await api(`/api/businesses/${encodeURIComponent(CURRENT_BUSINESS.id)}`, { method: 'PATCH', body: { status: newStatus } });
+        CURRENT_BUSINESS.status = updated.status;
+        renderWorkspaceStatus();
+      } catch (err) {
+        alert('Kunne ikke skifte status: ' + err.message);
+      }
     }
 
     let EVENTS_ERROR = null;
@@ -835,7 +875,7 @@
       if (hqLatest) {
         const latest = tasks.slice(0, 3);
         hqLatest.innerHTML = latest.length
-          ? latest.map((t) => `<div class="text-left text-xs mb-2"><span class="ql-dot ${SIGNAL_BY_STATUS[t.status]}"></span> ${escapeHtml(t.title)}</div>`).join('')
+          ? latest.map((t) => `<div onclick="jumpToTask('${t.id}')" class="text-left text-xs mb-2 cursor-pointer hover:opacity-80" title="Gå til hændelsen i skibsjournalen"><span class="ql-dot ${SIGNAL_BY_STATUS[t.status]}"></span> ${escapeHtml(t.title)}</div>`).join('')
           : 'Ingen opgaver endnu';
         hqLatest.className = latest.length ? 'text-xs' : 'ql-card border rounded-lg p-4 text-center ql-text-muted text-xs';
       }
