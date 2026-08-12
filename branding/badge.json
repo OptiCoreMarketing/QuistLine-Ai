@@ -1,10 +1,10 @@
 {
-  "badgeText": "LeadAgent · QuistLine.ai",
+  "badgeText": "QuistLine.ai",
   "displayLocation": "bottom-left",
   "style": {
     "fontFamily": "JetBrains Mono",
     "backgroundColor": "rgba(15, 23, 42, 0.6)",
     "borderColor": "rgba(30, 41, 59, 0.8)",
-    "textColor": "#64748b"
+    "textColor": "#94a3b8"
   }
 }

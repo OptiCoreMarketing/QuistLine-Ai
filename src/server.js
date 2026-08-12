@@ -13,6 +13,62 @@ app.use(express.static(path.join(__dirname, "public")));
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
+// --- Stopgap-auth (IKKE login-systemet fra spec åbent punkt #5, som stadig
+// er ubesluttet). Formål: forhindre at en tilfældig tredjepart, der finder
+// URL'en, kan trigge betalte Groq-kald på din nøgle. Erstattes af en rigtig
+// godkendelses-model, når trin 4 (godkendelses-gates) bygges. ---
+function requireOwnerKey(req, res, next) {
+  const configuredKey = process.env.OWNER_API_KEY;
+  if (!configuredKey) {
+    console.warn("ADVARSEL: OWNER_API_KEY er ikke sat i miljøvariabler — dette endpoint er UBESKYTTET.");
+    return next();
+  }
+  const providedKey = req.header("x-owner-key");
+  if (providedKey !== configuredKey) {
+    return res.status(401).json({ error: "Ugyldig eller manglende x-owner-key header." });
+  }
+  next();
+}
+
+// --- Simpel rate limiting (stopgap). In-memory pr. IP, nulstilles hvert
+// minut. NB: i et serverless-miljø med flere samtidige instanser er dette
+// IKKE en garanteret korrekt grænse (hukommelsen deles ikke nødvendigvis
+// mellem invocations) — det er et lag, ikke løsningen. Den rigtige løsning
+// er budgetkuverten (spec pkt. 56.3), der lever i databasen, bygges trin 4. ---
+const RATE_LIMIT_PER_MINUTE = Number(process.env.RATE_LIMIT_PER_MINUTE) || 20;
+const requestLog = new Map();
+
+function rateLimit(req, res, next) {
+  const ip = req.ip || "unknown";
+  const now = Date.now();
+  const windowMs = 60_000;
+  const entry = requestLog.get(ip);
+
+  if (!entry || now - entry.windowStart > windowMs) {
+    requestLog.set(ip, { windowStart: now, count: 1 });
+    return next();
+  }
+  if (entry.count >= RATE_LIMIT_PER_MINUTE) {
+    return res.status(429).json({ error: `For mange forespørgsler. Maks ${RATE_LIMIT_PER_MINUTE} pr. minut pr. IP.` });
+  }
+  entry.count += 1;
+  next();
+}
+
+// --- Model allow-list (jf. spec addendum "model-provider-claude", pkt. 18.3).
+// Ingen model-streng fra klienten bruges ukontrolleret. Udvid listen, når
+// ANTHROPIC_API_KEY tilføjes og Claude-routing bygges (samme addendum). ---
+const ALLOWED_MODELS = [
+  "llama-3.3-70b-versatile" // Groq — nuværende fallback/eneste model
+];
+
+function resolveModel(requestedModel) {
+  if (requestedModel && ALLOWED_MODELS.includes(requestedModel)) {
+    return requestedModel;
+  }
+  return ALLOWED_MODELS[0];
+}
+
 // Hjælpefunktion: Genbrug MongoDB-forbindelse i serverless miljø
 async function connectToDatabase() {
   if (mongoose.connection.readyState >= 1) return;
@@ -42,7 +98,7 @@ const CHIEF_PROMPT = `Du er CHIEF, Lead Agent på QuistLine.ai. Du koordinerer d
 const ENGINEER_PROMPT = `Du er ENGINEER, en Worker Agent. Når du bygger, skal du oprette en struktureret rapport med sektionerne: # Task Rapport, ## Status, ## Ændringer, ## Tests og ## Anbefalinger.`;
 
 // GET /api/tasks - Hent opgaver fra MongoDB
-app.get("/api/tasks", async (req, res) => {
+app.get("/api/tasks", requireOwnerKey, async (req, res) => {
   try {
     await connectToDatabase();
     if (mongoose.connection.readyState === 1) {
@@ -56,9 +112,9 @@ app.get("/api/tasks", async (req, res) => {
 });
 
 // POST /api/agent - Orkestrering af Chief & Engineer
-app.post("/api/agent", async (req, res) => {
+app.post("/api/agent", requireOwnerKey, rateLimit, async (req, res) => {
   const { prompt, model, hireWorker, projectName } = req.body;
-  const selectedModel = model || "llama-3.3-70b-versatile";
+  const selectedModel = resolveModel(model);
 
   try {
     await connectToDatabase();

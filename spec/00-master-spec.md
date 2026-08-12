@@ -87,6 +87,12 @@ ved reelt problematiske forhold (løbsk forbrug, kritiske fejl, sikkerhed).
 6. Fuld rapport og log er obligatorisk hver gang — ingen stiltiende handlinger
 
 ### 3.5 Permissions-model pr. agent
+> **Delvist overskrevet af pkt. 66.3** (addendum "idebank-vedtaget"): for
+> **projekt-workers** er den statiske model nedenfor erstattet af en
+> dynamisk tillidsmodel (`under opsyn` → `betroet` → `selvkørende`).
+> For **platform-agenter** gælder listen nedenfor stadig uændret, jf.
+> pkt. 34.4.
+
 Granulær tilladelsesliste pr. agent (inspireret af cto.new): Check team
 status / Read task reports / Update business plan / Hire employees / Fire
 employees / Delegate work / Issue invoices / Create payment links / Create
@@ -150,6 +156,11 @@ Bibliotekar-agenten er vogter af reglen.
 5. Read-only for Owner — redigering kun gennem agenter
 
 ## 7. Deploy-pipeline (CI/CD med Chief som mellemled)
+> **Trin 3 udvidet af pkt. 76** (byggevejledning): de tre testniveauer
+> nedenfor er stadig gyldige, men to niveauer er tilføjet efter dem —
+> modstander-review (niveau 4) og visuel verifikation (niveau 5). Resten
+> af flowet (trin 1-2, 4-8 nedenfor) er uændret.
+
 1. Owner beder Chief om opdatering
 2. Chief uddelegerer til projektets engineer i sandkassen
 3. Engineer bygger + kører 3 test-niveauer, retry-loft 3 pr. niveau:

@@ -39,6 +39,7 @@ til "pkt. 56.1" findes altid ét og kun ét sted.
 | `65-idebank-vedtaget.md` | 65–72 | Beslutning: idébanken vedtaget i tre grader + revideret byggerækkefølge | **BESLUTTET** |
 | `73-byggevejledning.md` | 73–82 | Gates, definition of done, testniveauer, startprompt | Bindende under byggeri |
 | `83-beslutninger-database-taerskler.md` | 83–86 | Postgres som system of record, vagtpost-tærskler, tillidstærskler | **BESLUTTET** |
+| `87-spec-sundhedstjek.md` | 87–94 | Første kørte spec-sundhedstjek: nummerhul, statusrettelser, hash-kæde-forbehold, trin 1 delt i 1a/1b | **RETTET** |
 
 ---
 
@@ -62,9 +63,10 @@ til "pkt. 56.1" findes altid ét og kun ét sted.
 
 | # | Trin | Status |
 |---|---|---|
-| 0 | Rens repoet for cto.new-branding | **Næste** |
-| 1 | Datamodel + event-log + hash-kæde + stamtavle + trust | Ikke påbegyndt |
-| 2 | Orchestrator + kø + tilstandsmaskine + Vagtposten | Ikke påbegyndt |
+| 0 | Rens repoet for cto.new-branding | **Færdig** — se rapport 2026-08-12, afventer push til GitHub |
+| 1a | Datamodel: business/task/event + hash-kæde fra start | Næste |
+| 1b | + stamtavle, artifacts, agent_trust, provenance | Efter 1a, kan ikke starte før 1a virker |
+| 2 | Orchestrator + kø + tilstandsmaskine + Vagtposten | Kan starte når 1a er færdig, kræver ikke 1b |
 | 3 | Chief-chat + aktivitets-stream + designretning | Ikke påbegyndt |
 | 4 | Godkendelses-gates + risikoklasser + budgetkuvert + trust-niveauer | Ikke påbegyndt |
 | 5 | GitHub + Vercel preview | Ikke påbegyndt |
@@ -90,8 +92,9 @@ Oprindelige (pkt. 14):
 | 3 | Always-on vs. on-demand pr. agent | Afventer bekræftelse |
 | 4 | Marketplace: prismodel, kvalitetskontrol, hvem må købe | Åben |
 | 5 | Login: metode, session, 2FA | Åben |
-| 6 | Permissions-listens omfang | Forslag: differentieret (pkt. 34.4/35), delvist erstattet af pkt. 66.3 |
-| 7 | Data-arkitektur mod eksisterende stack | Besvaret af pkt. 41.2, afventer beslutning (se #13) |
+| 6 | Permissions-listens omfang | **Delvist lukket** — platform-agenter uændret (pkt. 3.5, nu markeret), projekt-workers lukket af pkt. 66.3 |
+| 7 | Data-arkitektur mod eksisterende stack | **Lukket** — konsekvens af #13's lukning, pkt. 89 |
+| 8 | *(retired — aldrig defineret, forfatterfejl. Ikke genbrugt.)* | Lukket som tom, pkt. 88 |
 
 Tilføjet senere:
 
@@ -111,9 +114,11 @@ Tilføjet senere:
 | 19 | Hvilke event-typer er `transferable` ved salg? | pkt. 72 — før trin 10 |
 | 20 | Tærskler for forfremmelse i lærlinge-modellen | **Lukket** — pkt. 85 |
 | 21 | Kan skrogene sælges selvstændigt? | pkt. 72 |
+| 22 | Skal server.js's badge-rendering og /branding-servering laves rigtigt (dynamisk), eller er hardcoded nok? | Rapport 2026-08-12, trin 0 |
+| 23 | Hvilken ekstern forankrings-metode for hash-kæden, før Marketplace? | pkt. 92 |
 
-**Ingen blokeringer tilbage for trin 0–5.** Alle tre tidligere blokerende
-spørgsmål (#13, #16, #20) er lukket 12. august 2026.
+**Ingen blokeringer tilbage for trin 0–2.** #13, #16, #20 lukket i
+addendum 83. #6, #7 statusrettet i sundhedstjekket (pkt. 87). #8 retired.
 
 ---
 
