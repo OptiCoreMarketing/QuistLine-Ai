@@ -4,6 +4,8 @@ Komplet Agent Workspace med Chief (Lead Agent) og Engineer (Worker) drevet af Gr
 
 ## Quickstart
 
+Kræver Node ≥ 22.14 (bruger `--env-file-if-exists`, indbygget i Node — ingen `dotenv`-afhængighed).
+
 1. Åbn terminalen i mappen `QuistLine Ai` og installer afhængigheder:
    ```bash
    npm install
@@ -29,13 +31,14 @@ Serveren kører derefter på `http://localhost:3000` (eller den port, du har sat
 ## Status
 
 Se `/spec/INDEX.md` for den fulde, aktuelle spec-status. Kort version:
-- Trin 0 (branding) og trin 1a (datamodel + event-log med hash-kæde,
-  Postgres) er gennemført.
+- Trin 0, 1a, 2.1 og 3.1–3.3 er gennemført **og verificeret mod en rigtig
+  Postgres** (se `reports/2026-08-12_lokal_postgres_verifikation.md`).
 - Frontend (`src/public/index.html`) og backend (`src/server.js`) er
-  fortsat ikke forbundet — se addendum "repo-status-gap" for detaljer.
-- `npm run migrate` er ikke afprøvet mod en rigtig Postgres-instans i denne
-  session (ingen tilgængelig i byggemiljøet) — kør den selv og meld tilbage,
-  hvis noget fejler.
+  forbundet — chat, hyr-Engineer-flow, task-board og aktivitets-strøm
+  kalder alle rigtige endpoints.
+- Det eneste ikke-verificerede stykke er selve Groq-kaldet (kræver en
+  rigtig `GROQ_API_KEY`) — alt omkring det (database-skrivning,
+  fejlhåndtering) er bekræftet.
 
 ## Sikkerhed
 

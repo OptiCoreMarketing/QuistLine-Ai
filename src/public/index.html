@@ -598,7 +598,11 @@
       let events = CURRENT_EVENTS;
       if (STREAM_FILTER === 'needs_me') {
         const awaitingIds = new Set(CURRENT_TASKS.filter((t) => SIGNAL_BY_STATUS[t.status] === 'awaiting').map((t) => t.id));
-        events = events.filter((ev) => ev.type === 'guard_violation' || (ev.task_id && awaitingIds.has(ev.task_id)));
+        // Vigtigt: en guard_violation knyttet til en task, der IKKE længere
+        // afventer (fx allerede løst med Fortsæt/Stop), skal ikke blive
+        // hængende for evigt. Kun untied guard_violations (intet task_id,
+        // et defensivt undtagelsestilfælde) vises unconditionelt.
+        events = events.filter((ev) => (ev.task_id ? awaitingIds.has(ev.task_id) : ev.type === 'guard_violation'));
       }
 
       if (!events.length) {

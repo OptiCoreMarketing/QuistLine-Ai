@@ -4,10 +4,13 @@
   "description": "QuistLine.ai Lead Agent Workspace med Chief, Engineer og Groq Engine",
   "type": "module",
   "main": "src/server.js",
+  "engines": {
+    "node": ">=22.14.0"
+  },
   "scripts": {
-    "start": "node src/server.js",
-    "test": "node tests/server.test.js && node tests/stateMachine.test.js && node tests/guards.test.js",
-    "migrate": "node scripts/migrate.js"
+    "start": "node --env-file-if-exists=.env src/server.js",
+    "test": "node --env-file-if-exists=.env tests/server.test.js && node --env-file-if-exists=.env tests/stateMachine.test.js && node --env-file-if-exists=.env tests/guards.test.js",
+    "migrate": "node --env-file-if-exists=.env scripts/migrate.js"
   },
   "dependencies": {
     "express": "^4.19.2",

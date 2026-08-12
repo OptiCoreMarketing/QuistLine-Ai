@@ -4,10 +4,12 @@
 *Sidst opdateret: 12. august 2026*
 
 **Projektstatus: BYGGERI I GANG.** Trin 0, 1a, 2.1, 3.1, 3.2 og 3.3 er
-gennemført og pushet. **Fem sider i træk er kun logik-testet, ikke
-afprøvet mod en rigtig database** — stærk anbefaling om at teste den fulde
-vej, før mere bygges, se seneste rapport. Side 2.2 (orchestrator/jobkø) er
-bevidst udskudt — kræver en hosting-beslutning, se spørgsmål 26.
+gennemført og pushet. **Alle fem er nu bekræftet mod en rigtig Postgres**
+(lokal opsætning, se rapport 2026-08-12_lokal_postgres_verifikation) — to
+reelle fejl blev fundet og rettet undervejs (`.env` blev aldrig indlæst;
+"kræver mig"-filteret frigav aldrig en løst guard_violation). Side 2.2
+(orchestrator/jobkø) er bevidst udskudt — kræver en hosting-beslutning, se
+spørgsmål 26.
 
 ---
 
@@ -67,13 +69,13 @@ til "pkt. 56.1" findes altid ét og kun ét sted.
 | # | Trin | Status |
 |---|---|---|
 | 0 | Rens repoet for cto.new-branding | **Færdig** — pushet 2026-08-12 |
-| 1a | Datamodel: business/task/event + hash-kæde fra start | **Færdig** — se rapport 2026-08-12_trin1a, pushet til GitHub. Migration ikke afprøvet mod rigtig Postgres endnu, se rapportens forbehold |
+| 1a | Datamodel: business/task/event + hash-kæde fra start | **Færdig, verificeret mod rigtig Postgres** 2026-08-12 |
 | 1b | + stamtavle, artifacts, agent_trust, provenance | Efter 1a, kan ikke starte før 1a virker |
-| 2.1 | Tilstandsmaskine (task) + Vagtpost lag 1 (8 regler) | **Færdig** — se rapport 2026-08-12_trin2_side1, pushet. Kun 2 af 8 regler koblet til en live call-site, se rapportens "Bevidst udeladt" |
+| 2.1 | Tilstandsmaskine (task) + Vagtpost lag 1 (8 regler) | **Færdig, verificeret mod rigtig Postgres** 2026-08-12. Kun 2 af 8 regler koblet til en live call-site, se rapportens "Bevidst udeladt" |
 | 2.2 | Orchestrator (always-on) + jobkø (pg-boss) | **Ikke påbegyndt** — kræver eksplicit hosting-beslutning (spm. 26), ikke kun kode |
-| 3.1 | Chat/hire-flow forbundet + søkort-palette/rederi-sprog/signalflag | **Færdig** — se rapport 2026-08-12_trin3_side1, pushet. Kun logik+rendering browser-testet, ikke mod rigtig data (ingen DB i byggemiljøet) |
-| 3.2 | Løs Vagtpost-stop (Fortsæt/Stop) + "Hvorfor?"-kæde + klikbar "afventer dig" | **Færdig** — se rapport 2026-08-12_trin3_side2, pushet. Samme DB-forbehold |
-| 3.3 | To-kanal-model: separat aktivitets-strøm (observation) fra Chief-chat (kommando), jf. pkt.42/48 | **Færdig** — se rapport 2026-08-12_trin3_side3, pushet. Rettede en design-afvigelse fra side 3.1/3.2 |
+| 3.1 | Chat/hire-flow forbundet + søkort-palette/rederi-sprog/signalflag | **Færdig, verificeret** mod rigtig Postgres + ægte HTTP/browser-kald 2026-08-12 |
+| 3.2 | Løs Vagtpost-stop (Fortsæt/Stop) + "Hvorfor?"-kæde + klikbar "afventer dig" | **Færdig, verificeret** — se "To reelle fejl fundet" i rapport 2026-08-12_lokal_postgres_verifikation |
+| 3.3 | To-kanal-model: separat aktivitets-strøm (observation) fra Chief-chat (kommando), jf. pkt.42/48 | **Færdig, verificeret** mod ægte data, inkl. et reelt knap-klik |
 | 3.4 | Detaljeniveauer i strømmen, kommandopalet, virtualisering | Ikke påbegyndt — lav prioritet uden mere volumen |
 | 4 | Godkendelses-gates + risikoklasser + budgetkuvert + trust-niveauer | Ikke påbegyndt |
 | 5 | GitHub + Vercel preview | Ikke påbegyndt |
@@ -127,7 +129,7 @@ Tilføjet senere:
 | 26 | Hvornår besluttes orchestrator/jobkø-arkitekturen (pkt. 41.2) konkret? | Rapport 2026-08-12_trin2_side1 — blokerer side 2.2 |
 | 27 | Skal Owner-key i localStorage anerkendes som "login v0", eller udskiftes helt uden mellemstadier når spm. 5 besluttes? | Rapport 2026-08-12_trin3_side1 |
 
-**Ingen blokeringer tilbage for trin 0–3.1.** #13, #16, #20 lukket i
+**Ingen blokeringer tilbage for trin 0–3.3.** #13, #16, #20 lukket i
 addendum 83. #6, #7 statusrettet i sundhedstjekket (pkt. 87). #8 retired.
 Side 2.2 (orchestrator/jobkø) afventer spørgsmål 26.
 
