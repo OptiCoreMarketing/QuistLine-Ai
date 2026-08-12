@@ -735,7 +735,15 @@
     function jumpToTask(taskId) {
       if (!taskId) return;
       switchTab('hq');
-      const target = document.querySelector(`#activity-stream [data-task-id="${taskId}"]`) || document.querySelector(`#chat-feed [data-task-id="${taskId}"]`);
+      let target = document.querySelector(`#activity-stream [data-task-id="${taskId}"]`) || document.querySelector(`#chat-feed [data-task-id="${taskId}"]`);
+      // Hvis målet er filtreret ud af "kun det der kræver mig" (fx en
+      // allerede afsluttet task), skift til "vis alt", så klikket altid
+      // fører et sted hen i stedet for at være et stille no-op.
+      if (!target && STREAM_FILTER !== 'all') {
+        STREAM_FILTER = 'all';
+        renderActivityStream();
+        target = document.querySelector(`#activity-stream [data-task-id="${taskId}"]`);
+      }
       if (target) {
         target.scrollIntoView({ behavior: 'smooth', block: 'center' });
         target.style.outline = '2px solid var(--signal-awaiting)';
@@ -774,6 +782,30 @@
       }
     }
 
+    // Opgave-kort i Opgaver-fanen: klikbart (hopper til tråden i
+    // aktivitets-strømmen) og med handlingsknapper direkte på kortet, når
+    // tasken faktisk afventer en beslutning — samme handlinger som findes
+    // i chatten/strømmen, blot tilgængelige uden at skulle finde hændelsen.
+    function renderTaskCard(t) {
+      let actions = '';
+      if (t.status === 'AWAITING_HIRE_APPROVAL') {
+        actions = `<div class="flex gap-2 mt-2">
+          <button onclick="event.stopPropagation(); respondToHireApproval('${t.id}', true)" class="ql-accent-bg text-[11px] px-3 py-1 rounded">Godkend</button>
+          <button onclick="event.stopPropagation(); respondToHireApproval('${t.id}', false)" class="ql-input text-[11px] px-3 py-1 rounded" style="color:var(--signal-killed);">Afvis</button>
+        </div>`;
+      } else if (t.status === 'AWAITING_OWNER_REVIEW') {
+        actions = `<div class="flex gap-2 mt-2">
+          <button onclick="event.stopPropagation(); resolveGuardTask('${t.id}', 'RUNNING')" class="ql-accent-bg text-[11px] px-3 py-1 rounded">Fortsæt</button>
+          <button onclick="event.stopPropagation(); resolveGuardTask('${t.id}', 'KILLED')" class="ql-input text-[11px] px-3 py-1 rounded" style="color:var(--signal-killed);">Stop</button>
+        </div>`;
+      }
+      return `<div onclick="jumpToTask('${t.id}')" class="ql-card border p-4 rounded-xl text-xs cursor-pointer hover:opacity-90" title="Gå til tråden i aktivitets-strømmen">
+        <div class="font-medium">${escapeHtml(t.title)}</div>
+        <div class="ql-meta mt-1">${escapeHtml(STATUS_LABEL[t.status] || t.status)}</div>
+        ${actions}
+      </div>`;
+    }
+
     function renderTaskBoard(tasks) {
       const board = document.getElementById('task-board');
       const buckets = { awaiting: [], running: [], done: [], killed: [] };
@@ -783,7 +815,7 @@
         <div class="space-y-3">
           <div class="font-bold text-xs flex items-center gap-2"><span class="ql-dot ${dotClass}"></span> ${title}</div>
           ${items.length
-            ? items.map((t) => `<div class="ql-card border p-4 rounded-xl text-xs"><div class="font-medium">${escapeHtml(t.title)}</div><div class="ql-meta mt-1">${escapeHtml(STATUS_LABEL[t.status] || t.status)}</div></div>`).join('')
+            ? items.map(renderTaskCard).join('')
             : `<div class="ql-card border p-6 rounded-xl text-xs ql-text-muted text-center">Ingen</div>`}
         </div>`;
 

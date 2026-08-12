@@ -24,6 +24,7 @@
 - Ægte Groq-kald (plain chat + fuldt hire-flow) kørt end-to-end mod rigtig Postgres. Intet resterende uverificeret stykke i trin 0–4.1. Se `reports/2026-08-12_groq_end_to_end_verifikation.md`.
 ### Ændret
 - **Budgetkuvert/budget-værn måles nu i tokens, ikke kroner** (lukker åbent spørgsmål #17, spec pkt. 95). `checkBudgetGuard` i `src/guards.js` omdøbt `spentDkk/estimateDkk` → `spentTokens/estimateTokens`, fallback-loft 25 kr → 20.000 tokens pr. task.
+- Opgavekort i Opgaver-fanen er nu klikbare (hopper til tråden i aktivitets-strømmen) og viser Godkend/Afvis eller Fortsæt/Stop direkte på kortet, når opgaven afventer en beslutning.
 ### Fjernet
 - Mongoose/MongoDB — erstattet af Postgres som system of record (spec pkt. 83).
 - `src/tasks.json` — dødt seed-data, blev ikke brugt af nogen kode.
