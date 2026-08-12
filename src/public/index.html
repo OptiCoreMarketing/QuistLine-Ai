@@ -201,6 +201,7 @@
       </div>
 
       <div class="flex items-center gap-4 ql-text-muted">
+        <span id="workspace-token-usage" class="ql-meta flex items-center gap-1.5" title="Samlet token-forbrug for dette skib (spec pkt.95: tokens, ikke kroner)"></span>
         <button onclick="navigateGlobal('launch')" class="hover:opacity-70 flex items-center gap-1"><i class="fa-solid fa-house"></i> Hjem</button>
         <button onclick="toggleMiljo()" class="hover:opacity-70 flex items-center gap-1"><i class="fa-solid fa-compass"></i> <span data-miljo-label>Nat</span></button>
         <button id="pause-resume-btn" onclick="togglePauseBusiness()" class="ql-input px-3 py-1 rounded-md font-medium text-xs flex items-center gap-1.5"></button>
@@ -594,6 +595,28 @@
       await Promise.all([loadEvents(), loadTasksForCurrentBusiness()]);
       renderChatFeed();
       renderActivityStream();
+      renderTokenUsage();
+      renderTaskBoardFromState();
+    }
+
+    // Samlet token-forbrug for dette skib, jf. spec pkt.95 (tokens, ikke
+    // kroner) og pkt.58.6 (løbende omkostningsmåler). Beregnet client-side
+    // fra allerede hentede events — ingen ekstra kald nødvendigt, da
+    // tokens_in/tokens_out allerede findes på hvert event.
+    function renderTokenUsage() {
+      const el = document.getElementById('workspace-token-usage');
+      if (!el) return;
+      if (EVENTS_ERROR) { el.textContent = ''; return; }
+      const total = CURRENT_EVENTS.reduce((sum, ev) => sum + (ev.tokens_in || 0) + (ev.tokens_out || 0), 0);
+      el.innerHTML = `<i class="fa-solid fa-coins"></i> ${total.toLocaleString('da-DK')} tokens`;
+    }
+
+    // Sum af tokens_in+tokens_out for én bestemt task, udledt af
+    // CURRENT_EVENTS — bruges på opgavekortet.
+    function taskTokenTotal(taskId) {
+      return CURRENT_EVENTS
+        .filter((ev) => ev.task_id === taskId)
+        .reduce((sum, ev) => sum + (ev.tokens_in || 0) + (ev.tokens_out || 0), 0);
     }
 
     function toggleStreamFilter() {
@@ -839,9 +862,10 @@
           <button onclick="event.stopPropagation(); resolveGuardTask('${t.id}', 'KILLED')" class="ql-input text-[11px] px-3 py-1 rounded" style="color:var(--signal-killed);">Stop</button>
         </div>`;
       }
+      const tokenTotal = taskTokenTotal(t.id);
       return `<div onclick="jumpToTask('${t.id}')" class="ql-card border p-4 rounded-xl text-xs cursor-pointer hover:opacity-90" title="Gå til tråden i aktivitets-strømmen">
         <div class="font-medium">${escapeHtml(t.title)}</div>
-        <div class="ql-meta mt-1">${escapeHtml(STATUS_LABEL[t.status] || t.status)}</div>
+        <div class="ql-meta mt-1">${escapeHtml(STATUS_LABEL[t.status] || t.status)}${tokenTotal ? ` · ${tokenTotal.toLocaleString('da-DK')} tokens` : ''}</div>
         ${actions}
       </div>`;
     }
@@ -882,17 +906,28 @@
     }
 
     async function loadTasksForCurrentBusiness() {
-      const board = document.getElementById('task-board');
       try {
         const allTasks = await api('/api/tasks');
         CURRENT_TASKS = allTasks.filter((t) => t.business_id === CURRENT_BUSINESS.id);
         TASKS_ERROR = null;
-        renderTaskBoard(CURRENT_TASKS);
       } catch (err) {
         CURRENT_TASKS = [];
         TASKS_ERROR = err.message;
-        board.innerHTML = `<div class="ql-meta">Kunne ikke hente opgaver: ${escapeHtml(err.message)}</div>`;
       }
+    }
+
+    // Renderer selve Opgaver-fanens board — kaldes EFTER både events og
+    // tasks er hentet (se refreshWorkspace), da opgavekortenes token-tal
+    // (taskTokenTotal) læser fra CURRENT_EVENTS. At kalde den for tidligt
+    // (fx inde i loadTasksForCurrentBusiness, parallelt med loadEvents)
+    // ville kunne vise forældede token-tal, indtil næste opdatering.
+    function renderTaskBoardFromState() {
+      const board = document.getElementById('task-board');
+      if (TASKS_ERROR) {
+        board.innerHTML = `<div class="ql-meta">Kunne ikke hente opgaver: ${escapeHtml(TASKS_ERROR)}</div>`;
+        return;
+      }
+      renderTaskBoard(CURRENT_TASKS);
     }
 
     // ---------------------------------------------------------------

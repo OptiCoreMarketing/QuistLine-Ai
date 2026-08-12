@@ -5,6 +5,7 @@
 - `PATCH /api/businesses/:businessId` — omdøb og/eller pause/genoptag et skib. `migrations/003_business_status.sql` giver `business.status` en håndhævet CHECK (`active`/`paused`), samme mønster som `task.status`.
 - Omdøb-blyant og Pause/Genoptag-knap i workspace-headeren; Flåden-listens statuspunkt viser nu korrekt aktiv/pauset (viste tidligere altid grøn uanset faktisk status).
 - HQ-sidebarens "Seneste opgaver"-liste er nu klikbar (samme mønster som "Afventer dig").
+- **Token-forbrug vist i UI'et** — samlet i workspace-headeren, pr. opgave på opgavekortet. `tokens_in`/`tokens_out` har eksisteret på hvert event siden trin 1a, men blev aldrig vist. Beregnet client-side, ingen backend-ændring. Fandt og rettede en race condition, jeg selv introducerede undervejs (opgavekort kunne vise forældede token-tal, hvis events endnu ikke var indlæst) — rettet før push.
 
 ## [Unreleased] - 2026-08-12
 ### Tilføjet
