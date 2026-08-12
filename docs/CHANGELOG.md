@@ -7,6 +7,8 @@
 - Trin 1a: Postgres-datamodel (`business`, `task`, `event`) med append-only, hash-kædet event-log (`migrations/001_init.sql`, `src/db.js`, `src/eventLog.js`).
 - `npm run migrate` til at køre database-migrationer.
 - `GET /api/events` og `GET /api/events/verify` til at læse og verificere hash-kæden.
+- Trin 2, side 2.1: task-tilstandsmaskine (`src/taskStateMachine.js`, `migrations/002_state_machine.sql`) og alle 8 Vagtpost lag 1-regler (`src/guards.js`), jf. spec pkt. 41.3/60.1/84.
+- Kontraktvalidering + hemmeligheds-scanner koblet på `/api/agent`s hireWorker-flow.
 ### Fjernet
 - Mongoose/MongoDB — erstattet af Postgres som system of record (spec pkt. 83).
 - `src/tasks.json` — dødt seed-data, blev ikke brugt af nogen kode.

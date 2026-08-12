@@ -4,6 +4,8 @@ import { fileURLToPath } from "url";
 import Groq from "groq-sdk";
 import { pool, isDatabaseConfigured } from "./db.js";
 import { appendEvent, getEventsForBusiness, verifyChain } from "./eventLog.js";
+import { transitionTask } from "./taskStateMachine.js";
+import { checkEngineerReportContract, checkSecretScanner, recordGuardViolation } from "./guards.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -163,11 +165,16 @@ app.post("/api/agent", requireOwnerKey, rateLimit, requireDatabase, async (req, 
     if (hireWorker) {
       const taskTitle = prompt.length > 50 ? prompt.substring(0, 47) + "..." : prompt;
       const taskResult = await pool.query(
-        `INSERT INTO task (business_id, title, assigned_to, status)
-         VALUES ($1, $2, 'Engineer', 'RUNNING') RETURNING *`,
+        `INSERT INTO task (business_id, title, assigned_to) VALUES ($1, $2, 'Engineer') RETURNING *`,
         [business.id, taskTitle]
       );
       const task = taskResult.rows[0];
+      await transitionTask({
+        taskId: task.id,
+        toStatus: "RUNNING",
+        agentId: "chief",
+        reason: "hireWorker godkendt af Owner"
+      });
 
       // 1. Worker genererer rapporten
       const workerCompletion = await groq.chat.completions.create({
@@ -194,7 +201,33 @@ app.post("/api/agent", requireOwnerKey, rateLimit, requireDatabase, async (req, 
         tokensOut: workerCompletion.usage?.completion_tokens ?? null
       });
 
-      await pool.query("UPDATE task SET status = 'DONE' WHERE id = $1", [task.id]);
+      // Vagtpost lag 1 (pkt. 60.1): kontraktvalidering + hemmeligheds-
+      // scanner. De fire regler, der kræver et fil-/tool-kalds-loop
+      // (masse-sletning, løkke-værn, budget-værn, sti-værn) har intet at
+      // vogte i denne synkrone flow endnu — se rapport for side 2.1.
+      const contractCheck = checkEngineerReportContract(workerOutput);
+      const secretCheck = checkSecretScanner(workerOutput);
+      const failedGuard = contractCheck.violated ? contractCheck : (secretCheck.violated ? secretCheck : null);
+
+      if (failedGuard) {
+        await recordGuardViolation({
+          businessId: business.id,
+          taskId: task.id,
+          agentId: "vagtpost",
+          violation: failedGuard,
+          context: { stage: "engineer_report" }
+        });
+
+        return res.json({
+          reply: null,
+          rawWorkerOutput: workerOutput,
+          taskId: task.id,
+          businessId: business.id,
+          guardViolation: { rule: failedGuard.rule, detail: failedGuard.detail }
+        });
+      }
+
+      await transitionTask({ taskId: task.id, toStatus: "DONE", agentId: "engineer" });
 
       // 2. Chief svarer Owner
       const chiefCompletion = await groq.chat.completions.create({

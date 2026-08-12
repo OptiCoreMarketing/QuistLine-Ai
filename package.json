@@ -6,7 +6,7 @@
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
-    "test": "node tests/server.test.js",
+    "test": "node tests/server.test.js && node tests/stateMachine.test.js && node tests/guards.test.js",
     "migrate": "node scripts/migrate.js"
   },
   "dependencies": {

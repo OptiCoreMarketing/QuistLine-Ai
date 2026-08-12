@@ -3,9 +3,10 @@
 *Jf. pkt. 30.2. Dette er indgangen til hele specen. Læs denne først.*
 *Sidst opdateret: 12. august 2026*
 
-**Projektstatus: BYGGERI I GANG.** Trin 0 (repo-oprydning) og trin 1a
-(datamodel + event-log med hash-kæde, Postgres) er gennemført og pushet.
-Se byggerækkefølgen nedenfor for status pr. trin.
+**Projektstatus: BYGGERI I GANG.** Trin 0, trin 1a og trin 2 side 2.1
+(tilstandsmaskine + Vagtpost lag 1) er gennemført og pushet. Trin 2's
+orchestrator/jobkø-del er bevidst udskudt til en selvstændig side — se
+byggerækkefølgen nedenfor.
 
 ---
 
@@ -67,7 +68,8 @@ til "pkt. 56.1" findes altid ét og kun ét sted.
 | 0 | Rens repoet for cto.new-branding | **Færdig** — pushet 2026-08-12 |
 | 1a | Datamodel: business/task/event + hash-kæde fra start | **Færdig** — se rapport 2026-08-12_trin1a, pushet til GitHub. Migration ikke afprøvet mod rigtig Postgres endnu, se rapportens forbehold |
 | 1b | + stamtavle, artifacts, agent_trust, provenance | Efter 1a, kan ikke starte før 1a virker |
-| 2 | Orchestrator + kø + tilstandsmaskine + Vagtposten | **Næste** — kan påbegyndes, kræver ikke 1b |
+| 2.1 | Tilstandsmaskine (task) + Vagtpost lag 1 (8 regler) | **Færdig** — se rapport 2026-08-12_trin2_side1, pushet. Kun 2 af 8 regler koblet til en live call-site, se rapportens "Bevidst udeladt" |
+| 2.2 | Orchestrator (always-on) + jobkø (pg-boss) | **Ikke påbegyndt** — kræver eksplicit hosting-beslutning (spm. 26), ikke kun kode |
 | 3 | Chief-chat + aktivitets-stream + designretning | Ikke påbegyndt |
 | 4 | Godkendelses-gates + risikoklasser + budgetkuvert + trust-niveauer | Ikke påbegyndt |
 | 5 | GitHub + Vercel preview | Ikke påbegyndt |
@@ -116,9 +118,13 @@ Tilføjet senere:
 | 21 | Kan skrogene sælges selvstændigt? | pkt. 72 |
 | 22 | Skal server.js's badge-rendering og /branding-servering laves rigtigt (dynamisk), eller er hardcoded nok? | Rapport 2026-08-12, trin 0 |
 | 23 | Hvilken ekstern forankrings-metode for hash-kæden, før Marketplace? | pkt. 92 |
+| 24 | Er hash-kædens scope (pr. business, ikke globalt) korrekt? | Rapport 2026-08-12_trin1a — antaget, afventer bekræftelse før 1b |
+| 25 | Skal alle Vagtpost-overtrædelser mappe til `AWAITING_OWNER_REVIEW`, eller skal "blokér altid"-regler have en strengere tilstand? | Rapport 2026-08-12_trin2_side1 |
+| 26 | Hvornår besluttes orchestrator/jobkø-arkitekturen (pkt. 41.2) konkret? | Rapport 2026-08-12_trin2_side1 — blokerer side 2.2 |
 
-**Ingen blokeringer tilbage for trin 0–2.** #13, #16, #20 lukket i
+**Ingen blokeringer tilbage for trin 0–2.1.** #13, #16, #20 lukket i
 addendum 83. #6, #7 statusrettet i sundhedstjekket (pkt. 87). #8 retired.
+Side 2.2 (orchestrator/jobkø) afventer spørgsmål 26.
 
 ---
 
