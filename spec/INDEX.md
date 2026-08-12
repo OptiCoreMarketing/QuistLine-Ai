@@ -132,11 +132,13 @@ Tilføjet senere:
 | 25 | Skal alle Vagtpost-overtrædelser mappe til `AWAITING_OWNER_REVIEW`, eller skal "blokér altid"-regler have en strengere tilstand? | Rapport 2026-08-12_trin2_side1 |
 | 26 | Hvornår besluttes orchestrator/jobkø-arkitekturen (pkt. 41.2) konkret? | Rapport 2026-08-12_trin2_side1 — blokerer side 2.2 |
 | 27 | Skal Owner-key i localStorage anerkendes som "login v0", eller udskiftes helt uden mellemstadier når spm. 5 besluttes? | Rapport 2026-08-12_trin3_side1 |
+| 28 | Global platform-agent-hukommelse (Warden mm.): egen tabel uden `business_id`, eller gøres kolonnen nullable? | Rapport 2026-08-12_generaliseret_agent_hukommelse — afklares når trin 9 påbegyndes |
 
 **Ingen blokeringer tilbage for trin 0–4.1, og ingen blokering for side
 4.2 længere.** #13, #16, #17, #20 lukket i addendum 83/95. #6, #7
 statusrettet i sundhedstjekket (pkt. 87). #8 retired. Side 2.2
-(orchestrator/jobkø) afventer stadig spørgsmål 26.
+(orchestrator/jobkø) afventer stadig spørgsmål 26. #28 blokerer intet
+før trin 9.
 
 ---
 

@@ -6,6 +6,7 @@ import { pool, isDatabaseConfigured } from "./db.js";
 import { appendEvent, getEventsForBusiness, verifyChain } from "./eventLog.js";
 import { transitionTask } from "./taskStateMachine.js";
 import { checkEngineerReportContract, checkSecretScanner, recordGuardViolation } from "./guards.js";
+import { getAgentConversationHistory } from "./agentMemory.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -99,28 +100,9 @@ const CHIEF_PROMPT = `Du er CHIEF, Lead Agent på QuistLine.ai. Du koordinerer d
 const ENGINEER_PROMPT = `Du er ENGINEER, en Worker Agent. Når du bygger, skal du oprette en struktureret rapport med sektionerne: # Task Rapport, ## Status, ## Ændringer, ## Tests og ## Anbefalinger.`;
 
 // Chief er pr. business, ikke global (spec pkt. 54.1): hvert projekt har
-// sin egen, individuelle samtale — en ny business starter med tom
-// historik, og et eksisterende projekts historik bæres aldrig over i et
-// andet. Kontekstvinduet holdes bevidst lille (pkt. 54.1's begrundelse:
-// "Chief for projekt A skal ikke bære projekt B's historik rundt") ved
-// kun at hente de seneste CHIEF_HISTORY_LIMIT beskeder, ikke hele loggen.
-// Kun `message`-typen (Owner↔Chief) — rapporter/godkendelser/tilstands-
-// skift hører til observationskanalen, ikke selve samtalen, Chief skal
-// huske ordret.
-const CHIEF_HISTORY_LIMIT = 20;
-
-async function getChiefConversationHistory(businessId) {
-  const { rows } = await pool.query(
-    `SELECT agent_id, payload FROM event
-     WHERE business_id = $1 AND type = 'message'
-     ORDER BY created_at DESC LIMIT $2`,
-    [businessId, CHIEF_HISTORY_LIMIT]
-  );
-  return rows.reverse().map((row) => ({
-    role: row.agent_id === "owner" ? "user" : "assistant",
-    content: row.agent_id === "owner" ? (row.payload.prompt || "") : (row.payload.content || "")
-  }));
-}
+// sin egen, individuelle samtale via getAgentConversationHistory
+// (src/agentMemory.js) — en ny business starter med tom historik, og et
+// eksisterende projekts historik bæres aldrig over i et andet.
 
 // GET /api/businesses - Hent Flåden (alle businesses), nyeste først
 app.get("/api/businesses", requireOwnerKey, requireDatabase, async (req, res) => {
@@ -271,7 +253,7 @@ app.post("/api/tasks/:taskId/approve-hire", requireOwnerKey, rateLimit, requireD
 
       // 2. Chief svarer Owner — med sin egen samtalehistorik for netop
       // denne business, ikke et koldt, isoleret kald.
-      const chiefHistory = await getChiefConversationHistory(business.id);
+      const chiefHistory = await getAgentConversationHistory("chief", business.id);
       const chiefCompletion = await groq.chat.completions.create({
         messages: [
           { role: "system", content: CHIEF_PROMPT },
@@ -356,7 +338,7 @@ app.post("/api/agent", requireOwnerKey, rateLimit, requireDatabase, async (req, 
     const business = await findOrCreateBusiness(projectName);
     // Hentet FØR den nuværende besked skrives til loggen, så den ikke
     // optræder dobbelt (én gang fra historikken, én gang som selve kaldet).
-    const chiefHistory = await getChiefConversationHistory(business.id);
+    const chiefHistory = await getAgentConversationHistory("chief", business.id);
 
     const ownerEvent = await appendEvent({
       businessId: business.id,
