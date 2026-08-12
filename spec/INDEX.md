@@ -3,11 +3,11 @@
 *Jf. pkt. 30.2. Dette er indgangen til hele specen. Læs denne først.*
 *Sidst opdateret: 12. august 2026*
 
-**Projektstatus: BYGGERI I GANG.** Trin 0, 1a, 2.1, 3.1 og 3.2 er
-gennemført og pushet. Fire sider i træk er kun logik-testet, ikke afprøvet
-mod en rigtig database — se anbefalingen i den seneste rapport. Side 2.2
-(orchestrator/jobkø) er bevidst udskudt — kræver en hosting-beslutning, se
-spørgsmål 26.
+**Projektstatus: BYGGERI I GANG.** Trin 0, 1a, 2.1, 3.1, 3.2 og 3.3 er
+gennemført og pushet. **Fem sider i træk er kun logik-testet, ikke
+afprøvet mod en rigtig database** — stærk anbefaling om at teste den fulde
+vej, før mere bygges, se seneste rapport. Side 2.2 (orchestrator/jobkø) er
+bevidst udskudt — kræver en hosting-beslutning, se spørgsmål 26.
 
 ---
 
@@ -73,7 +73,8 @@ til "pkt. 56.1" findes altid ét og kun ét sted.
 | 2.2 | Orchestrator (always-on) + jobkø (pg-boss) | **Ikke påbegyndt** — kræver eksplicit hosting-beslutning (spm. 26), ikke kun kode |
 | 3.1 | Chat/hire-flow forbundet + søkort-palette/rederi-sprog/signalflag | **Færdig** — se rapport 2026-08-12_trin3_side1, pushet. Kun logik+rendering browser-testet, ikke mod rigtig data (ingen DB i byggemiljøet) |
 | 3.2 | Løs Vagtpost-stop (Fortsæt/Stop) + "Hvorfor?"-kæde + klikbar "afventer dig" | **Færdig** — se rapport 2026-08-12_trin3_side2, pushet. Samme DB-forbehold |
-| 3.3 | Aktivitets-stream m. detaljeniveauer, kommandopalet, virtualisering | Ikke påbegyndt — lav prioritet uden mere volumen, se side 3.2-rapporten |
+| 3.3 | To-kanal-model: separat aktivitets-strøm (observation) fra Chief-chat (kommando), jf. pkt.42/48 | **Færdig** — se rapport 2026-08-12_trin3_side3, pushet. Rettede en design-afvigelse fra side 3.1/3.2 |
+| 3.4 | Detaljeniveauer i strømmen, kommandopalet, virtualisering | Ikke påbegyndt — lav prioritet uden mere volumen |
 | 4 | Godkendelses-gates + risikoklasser + budgetkuvert + trust-niveauer | Ikke påbegyndt |
 | 5 | GitHub + Vercel preview | Ikke påbegyndt |
 | 6 | Bibliotekar + rapport-validering + stamtavle-opslag | Ikke påbegyndt |

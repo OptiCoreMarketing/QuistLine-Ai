@@ -11,6 +11,7 @@
 - Kontraktvalidering + hemmeligheds-scanner koblet på `/api/agent`s hireWorker-flow.
 - Trin 3, side 3.1: `GET /api/businesses`, og `src/public/index.html` omskrevet — søkort-palette + to læsemiljøer (Dæk/Nat), signalflag-tilstandsfarver, rederi-sprog, chat/hire-flow forbundet til rigtige endpoints.
 - Trin 3, side 3.2: `POST /api/tasks/:taskId/transition`; UI kan nu Fortsætte/Stoppe en task, Vagtposten har sat i `AWAITING_OWNER_REVIEW`; "Hvorfor?"-kæde-modal (parent_event_id); klikbar "Afventer dig"-liste, der hopper til hændelsen.
+- Trin 3, side 3.3: separat Aktivitets-strøm-panel (observationskanal, alle hændelsestyper, "kun det der kræver mig"-default-filter) — adskilt fra Chief-chatten (kommandokanal, kun Owner/Chief-beskeder), jf. spec pkt. 42/48.
 ### Fjernet
 - Mongoose/MongoDB — erstattet af Postgres som system of record (spec pkt. 83).
 - `src/tasks.json` — dødt seed-data, blev ikke brugt af nogen kode.

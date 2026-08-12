@@ -247,45 +247,58 @@
           <div class="pt-4 border-t ql-border text-xs ql-text-muted truncate">angel@corehost.one</div>
         </aside>
 
-        <main class="flex-1 flex flex-col min-w-0">
-          <div class="px-4 py-2 border-b ql-border flex justify-between items-center text-xs ql-sidebar">
-            <div class="flex items-center gap-4">
-              <button onclick="toggleMainView('team')" id="btn-view-team" class="font-bold flex items-center gap-1">SKIB</button>
-              <button onclick="toggleMainView('site')" id="btn-view-site" class="font-medium ql-text-muted flex items-center gap-1">
-                <span class="ql-dot done"></span> SITE
-              </button>
+        <main class="flex-1 flex flex-col min-w-0 min-h-0">
+          <!-- ZONE 1: SKIB/SITE (top ~45%) -->
+          <div class="flex flex-col min-h-0" style="height:45%;">
+            <div class="px-4 py-2 border-b ql-border flex justify-between items-center text-xs ql-sidebar shrink-0">
+              <div class="flex items-center gap-4">
+                <button onclick="toggleMainView('team')" id="btn-view-team" class="font-bold flex items-center gap-1">SKIB</button>
+                <button onclick="toggleMainView('site')" id="btn-view-site" class="font-medium ql-text-muted flex items-center gap-1">
+                  <span class="ql-dot done"></span> SITE
+                </button>
+              </div>
+            </div>
+
+            <div id="view-team-canvas" class="flex-1 ql-grid-bg p-6 relative overflow-y-auto custom-scrollbar flex flex-col justify-center items-center gap-6">
+              <div class="ql-card border p-4 rounded-xl flex items-center gap-4 shadow-xl">
+                <div class="w-12 h-12 rounded-full flex items-center justify-center ql-accent text-xl font-bold" style="background-color: var(--bg-input);"><i class="fa-solid fa-crown"></i></div>
+                <div>
+                  <div class="font-bold text-xs">chief</div>
+                  <select disabled title="Dynamisk modelliste — åbent spørgsmål 9" class="ql-input rounded text-[10px] mt-1 ql-disabled">
+                    <option value="" selected disabled>Groq · llama-3.3-70b</option>
+                  </select>
+                </div>
+              </div>
+              <div class="w-0.5 h-6" style="background-color: var(--border);"></div>
+              <div class="ql-card border p-4 rounded-xl flex items-center gap-4 shadow-xl">
+                <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold" style="background-color: var(--bg-input); color: var(--signal-running);"><i class="fa-solid fa-code"></i></div>
+                <div>
+                  <div class="font-bold text-xs">engineer</div>
+                  <select disabled title="Dynamisk modelliste — åbent spørgsmål 9" class="ql-input rounded text-[10px] mt-1 ql-disabled">
+                    <option value="" selected disabled>Groq · llama-3.3-70b</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div id="view-site-preview" class="flex-1 flex flex-col min-h-0 hidden">
+              <div class="flex-1 flex items-center justify-center text-xs ql-text-muted">Ingen live preview endnu — trin 5 (Vercel preview).</div>
             </div>
           </div>
 
-          <!-- SKIB-canvas (team) -->
-          <div id="view-team-canvas" class="flex-1 ql-grid-bg p-6 relative overflow-y-auto custom-scrollbar flex flex-col justify-center items-center gap-6">
-            <div class="ql-card border p-4 rounded-xl flex items-center gap-4 shadow-xl">
-              <div class="w-12 h-12 rounded-full flex items-center justify-center ql-accent text-xl font-bold" style="background-color: var(--bg-input);"><i class="fa-solid fa-crown"></i></div>
-              <div>
-                <div class="font-bold text-xs">chief</div>
-                <select disabled title="Dynamisk modelliste — åbent spørgsmål 9" class="ql-input rounded text-[10px] mt-1 ql-disabled">
-                  <option value="" selected disabled>Groq · llama-3.3-70b</option>
-                </select>
-              </div>
+          <!-- ZONE 2: AKTIVITETS-STRØM (observationskanal, alle agenter — pkt.42/48.2) -->
+          <div class="flex flex-col min-h-0 border-t ql-border-strong" style="height:55%;">
+            <div class="px-4 py-2 border-b ql-border flex justify-between items-center text-xs ql-sidebar shrink-0">
+              <span class="font-bold flex items-center gap-1.5"><i class="fa-solid fa-water ql-accent"></i> Aktivitets-strøm</span>
+              <button id="stream-filter-btn" onclick="toggleStreamFilter()" class="ql-input text-[11px] px-3 py-1 rounded">Kun det der kræver mig</button>
             </div>
-            <div class="w-0.5 h-6" style="background-color: var(--border);"></div>
-            <div class="ql-card border p-4 rounded-xl flex items-center gap-4 shadow-xl">
-              <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold" style="background-color: var(--bg-input); color: var(--signal-running);"><i class="fa-solid fa-code"></i></div>
-              <div>
-                <div class="font-bold text-xs">engineer</div>
-                <select disabled title="Dynamisk modelliste — åbent spørgsmål 9" class="ql-input rounded text-[10px] mt-1 ql-disabled">
-                  <option value="" selected disabled>Groq · llama-3.3-70b</option>
-                </select>
-              </div>
+            <div id="activity-stream" class="flex-1 p-3 overflow-y-auto custom-scrollbar text-xs">
+              <div class="ql-meta" style="padding:16px;">Åbn eller søsæt et skib for at se aktivitets-strømmen.</div>
             </div>
-          </div>
-
-          <div id="view-site-preview" class="flex-1 flex flex-col min-h-0 hidden">
-            <div class="flex-1 flex items-center justify-center text-xs ql-text-muted">Ingen live preview endnu — trin 5 (Vercel preview).</div>
           </div>
         </main>
 
-        <!-- CHIEF-CHAT (skibsjournalen, ægte /api/agent + /api/events) -->
+        <!-- CHIEF-CHAT (kommandokanal — kun Owner+Chief, pkt.42) -->
         <aside class="w-96 border-l ql-border ql-sidebar flex flex-col justify-between shrink-0">
           <div class="p-3 border-b ql-border flex justify-between items-center text-xs">
             <span class="font-bold flex items-center gap-1.5"><i class="fa-solid fa-crown ql-accent"></i> Chief</span>
@@ -293,7 +306,7 @@
           </div>
 
           <div id="chat-feed" class="flex-1 p-3 overflow-y-auto custom-scrollbar text-xs">
-            <div class="ql-meta" style="padding:16px;">Åbn eller søsæt et skib for at se skibsjournalen.</div>
+            <div class="ql-meta" style="padding:16px;">Åbn eller søsæt et skib for at starte samtalen.</div>
           </div>
 
           <div class="p-3 border-t ql-border space-y-2">
@@ -532,9 +545,69 @@
       refreshWorkspace();
     }
 
+    let EVENTS_ERROR = null;
+    let TASKS_ERROR = null;
+    let STREAM_FILTER = 'needs_me'; // 'needs_me' | 'all' — default jf. pkt.55.4
+
     async function refreshWorkspace() {
       if (!CURRENT_BUSINESS) return;
       await Promise.all([loadEvents(), loadTasksForCurrentBusiness()]);
+      renderChatFeed();
+      renderActivityStream();
+    }
+
+    function toggleStreamFilter() {
+      STREAM_FILTER = STREAM_FILTER === 'needs_me' ? 'all' : 'needs_me';
+      renderActivityStream();
+    }
+
+    // ---------------------------------------------------------------
+    // Kommandokanal (Chief-chat, pkt.42) — kun samtalen mellem Owner og
+    // Chief. Alt andet (rapporter, tilstandsskift, guard-stop) hører til
+    // observationskanalen (aktivitets-strømmen) nedenfor, ikke her.
+    // ---------------------------------------------------------------
+    function renderChatFeed() {
+      const feed = document.getElementById('chat-feed');
+      if (EVENTS_ERROR) {
+        feed.innerHTML = `<div class="ql-msg ql-msg-error ql-meta">Kunne ikke hente samtalen: ${escapeHtml(EVENTS_ERROR)}</div>`;
+        return;
+      }
+      const messages = CURRENT_EVENTS.filter((ev) => ev.type === 'message');
+      feed.innerHTML = messages.length
+        ? messages.map(renderEvent).join('')
+        : `<div class="ql-meta" style="padding:16px;">Skriv til Chief for at starte samtalen.</div>`;
+      feed.scrollTop = feed.scrollHeight;
+    }
+
+    // ---------------------------------------------------------------
+    // Observationskanal (aktivitets-strøm, pkt.42/48.2) — alle agenter,
+    // read-only, alle hændelsestyper. Default-filter "kun det, der
+    // kræver mig" (pkt.55.4): guard_violations + hændelser knyttet til
+    // en task i en AWAITING_*-tilstand.
+    // ---------------------------------------------------------------
+    function renderActivityStream() {
+      const el = document.getElementById('activity-stream');
+      const filterBtn = document.getElementById('stream-filter-btn');
+      if (filterBtn) filterBtn.textContent = STREAM_FILTER === 'needs_me' ? 'Kun det der kræver mig' : 'Viser alt';
+
+      if (EVENTS_ERROR) {
+        el.innerHTML = `<div class="ql-msg ql-msg-error ql-meta">Kunne ikke hente aktivitets-strømmen: ${escapeHtml(EVENTS_ERROR)}</div>`;
+        return;
+      }
+
+      let events = CURRENT_EVENTS;
+      if (STREAM_FILTER === 'needs_me') {
+        const awaitingIds = new Set(CURRENT_TASKS.filter((t) => SIGNAL_BY_STATUS[t.status] === 'awaiting').map((t) => t.id));
+        events = events.filter((ev) => ev.type === 'guard_violation' || (ev.task_id && awaitingIds.has(ev.task_id)));
+      }
+
+      if (!events.length) {
+        el.innerHTML = STREAM_FILTER === 'needs_me'
+          ? `<div class="ql-meta ql-signal-done" style="padding:16px;"><i class="fa-solid fa-circle-check"></i> Intet kræver dig lige nu.</div>`
+          : `<div class="ql-meta" style="padding:16px;">Ingen hændelser endnu.</div>`;
+        return;
+      }
+      el.innerHTML = events.map(renderEvent).join('');
     }
 
     function renderEvent(ev) {
@@ -613,7 +686,7 @@
     function jumpToTask(taskId) {
       if (!taskId) return;
       switchTab('hq');
-      const target = document.querySelector(`#chat-feed [data-task-id="${taskId}"]`);
+      const target = document.querySelector(`#activity-stream [data-task-id="${taskId}"]`) || document.querySelector(`#chat-feed [data-task-id="${taskId}"]`);
       if (target) {
         target.scrollIntoView({ behavior: 'smooth', block: 'center' });
         target.style.outline = '2px solid var(--signal-awaiting)';
@@ -622,16 +695,12 @@
     }
 
     async function loadEvents() {
-      const feed = document.getElementById('chat-feed');
       try {
         CURRENT_EVENTS = await api(`/api/events?businessId=${encodeURIComponent(CURRENT_BUSINESS.id)}`);
-        feed.innerHTML = CURRENT_EVENTS.length
-          ? CURRENT_EVENTS.map(renderEvent).join('')
-          : `<div class="ql-meta" style="padding:16px;">Ingen beskeder endnu i skibsjournalen for dette skib.</div>`;
-        feed.scrollTop = feed.scrollHeight;
+        EVENTS_ERROR = null;
       } catch (err) {
         CURRENT_EVENTS = [];
-        feed.innerHTML = `<div class="ql-msg ql-msg-error ql-meta">Kunne ikke hente skibsjournalen: ${escapeHtml(err.message)}</div>`;
+        EVENTS_ERROR = err.message;
       }
     }
 
@@ -696,9 +765,11 @@
       try {
         const allTasks = await api('/api/tasks');
         CURRENT_TASKS = allTasks.filter((t) => t.business_id === CURRENT_BUSINESS.id);
+        TASKS_ERROR = null;
         renderTaskBoard(CURRENT_TASKS);
       } catch (err) {
         CURRENT_TASKS = [];
+        TASKS_ERROR = err.message;
         board.innerHTML = `<div class="ql-meta">Kunne ikke hente opgaver: ${escapeHtml(err.message)}</div>`;
       }
     }
