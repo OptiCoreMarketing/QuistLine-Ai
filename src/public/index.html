@@ -572,7 +572,9 @@
         feed.innerHTML = `<div class="ql-msg ql-msg-error ql-meta">Kunne ikke hente samtalen: ${escapeHtml(EVENTS_ERROR)}</div>`;
         return;
       }
-      const messages = CURRENT_EVENTS.filter((ev) => ev.type === 'message');
+      // Godkendelsesanmodninger (pkt.56) hører til kommandokanalen — det er
+      // en beslutning mellem Owner og Chief, ikke observation af en worker.
+      const messages = CURRENT_EVENTS.filter((ev) => ev.type === 'message' || ev.type === 'approval_request' || ev.type === 'approval_granted');
       feed.innerHTML = messages.length
         ? messages.map(renderEvent).join('')
         : `<div class="ql-meta" style="padding:16px;">Skriv til Chief for at starte samtalen.</div>`;
@@ -628,6 +630,27 @@
       if (ev.type === 'report') {
         return `<div class="ql-msg ql-msg-report"${taskAttr}><div class="ql-meta" style="margin-bottom:6px;">${chainBtn}<i class="fa-solid fa-code"></i> ENGINEER-RAPPORT · ${time}</div><pre class="ql-prose" style="white-space:pre-wrap; font-size:14px; margin:0;">${escapeHtml(ev.payload?.content)}</pre></div>`;
       }
+      if (ev.type === 'approval_request') {
+        const taskId = ev.task_id || '';
+        const promptSnippet = (ev.payload?.prompt || '').slice(0, 140);
+        // En anmodning, hvis task ikke længere afventer (allerede godkendt/
+        // afvist), skal ikke vise aktive knapper — samme fejlklasse som
+        // guard_violation-kortet i side 3.2/lokal-verifikationen: en gammel
+        // anmodning skal ikke kunne genafgøres eller se aktiv ud for evigt.
+        const relatedTask = CURRENT_TASKS.find((t) => t.id === taskId);
+        const stillPending = relatedTask && relatedTask.status === 'AWAITING_HIRE_APPROVAL';
+        return `<div class="ql-msg ql-msg-chief"${taskAttr}>
+          <div class="ql-meta" style="margin-bottom:6px;">${chainBtn}<i class="fa-solid fa-crown ql-accent"></i> CHIEF AFVENTER DIN GODKENDELSE · ${time}</div>
+          <div class="ql-prose" style="margin-bottom:10px;">Hyre Engineer til: "${escapeHtml(promptSnippet)}${(ev.payload?.prompt || '').length > 140 ? '…' : ''}"?</div>
+          ${stillPending ? `<div class="flex gap-2">
+            <button onclick="respondToHireApproval('${taskId}', true)" class="ql-accent-bg text-[11px] px-3 py-1 rounded">Godkend hyring</button>
+            <button onclick="respondToHireApproval('${taskId}', false)" class="ql-input text-[11px] px-3 py-1 rounded" style="color:var(--signal-killed);">Afvis</button>
+          </div>` : `<div class="ql-meta">Afgjort — status: ${escapeHtml(STATUS_LABEL[relatedTask?.status] || relatedTask?.status || 'ukendt')}</div>`}
+        </div>`;
+      }
+      if (ev.type === 'approval_granted') {
+        return `<div class="ql-msg-status"${taskAttr}>${chainBtn}<i class="fa-solid fa-check ql-signal-done"></i> Hyring godkendt · ${time}</div>`;
+      }
       if (ev.type === 'guard_violation') {
         const taskId = ev.task_id || '';
         return `<div class="ql-msg ql-msg-error"${taskAttr}>
@@ -681,9 +704,31 @@
       if (!taskId) return;
       try {
         await api(`/api/tasks/${encodeURIComponent(taskId)}/transition`, { method: 'POST', body: { toStatus, reason: 'owner_resolved_guard_violation' } });
-        await refreshWorkspace();
       } catch (err) {
         alert('Kunne ikke opdatere opgaven: ' + err.message);
+      } finally {
+        // Altid genindlæs, uanset udfald — serveren kan have ændret
+        // tilstand, selv når kaldet svarer med en fejl (se approve-hire
+        // nedenfor: et 500-svar kan stadig betyde task blev sat til KILLED).
+        // Uden dette bliver kortet hængende og ser "afventer" ud, selvom
+        // det reelt er afgjort.
+        await refreshWorkspace();
+      }
+    }
+
+    // ---------------------------------------------------------------
+    // Godkendelses-gate for hyring (pkt.56.1, gul klasse) — den tekniske
+    // håndhævelse af CHIEF_PROMPT's "spørg altid om lov". Godkendelse
+    // udløser det egentlige Groq-kald server-side; intet sker før da.
+    // ---------------------------------------------------------------
+    async function respondToHireApproval(taskId, approved) {
+      if (!taskId) return;
+      try {
+        await api(`/api/tasks/${encodeURIComponent(taskId)}/approve-hire`, { method: 'POST', body: { approved } });
+      } catch (err) {
+        alert('Kunne ikke svare på hyrings-anmodningen: ' + err.message);
+      } finally {
+        await refreshWorkspace();
       }
     }
 

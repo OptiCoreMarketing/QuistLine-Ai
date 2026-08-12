@@ -13,9 +13,13 @@
 - Trin 3, side 3.2: `POST /api/tasks/:taskId/transition`; UI kan nu Fortsætte/Stoppe en task, Vagtposten har sat i `AWAITING_OWNER_REVIEW`; "Hvorfor?"-kæde-modal (parent_event_id); klikbar "Afventer dig"-liste, der hopper til hændelsen.
 - Trin 3, side 3.3: separat Aktivitets-strøm-panel (observationskanal, alle hændelsestyper, "kun det der kræver mig"-default-filter) — adskilt fra Chief-chatten (kommandokanal, kun Owner/Chief-beskeder), jf. spec pkt. 42/48.
 - `package.json`: `--env-file-if-exists=.env` på alle scripts, `engines.node >= 22.14.0`.
+- Trin 4, side 4.1: `POST /api/tasks/:taskId/approve-hire` — hyring er nu en rigtig godkendelses-gate (`AWAITING_HIRE_APPROVAL` → godkend/afvis), ikke kun en instruktion i CHIEF_PROMPT. Godkend/afvis-kort i Chief-chatten.
 ### Rettet
 - **`.env` blev aldrig indlæst** — intet i koden læste filen, selvom README instruerede `cp .env.example .env`. Rettet via Node's `--env-file-if-exists`.
 - **"Kræver mig"-filteret i aktivitets-strømmen frigav aldrig en løst `guard_violation`** — den blev vist for evigt, uanset om opgaven stadig afventede. Fundet ved verifikation mod rigtig Postgres, se `reports/2026-08-12_lokal_postgres_verifikation.md`.
+- **En task kunne blive fanget i `RUNNING` for evigt**, hvis Groq-kaldet efter en godkendt hyring fejlede. Sættes nu til `KILLED` med sporbar årsag.
+- **Godkendelseskort i UI'et forblev aktive for evigt**, selv efter afgørelse — samme fejlklasse som "kræver mig"-filteret. Viser nu korrekt "Afgjort — status: X".
+- **UI'et opdaterede sig ikke, når en godkendelse "lykkedes server-side men rapporteredes som fejl"** (task blev sat til KILLED, men klienten fik kun en 500). `finally`-genindlæsning tilføjet.
 ### Fjernet
 - Mongoose/MongoDB — erstattet af Postgres som system of record (spec pkt. 83).
 - `src/tasks.json` — dødt seed-data, blev ikke brugt af nogen kode.

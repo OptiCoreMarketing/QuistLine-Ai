@@ -3,13 +3,12 @@
 *Jf. pkt. 30.2. Dette er indgangen til hele specen. Læs denne først.*
 *Sidst opdateret: 12. august 2026*
 
-**Projektstatus: BYGGERI I GANG.** Trin 0, 1a, 2.1, 3.1, 3.2 og 3.3 er
-gennemført og pushet. **Alle fem er nu bekræftet mod en rigtig Postgres**
-(lokal opsætning, se rapport 2026-08-12_lokal_postgres_verifikation) — to
-reelle fejl blev fundet og rettet undervejs (`.env` blev aldrig indlæst;
-"kræver mig"-filteret frigav aldrig en løst guard_violation). Side 2.2
-(orchestrator/jobkø) er bevidst udskudt — kræver en hosting-beslutning, se
-spørgsmål 26.
+**Projektstatus: BYGGERI I GANG.** Trin 0, 1a, 2.1, 3.1–3.3 og 4.1 er
+gennemført, verificeret mod en rigtig Postgres, og pushet. Hyring er nu en
+rigtig, teknisk håndhævet godkendelses-gate (side 4.1) — ikke kun en
+instruktion i en prompt. Fem reelle fejl er fundet og rettet under
+verifikationerne, se seneste to rapporter. Side 2.2 (orchestrator/jobkø)
+er bevidst udskudt — kræver en hosting-beslutning, se spørgsmål 26.
 
 ---
 
@@ -77,7 +76,8 @@ til "pkt. 56.1" findes altid ét og kun ét sted.
 | 3.2 | Løs Vagtpost-stop (Fortsæt/Stop) + "Hvorfor?"-kæde + klikbar "afventer dig" | **Færdig, verificeret** — se "To reelle fejl fundet" i rapport 2026-08-12_lokal_postgres_verifikation |
 | 3.3 | To-kanal-model: separat aktivitets-strøm (observation) fra Chief-chat (kommando), jf. pkt.42/48 | **Færdig, verificeret** mod ægte data, inkl. et reelt knap-klik |
 | 3.4 | Detaljeniveauer i strømmen, kommandopalet, virtualisering | Ikke påbegyndt — lav prioritet uden mere volumen |
-| 4 | Godkendelses-gates + risikoklasser + budgetkuvert + trust-niveauer | Ikke påbegyndt |
+| 4.1 | Rigtig godkendelses-gate for hyring (gul klasse, pkt.56.1) | **Færdig, verificeret** mod rigtig Postgres + browser 2026-08-12 — se rapport 2026-08-12_trin4_side1, tre fejl fundet og rettet |
+| 4.2 | Generelle risikoklasser + budgetkuvert + trust-niveauer | Ikke påbegyndt — afventer spm. 17 (kr. vs. tokens) |
 | 5 | GitHub + Vercel preview | Ikke påbegyndt |
 | 6 | Bibliotekar + rapport-validering + stamtavle-opslag | Ikke påbegyndt |
 | 7 | Team-model: roller, faser, den tomme stol, agent-stemmer | Ikke påbegyndt |
@@ -129,9 +129,10 @@ Tilføjet senere:
 | 26 | Hvornår besluttes orchestrator/jobkø-arkitekturen (pkt. 41.2) konkret? | Rapport 2026-08-12_trin2_side1 — blokerer side 2.2 |
 | 27 | Skal Owner-key i localStorage anerkendes som "login v0", eller udskiftes helt uden mellemstadier når spm. 5 besluttes? | Rapport 2026-08-12_trin3_side1 |
 
-**Ingen blokeringer tilbage for trin 0–3.3.** #13, #16, #20 lukket i
+**Ingen blokeringer tilbage for trin 0–4.1.** #13, #16, #20 lukket i
 addendum 83. #6, #7 statusrettet i sundhedstjekket (pkt. 87). #8 retired.
-Side 2.2 (orchestrator/jobkø) afventer spørgsmål 26.
+Side 2.2 (orchestrator/jobkø) afventer spørgsmål 26. Side 4.2 (generelle
+risikoklasser) afventer spørgsmål 17.
 
 ---
 
