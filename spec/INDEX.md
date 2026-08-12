@@ -3,10 +3,9 @@
 *Jf. pkt. 30.2. Dette er indgangen til hele specen. Læs denne først.*
 *Sidst opdateret: 12. august 2026*
 
-**Projektstatus: BYGGERI I GANG.** Trin 0, trin 1a og trin 2 side 2.1
-(tilstandsmaskine + Vagtpost lag 1) er gennemført og pushet. Trin 2's
-orchestrator/jobkø-del er bevidst udskudt til en selvstændig side — se
-byggerækkefølgen nedenfor.
+**Projektstatus: BYGGERI I GANG.** Trin 0, 1a, 2.1 og 3.1 (chat-forbindelse
++ designretning) er gennemført og pushet. Side 2.2 (orchestrator/jobkø) er
+bevidst udskudt — kræver en hosting-beslutning, se spørgsmål 26.
 
 ---
 
@@ -70,7 +69,8 @@ til "pkt. 56.1" findes altid ét og kun ét sted.
 | 1b | + stamtavle, artifacts, agent_trust, provenance | Efter 1a, kan ikke starte før 1a virker |
 | 2.1 | Tilstandsmaskine (task) + Vagtpost lag 1 (8 regler) | **Færdig** — se rapport 2026-08-12_trin2_side1, pushet. Kun 2 af 8 regler koblet til en live call-site, se rapportens "Bevidst udeladt" |
 | 2.2 | Orchestrator (always-on) + jobkø (pg-boss) | **Ikke påbegyndt** — kræver eksplicit hosting-beslutning (spm. 26), ikke kun kode |
-| 3 | Chief-chat + aktivitets-stream + designretning | Ikke påbegyndt |
+| 3.1 | Chat/hire-flow forbundet + søkort-palette/rederi-sprog/signalflag | **Færdig** — se rapport 2026-08-12_trin3_side1, pushet. Kun logik+rendering browser-testet, ikke mod rigtig data (ingen DB i byggemiljøet) |
+| 3.2 | Aktivitets-stream m. detaljeniveauer, kommandopalet, virtualisering | Ikke påbegyndt — se "Bevidst udeladt" i side 3.1-rapporten |
 | 4 | Godkendelses-gates + risikoklasser + budgetkuvert + trust-niveauer | Ikke påbegyndt |
 | 5 | GitHub + Vercel preview | Ikke påbegyndt |
 | 6 | Bibliotekar + rapport-validering + stamtavle-opslag | Ikke påbegyndt |
@@ -121,8 +121,9 @@ Tilføjet senere:
 | 24 | Er hash-kædens scope (pr. business, ikke globalt) korrekt? | Rapport 2026-08-12_trin1a — antaget, afventer bekræftelse før 1b |
 | 25 | Skal alle Vagtpost-overtrædelser mappe til `AWAITING_OWNER_REVIEW`, eller skal "blokér altid"-regler have en strengere tilstand? | Rapport 2026-08-12_trin2_side1 |
 | 26 | Hvornår besluttes orchestrator/jobkø-arkitekturen (pkt. 41.2) konkret? | Rapport 2026-08-12_trin2_side1 — blokerer side 2.2 |
+| 27 | Skal Owner-key i localStorage anerkendes som "login v0", eller udskiftes helt uden mellemstadier når spm. 5 besluttes? | Rapport 2026-08-12_trin3_side1 |
 
-**Ingen blokeringer tilbage for trin 0–2.1.** #13, #16, #20 lukket i
+**Ingen blokeringer tilbage for trin 0–3.1.** #13, #16, #20 lukket i
 addendum 83. #6, #7 statusrettet i sundhedstjekket (pkt. 87). #8 retired.
 Side 2.2 (orchestrator/jobkø) afventer spørgsmål 26.
 

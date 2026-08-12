@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="da">
+<html lang="da" data-miljo="nat">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,173 +7,172 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
-    body { background-color: #0b0f17; color: #94a3b8; font-family: system-ui, -apple-system, sans-serif; }
-    .bg-card { background-color: #111827; }
-    .bg-sidebar { background-color: #070a11; }
-    .border-dark { border-color: #1f293d; }
-    .grid-bg {
-      background-image: radial-gradient(#1f293d 1px, transparent 1px);
-      background-size: 16px 16px;
+    /* Søkort-paletten (spec brainstorm B2) — to læsemiljøer (B3), ikke
+       light/dark mode: "Nat" til overvågning, "Dæk" til at læse agent-
+       prosa i timevis. Signalflag-tilstandsfarve (B1/pkt.57.2): hver
+       tilstand har ÉN farve, brugt konsekvent alle steder. */
+    html[data-miljo="nat"] {
+      --bg: #0d1b2e; --bg-elevated: #142438; --bg-sidebar: #0a1524; --bg-input: #0f2036;
+      --text: #dce4ec; --text-muted: #96a7bc;
+      --accent: #c9a668; --accent-strong: #ddbc7e; --accent-contrast: #1b1305;
+      --border: #22344a; --border-strong: #34496a;
+      --signal-running: #5fb0cc; --signal-awaiting: #d99a3d; --signal-done: #5c9169;
+      --signal-blocked: #7c8798; --signal-killed: #c15b52;
     }
-    .active-nav-tab { color: #10b981; border-bottom: 2px solid #10b981; }
+    html[data-miljo="dag"] {
+      --bg: #f2ead4; --bg-elevated: #e9dfc2; --bg-sidebar: #ece2c7; --bg-input: #fbf6e8;
+      --text: #241f14; --text-muted: #5c5540;
+      --accent: #8a6a35; --accent-strong: #6f5428; --accent-contrast: #fbf6e8;
+      --border: #cdbd97; --border-strong: #b3a077;
+      --signal-running: #2f6f83; --signal-awaiting: #a5680e; --signal-done: #3f6b4a;
+      --signal-blocked: #6d6656; --signal-killed: #a13a32;
+    }
+    :root { --font-serif: Georgia, 'Iowan Old Style', 'Palatino Linotype', serif; --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Consolas, monospace; }
+    body { background-color: var(--bg); color: var(--text); font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; transition: background-color .15s, color .15s; }
+
+    .ql-card { background-color: var(--bg-elevated); border-color: var(--border); }
+    .ql-sidebar { background-color: var(--bg-sidebar); }
+    .ql-border { border-color: var(--border); }
+    .ql-border-strong { border-color: var(--border-strong); }
+    .ql-text-muted { color: var(--text-muted); }
+    .ql-accent { color: var(--accent); }
+    .ql-accent-bg { background-color: var(--accent); color: var(--accent-contrast); }
+    .ql-accent-bg:hover { background-color: var(--accent-strong); }
+    .ql-input { background-color: var(--bg-input); border: 1px solid var(--border); color: var(--text); }
+    .ql-input:focus { outline: none; border-color: var(--accent); }
+    .ql-grid-bg { background-image: radial-gradient(var(--border) 1px, transparent 1px); background-size: 16px 16px; }
+    .ql-active-tab { color: var(--accent); border-bottom: 2px solid var(--accent); }
+    .ql-disabled { opacity: .45; cursor: not-allowed; }
     .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background: #1f293d; border-radius: 3px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* Signalflag — én farve pr. tilstand, brugt overalt (node, liste, stream) */
+    .ql-signal-running { color: var(--signal-running); }
+    .ql-signal-awaiting { color: var(--signal-awaiting); }
+    .ql-signal-done { color: var(--signal-done); }
+    .ql-signal-blocked { color: var(--signal-blocked); }
+    .ql-signal-killed { color: var(--signal-killed); }
+    .ql-dot { width: 8px; height: 8px; border-radius: 9999px; display: inline-block; flex-shrink: 0; }
+    .ql-dot.running { background: var(--signal-running); }
+    .ql-dot.awaiting { background: var(--signal-awaiting); }
+    .ql-dot.done { background: var(--signal-done); }
+    .ql-dot.blocked { background: var(--signal-blocked); }
+    .ql-dot.killed { background: var(--signal-killed); }
+
+    /* Chat-læsbarhed, spec pkt.21 + litterær typografi til agent-prosa (B4) */
+    .ql-msg { padding: 14px 16px; border-radius: 10px; margin-bottom: 14px; max-width: 72ch; }
+    .ql-msg-owner { background: var(--bg-input); border: 1px solid var(--border); margin-left: auto; }
+    .ql-msg-chief { background: var(--bg-elevated); border-left: 3px solid var(--accent); }
+    .ql-msg-report { background: var(--bg-elevated); border: 1px solid var(--border); }
+    .ql-msg-error { background: color-mix(in srgb, var(--signal-killed) 12%, var(--bg-elevated)); border-left: 3px solid var(--signal-killed); }
+    .ql-msg-status { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); padding: 3px 2px; }
+    .ql-prose { font-family: var(--font-serif); font-size: 15px; line-height: 1.6; }
+    .ql-meta { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); letter-spacing: .02em; }
   </style>
 </head>
 <body class="h-screen overflow-hidden">
 
   <!-- ================================================================= -->
-  <!-- 1. GLOBAL APP LEVEL LAYOUT (Main Navigation: Launch, Businesses, Integrations) -->
+  <!-- 1. GLOBAL APP LEVEL LAYOUT (Søsætning, Flåden, Integrationer) -->
   <!-- ================================================================= -->
   <div id="global-app-layout" class="h-full flex">
-    
+
     <!-- GLOBAL LEFT SIDEBAR -->
-    <aside class="w-60 bg-sidebar border-r border-dark flex flex-col justify-between p-4 shrink-0">
+    <aside class="w-60 ql-sidebar border-r ql-border flex flex-col justify-between p-4 shrink-0">
       <div class="space-y-6">
-        <!-- Logo -->
         <div class="flex items-center gap-2 px-2 cursor-pointer" onclick="navigateGlobal('launch')">
-          <div class="w-8 h-8 rounded bg-emerald-500/20 border border-emerald-500/50 flex items-center justify-center font-bold text-emerald-400">Q</div>
-          <span class="font-extrabold text-white text-lg tracking-wider">QuistLine<span class="text-xs text-emerald-400 block font-normal -mt-1">.ai</span></span>
+          <div class="w-8 h-8 rounded border flex items-center justify-center font-bold ql-accent ql-border-strong" style="background-color:color-mix(in srgb, var(--accent) 18%, transparent);">Q</div>
+          <span class="font-extrabold text-lg tracking-wider">QuistLine<span class="text-xs ql-accent block font-normal -mt-1">.ai</span></span>
         </div>
 
-        <!-- Navigation Menu -->
         <nav class="space-y-1 text-xs">
-          <button id="nav-launch" onclick="navigateGlobal('launch')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-emerald-400 bg-emerald-950/40 border border-emerald-500/30 font-medium transition">
-            <i class="fa-solid fa-rocket"></i> Launch new business
+          <button id="nav-launch" onclick="navigateGlobal('launch')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg ql-accent font-medium transition" style="background-color:color-mix(in srgb, var(--accent) 14%, transparent); border:1px solid color-mix(in srgb, var(--accent) 30%, transparent);">
+            <i class="fa-solid fa-anchor"></i> Søsætning
           </button>
-          <button id="nav-businesses" onclick="navigateGlobal('businesses')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-900 transition font-medium">
-            <i class="fa-solid fa-building flex-shrink-0"></i> Businesses
+          <button id="nav-businesses" onclick="navigateGlobal('businesses')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg ql-text-muted hover:opacity-80 transition font-medium">
+            <i class="fa-solid fa-water"></i> Flåden
           </button>
-          <button id="nav-integrations" onclick="navigateGlobal('integrations')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-900 transition font-medium">
-            <i class="fa-solid fa-plug"></i> Integrations
+          <button id="nav-integrations" onclick="navigateGlobal('integrations')" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg ql-text-muted hover:opacity-80 transition font-medium">
+            <i class="fa-solid fa-plug"></i> Integrationer
           </button>
 
-          <div class="pt-4 pb-1 text-[10px] font-bold text-slate-500 uppercase tracking-wider px-3">Marketplace</div>
-          <button class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-900 transition">
-            <i class="fa-solid fa-store"></i> Marketplace
-          </button>
-          <button class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-900 transition">
-            <i class="fa-solid fa-layer-group"></i> My Listings
+          <div class="pt-4 pb-1 text-[10px] font-bold ql-text-muted uppercase tracking-wider px-3">Handel</div>
+          <button class="w-full flex items-center gap-3 px-3 py-2 rounded-lg ql-text-muted ql-disabled" disabled title="Ikke bygget endnu — trin 10">
+            <i class="fa-solid fa-scroll"></i> Skibshandlen
           </button>
         </nav>
       </div>
 
-      <!-- Left Sidebar Bottom (Profile) -->
       <div class="space-y-3">
-        <div class="pt-2 border-t border-dark flex justify-between items-center text-xs px-1">
+        <button onclick="toggleMiljo()" class="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg ql-input text-xs font-medium" title="Skift mellem Dæk (læsning) og Nat (overvågning)">
+          <i class="fa-solid fa-compass"></i> Læsemiljø: <span data-miljo-label>Nat</span>
+        </button>
+        <div class="pt-2 border-t ql-border flex justify-between items-center text-xs px-1">
           <div class="flex items-center gap-2">
-            <div class="w-6 h-6 rounded-full bg-slate-800 flex items-center justify-center text-[10px] text-white">A</div>
-            <div class="text-slate-200 font-medium text-[11px]">Angel</div>
+            <div class="w-6 h-6 rounded-full flex items-center justify-center text-[10px]" style="background-color: var(--bg-input);">A</div>
+            <div class="font-medium text-[11px]">Angel</div>
           </div>
-          <i class="fa-solid fa-headset text-slate-500 hover:text-white cursor-pointer" title="Support"></i>
+          <i class="fa-solid fa-key ql-text-muted hover:opacity-70 cursor-pointer" title="Owner-key" onclick="changeOwnerKey()"></i>
         </div>
       </div>
     </aside>
 
     <!-- GLOBAL MAIN CONTENT AREA -->
-    <main class="flex-1 overflow-y-auto bg-slate-950 p-8 custom-scrollbar">
+    <main class="flex-1 overflow-y-auto p-8 custom-scrollbar">
 
-      <!-- VIEW 1: LAUNCH NEW BUSINESS -->
+      <!-- VIEW 1: SØSÆTNING -->
       <div id="view-launch" class="max-w-3xl mx-auto space-y-6 pt-6">
-        <h1 class="text-2xl font-bold text-white text-center">What business do you want to launch?</h1>
+        <h1 class="text-2xl font-bold text-center">Hvilket skib skal søsættes?</h1>
 
-        <!-- Prompt Text Area -->
-        <div class="bg-card border border-dark rounded-xl p-4 space-y-4">
-          <textarea rows="5" class="w-full bg-transparent text-slate-200 text-sm focus:outline-none resize-none" placeholder="Who's it for? What does it do? How will it make money? Rough notes are perfect."></textarea>
-          <div class="flex justify-between items-center pt-2 border-t border-dark">
-            <div class="flex items-center gap-2 text-xs text-slate-400 bg-slate-900 px-3 py-1.5 rounded-lg border border-dark">
-              <i class="fa-solid fa-robot"></i> Auto model
+        <div class="ql-card border rounded-xl p-4 space-y-4">
+          <input id="launch-name" type="text" placeholder="Projektnavn (fx GoogleSyn)" class="w-full ql-input rounded-lg px-3 py-2 text-sm" />
+          <textarea id="launch-brief" rows="5" class="w-full bg-transparent text-sm focus:outline-none resize-none ql-prose" style="font-size:14px;" placeholder="Hvem er det for? Hvad gør det? Hvordan tjener det penge? Løse noter er fint."></textarea>
+          <div class="flex justify-between items-center pt-2 border-t ql-border">
+            <div class="flex items-center gap-2 text-xs ql-text-muted ql-input px-3 py-1.5 rounded-lg">
+              <i class="fa-solid fa-robot"></i> Groq · llama-3.3-70b-versatile
             </div>
-            <button class="bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 transition">
-              <i class="fa-solid fa-rocket"></i> Launch business
+            <button id="launch-btn" onclick="launchBusiness()" class="ql-accent-bg px-5 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 transition">
+              <i class="fa-solid fa-anchor"></i> Søsæt
             </button>
           </div>
         </div>
 
-        <!-- Quick Access to Active Business -->
         <div class="pt-6">
-          <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Your Businesses</div>
-          <div onclick="openBusiness('GoogleSyn')" class="bg-card border border-dark hover:border-emerald-500/50 rounded-xl p-4 flex justify-between items-center cursor-pointer transition group">
-            <div class="flex items-center gap-3">
-              <div class="w-9 h-9 rounded-lg bg-indigo-950 border border-indigo-500/30 flex items-center justify-center text-indigo-400 font-bold">G</div>
-              <div>
-                <div class="font-bold text-white text-sm group-hover:text-emerald-400 transition">GoogleSyn</div>
-                <div class="text-xs text-slate-500 flex items-center gap-2">
-                  <span class="w-2 h-2 rounded-full bg-amber-500"></span> Paused
-                </div>
-              </div>
-            </div>
-            <i class="fa-solid fa-chevron-right text-slate-600 group-hover:text-emerald-400 transition"></i>
+          <div class="text-xs font-bold ql-text-muted uppercase tracking-wider mb-3">Flåden — de seneste</div>
+          <div id="fleet-quick-list" class="space-y-2">
+            <div class="ql-meta">Henter Flåden…</div>
           </div>
         </div>
       </div>
 
-      <!-- VIEW 2: BUSINESSES LIST -->
+      <!-- VIEW 2: FLÅDEN -->
       <div id="view-businesses" class="hidden max-w-4xl mx-auto space-y-6 pt-4">
         <div>
-          <h1 class="text-xl font-bold text-white">Businesses</h1>
-          <p class="text-xs text-slate-400">Manage the businesses you're building.</p>
+          <h1 class="text-xl font-bold">Flåden</h1>
+          <p class="text-xs ql-text-muted">Alle skibe under søsætning eller i drift.</p>
         </div>
-
-        <!-- Business Card -->
-        <div class="bg-card border border-dark rounded-xl p-5 flex items-center justify-between">
-          <div class="flex items-center gap-4">
-            <div class="w-14 h-14 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-white font-bold text-2xl">G</div>
-            <div class="space-y-1">
-              <div class="flex items-center gap-3">
-                <h3 class="font-bold text-white text-base">GoogleSyn</h3>
-                <span class="text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded-full font-medium">Paused</span>
-              </div>
-              <div class="text-xs text-slate-400 flex items-center gap-4">
-                <span>Active 27m ago</span>
-                <span>Employees: <i class="fa-solid fa-crown text-amber-400"></i> Lead, <i class="fa-solid fa-code text-indigo-400"></i> Engineer</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="flex items-center gap-2">
-            <button onclick="openBusiness('GoogleSyn')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2 transition">
-              Open <i class="fa-solid fa-arrow-right text-xs"></i>
-            </button>
-            <button class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-2 rounded-lg text-xs font-semibold">
-              <i class="fa-solid fa-shop"></i> Sell
-            </button>
-          </div>
-        </div>
-
-        <!-- Marketplace Banner -->
-        <div class="bg-gradient-to-r from-emerald-950/40 to-slate-900 border border-emerald-600/30 rounded-xl p-5 flex justify-between items-center">
-          <div>
-            <div class="font-bold text-white text-sm mb-1">Browse the marketplace</div>
-            <div class="text-xs text-slate-400">Buy a ready-to-run AI business and skip the setup.</div>
-          </div>
-          <button class="bg-emerald-950 border border-emerald-600/50 text-emerald-400 hover:bg-emerald-900 px-4 py-2 rounded-lg text-xs font-semibold">Discover businesses &rarr;</button>
+        <div id="fleet-list" class="space-y-3">
+          <div class="ql-meta">Henter Flåden…</div>
         </div>
       </div>
 
-      <!-- VIEW 3: INTEGRATIONS -->
+      <!-- VIEW 3: INTEGRATIONER -->
       <div id="view-integrations" class="hidden max-w-4xl mx-auto space-y-6 pt-4">
         <div>
-          <h1 class="text-xl font-bold text-white">Integrations</h1>
-          <p class="text-xs text-slate-400">Connect external tools to power your AI business agents</p>
+          <h1 class="text-xl font-bold">Integrationer</h1>
+          <p class="text-xs ql-text-muted">Forbind eksterne værktøjer til agenterne.</p>
         </div>
-
         <div class="space-y-4">
-          <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">CODE</div>
-          <div class="bg-card border border-dark rounded-xl p-5 flex justify-between items-center">
+          <div class="text-xs font-bold ql-text-muted uppercase tracking-wider">KODE</div>
+          <div class="ql-card border rounded-xl p-5 flex justify-between items-center">
             <div class="flex items-center gap-4">
-              <i class="fa-brands fa-github text-3xl text-white"></i>
+              <i class="fa-brands fa-github text-3xl"></i>
               <div>
-                <div class="font-bold text-white text-sm">GitHub <span class="text-xs text-slate-500 font-normal ml-2">• Not connected</span></div>
-                <div class="text-xs text-slate-400">Connect GitHub so businesses can work on your repositories.</div>
+                <div class="font-bold text-sm">GitHub <span class="text-xs ql-text-muted font-normal ml-2">· Ikke forbundet</span></div>
+                <div class="text-xs ql-text-muted">Forbind GitHub så Engineer kan arbejde i dine repos.</div>
               </div>
             </div>
-            <button class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-xs font-semibold">Connect GitHub</button>
-          </div>
-
-          <div class="text-xs font-bold text-slate-400 uppercase tracking-wider pt-4">MCPS & TOOLS</div>
-          <div class="bg-card border border-dark rounded-xl p-5 text-xs text-slate-500 text-center">
-            Ingen tools tilføjet endnu.
+            <button class="ql-input px-4 py-2 rounded-lg text-xs font-semibold ql-disabled" disabled title="Ikke bygget endnu — trin 5">Forbind GitHub</button>
           </div>
         </div>
       </div>
@@ -181,374 +180,455 @@
     </main>
   </div>
 
-
   <!-- ================================================================= -->
-  <!-- 2. BUSINESS WORKSPACE LEVEL LAYOUT (Inside GoogleSyn Headquarters) -->
+  <!-- 2. WORKSPACE (inde i et skib) -->
   <!-- ================================================================= -->
   <div id="workspace-app-layout" class="h-full flex flex-col hidden">
 
-    <!-- WORKSPACE TOP HEADER -->
-    <header class="h-12 bg-sidebar border-b border-dark flex items-center justify-between px-4 text-xs shrink-0">
+    <header class="h-12 ql-sidebar border-b ql-border flex items-center justify-between px-4 text-xs shrink-0">
       <div class="flex items-center gap-3">
         <div class="flex items-center gap-2 cursor-pointer" onclick="navigateGlobal('launch')">
-          <div class="w-6 h-6 rounded bg-emerald-500/20 border border-emerald-500/50 flex items-center justify-center font-bold text-emerald-400 text-xs">Q</div>
-          <span class="font-bold text-white">QuistLine.ai</span>
+          <div class="w-6 h-6 rounded flex items-center justify-center font-bold ql-accent text-xs" style="background-color:color-mix(in srgb, var(--accent) 18%, transparent);">Q</div>
+          <span class="font-bold">QuistLine.ai</span>
         </div>
-        <span class="text-slate-600">/</span>
-        <div class="flex items-center gap-2 bg-slate-900 border border-dark px-2.5 py-1 rounded text-slate-200">
-          <i class="fa-solid fa-building-flag text-emerald-400"></i>
-          <span id="workspace-business-name" class="font-semibold">GoogleSyn</span>
-          <i class="fa-solid fa-pen text-[10px] text-slate-500 cursor-pointer"></i>
+        <span class="ql-text-muted">/</span>
+        <div class="flex items-center gap-2 ql-input px-2.5 py-1 rounded">
+          <i class="fa-solid fa-ship ql-accent"></i>
+          <span id="workspace-business-name" class="font-semibold"></span>
         </div>
       </div>
 
-      <!-- Top Nav Right Actions -->
-      <div class="flex items-center gap-4 text-slate-400">
-        <button onclick="navigateGlobal('launch')" class="hover:text-white flex items-center gap-1"><i class="fa-solid fa-house"></i> Home</button>
-        <button onclick="navigateGlobal('businesses')" class="hover:text-white flex items-center gap-1"><i class="fa-solid fa-store"></i> Marketplace</button>
-        <a href="#" class="hover:text-white flex items-center gap-1"><i class="fa-solid fa-book"></i> Documentation</a>
-        <button class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1 rounded-md font-medium text-xs flex items-center gap-1.5 transition">
-          <i class="fa-solid fa-shop"></i> Sell this business
+      <div class="flex items-center gap-4 ql-text-muted">
+        <button onclick="navigateGlobal('launch')" class="hover:opacity-70 flex items-center gap-1"><i class="fa-solid fa-house"></i> Hjem</button>
+        <button onclick="toggleMiljo()" class="hover:opacity-70 flex items-center gap-1"><i class="fa-solid fa-compass"></i> <span data-miljo-label>Nat</span></button>
+        <button class="ql-input px-3 py-1 rounded-md font-medium text-xs flex items-center gap-1.5 ql-disabled" disabled title="Ikke bygget endnu — trin 10">
+          <i class="fa-solid fa-scroll"></i> Sælg dette skib
         </button>
       </div>
     </header>
 
-    <!-- WORKSPACE SUB HEADER (Tabs: Headquarters, Tasks, Files...) -->
-    <div class="bg-sidebar border-b border-dark px-4 flex justify-between items-center text-xs shrink-0">
+    <div class="ql-sidebar border-b ql-border px-4 flex justify-between items-center text-xs shrink-0">
       <nav class="flex gap-6">
-        <button onclick="switchTab('hq')" id="tab-hq" class="py-2.5 active-nav-tab font-semibold flex items-center gap-1.5 cursor-pointer">
-          <i class="fa-solid fa-gauge-high"></i> Headquarters
+        <button onclick="switchTab('hq')" id="tab-hq" class="py-2.5 ql-active-tab font-semibold flex items-center gap-1.5 cursor-pointer">
+          <i class="fa-solid fa-gauge-high"></i> Hovedkvarter
         </button>
-        <button onclick="switchTab('tasks')" id="tab-tasks" class="py-2.5 text-slate-400 hover:text-white flex items-center gap-1.5 cursor-pointer">
-          <i class="fa-solid fa-list-check"></i> Tasks
+        <button onclick="switchTab('tasks')" id="tab-tasks" class="py-2.5 ql-text-muted flex items-center gap-1.5 cursor-pointer">
+          <i class="fa-solid fa-list-check"></i> Opgaver
         </button>
-        <button onclick="switchTab('files')" id="tab-files" class="py-2.5 text-slate-400 hover:text-white flex items-center gap-1.5 cursor-pointer">
-          <i class="fa-solid fa-folder"></i> Files
+        <button onclick="switchTab('files')" id="tab-files" class="py-2.5 ql-text-muted flex items-center gap-1.5 cursor-pointer">
+          <i class="fa-solid fa-folder"></i> Filer
         </button>
-        <button onclick="switchTab('inbox')" id="tab-inbox" class="py-2.5 text-slate-400 hover:text-white flex items-center gap-1.5 cursor-pointer">
-          <i class="fa-solid fa-inbox"></i> Inbox
-        </button>
-        <button onclick="switchTab('ads')" id="tab-ads" class="py-2.5 text-slate-400 hover:text-white flex items-center gap-1.5 cursor-pointer">
-          <i class="fa-solid fa-bullhorn"></i> Ads
-        </button>
-        <button onclick="switchTab('finance')" id="tab-finance" class="py-2.5 text-slate-400 hover:text-white flex items-center gap-1.5 cursor-pointer">
-          <i class="fa-solid fa-wallet"></i> Finance
-        </button>
-        <button onclick="switchTab('settings')" id="tab-settings" class="py-2.5 text-slate-400 hover:text-white flex items-center gap-1.5 cursor-pointer">
-          <i class="fa-solid fa-gear"></i> Settings
-        </button>
+        <button class="py-2.5 ql-text-muted ql-disabled flex items-center gap-1.5" disabled title="Ikke bygget endnu"><i class="fa-solid fa-inbox"></i> Indbakke</button>
+        <button class="py-2.5 ql-text-muted ql-disabled flex items-center gap-1.5" disabled title="Ikke bygget endnu — trin 8"><i class="fa-solid fa-bullhorn"></i> Annoncer</button>
+        <button class="py-2.5 ql-text-muted ql-disabled flex items-center gap-1.5" disabled title="Ikke bygget endnu — trin 8"><i class="fa-solid fa-wallet"></i> Økonomi</button>
       </nav>
-      <button class="bg-emerald-950 border border-emerald-600/50 text-emerald-400 hover:bg-emerald-900 px-3 py-1 rounded text-xs font-medium flex items-center gap-1">
-        <i class="fa-regular fa-comment"></i> Open chat
-      </button>
     </div>
 
-    <!-- WORKSPACE MAIN CONTENT AREA -->
     <div class="flex-1 flex min-h-0">
 
-      <!-- SUBTAB 1: HEADQUARTERS -->
+      <!-- SUBTAB: HOVEDKVARTER -->
       <div id="subtab-hq" class="flex-1 flex min-w-0">
-        
-        <!-- HQ LEFT SIDEBAR -->
-        <aside class="w-64 bg-sidebar border-r border-dark p-3 flex flex-col justify-between shrink-0 custom-scrollbar overflow-y-auto">
+
+        <aside class="w-64 ql-sidebar border-r ql-border p-3 flex flex-col justify-between shrink-0 custom-scrollbar overflow-y-auto">
           <div class="space-y-5">
-            <button class="w-full py-2 bg-emerald-950/40 hover:bg-emerald-900/50 border border-emerald-600/50 text-emerald-400 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 transition">
-              <i class="fa-solid fa-play"></i> Resume business
-            </button>
-
-            <!-- TODO LIST -->
             <div>
-              <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                <i class="fa-solid fa-circle-check text-emerald-500"></i> MY TODO LIST
+              <div class="text-[11px] font-bold ql-text-muted uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <i class="fa-solid fa-clipboard-list"></i> Afventer dig
               </div>
-              <div class="bg-card border border-dark rounded-lg p-6 text-center text-slate-500 text-xs">
-                <i class="fa-solid fa-circle-check text-2xl mb-2 text-slate-600"></i>
-                <p>All caught up</p>
-              </div>
+              <div id="hq-awaiting" class="ql-card border rounded-lg p-4 text-center ql-text-muted text-xs">Intet afventer dig</div>
             </div>
-
-            <!-- LATEST TASKS -->
             <div>
-              <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                <i class="fa-solid fa-bars-staggered"></i> LATEST TASKS
+              <div class="text-[11px] font-bold ql-text-muted uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <i class="fa-solid fa-bars-staggered"></i> Seneste opgaver
               </div>
-              <div class="bg-card border border-dark rounded-lg p-6 text-center text-slate-500 text-xs">
-                <i class="fa-solid fa-pause text-xl mb-2 text-slate-600"></i>
-                <p>Business is paused</p>
-              </div>
-            </div>
-
-            <!-- ADS & FINANCE -->
-            <div>
-              <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                <i class="fa-solid fa-bullhorn text-slate-500"></i> ADS
-              </div>
-              <button class="w-full py-2 bg-slate-900 border border-emerald-500/40 text-emerald-400 hover:bg-slate-800 rounded-lg text-xs font-medium flex items-center justify-center gap-2">
-                <i class="fa-solid fa-robot"></i> Promote on ChatGPT
-              </button>
-            </div>
-
-            <div>
-              <div class="flex justify-between items-center mb-2">
-                <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                  <i class="fa-solid fa-wallet text-slate-500"></i> FINANCE
-                </span>
-              </div>
-              <div class="bg-card border border-dark rounded-lg p-3 flex justify-between items-center">
-                <span class="text-xs text-slate-400">Balance</span>
-                <span class="text-sm font-bold text-white">$0.00</span>
-              </div>
+              <div id="hq-latest" class="ql-card border rounded-lg p-4 text-center ql-text-muted text-xs">Ingen opgaver endnu</div>
             </div>
           </div>
-
-          <div class="pt-4 border-t border-dark flex items-center justify-between text-xs">
-            <div class="text-slate-200 font-medium truncate w-36">angel@corehost.one</div>
-          </div>
+          <div class="pt-4 border-t ql-border text-xs ql-text-muted truncate">angel@corehost.one</div>
         </aside>
 
-        <!-- HQ CENTER CANVAS PANEL -->
-        <main class="flex-1 flex flex-col min-w-0 bg-slate-950">
-          
-          <!-- Top Banners -->
-          <div class="p-3 border-b border-dark space-y-2 bg-slate-900/40">
-            <div class="bg-slate-900/80 border border-dark rounded-lg p-2 flex items-center justify-between text-xs">
-              <div class="flex items-center gap-2">
-                <i class="fa-solid fa-arrows-rotate text-emerald-400"></i>
-                <span class="font-bold text-slate-200">Your limit has reset</span>
-              </div>
-              <button class="bg-emerald-950 border border-emerald-600/50 text-emerald-400 hover:bg-emerald-900 px-3 py-1 rounded text-xs font-medium">Resume</button>
-            </div>
-          </div>
-
-          <!-- View Toggle Bar -->
-          <div class="px-4 py-2 border-b border-dark flex justify-between items-center text-xs bg-sidebar">
+        <main class="flex-1 flex flex-col min-w-0">
+          <div class="px-4 py-2 border-b ql-border flex justify-between items-center text-xs ql-sidebar">
             <div class="flex items-center gap-4">
-              <button onclick="toggleMainView('team')" id="btn-view-team" class="font-bold text-white flex items-center gap-1">TEAM</button>
-              <button onclick="toggleMainView('site')" id="btn-view-site" class="font-medium text-slate-400 hover:text-white flex items-center gap-1">
-                <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block"></span> SITE
+              <button onclick="toggleMainView('team')" id="btn-view-team" class="font-bold flex items-center gap-1">SKIB</button>
+              <button onclick="toggleMainView('site')" id="btn-view-site" class="font-medium ql-text-muted flex items-center gap-1">
+                <span class="ql-dot done"></span> SITE
               </button>
             </div>
-
-            <div class="flex items-center gap-4 text-slate-400 text-[11px]">
-              <span>USAGE: <span class="bg-emerald-950 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-800">DAILY</span> 13%</span>
-            </div>
           </div>
 
-          <!-- TEAM CANVAS -->
-          <div id="view-team-canvas" class="flex-1 grid-bg p-6 relative overflow-y-auto custom-scrollbar flex flex-col justify-between">
-            <div class="flex flex-col items-center justify-center space-y-6 py-4">
-              <!-- Lead Node -->
-              <div class="bg-card border border-dark p-4 rounded-xl flex items-center gap-4 shadow-xl">
-                <div class="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center text-amber-400 text-xl font-bold">
-                  <i class="fa-solid fa-crown"></i>
-                </div>
-                <div>
-                  <div class="font-bold text-white text-xs">lead</div>
-                  <select class="bg-slate-900 border border-dark rounded text-slate-300 text-[10px] mt-1">
-                    <option value="" selected disabled>Vælg model…</option>
-                  </select>
-                </div>
-              </div>
-
-              <div class="w-0.5 h-6 bg-slate-700"></div>
-
-              <!-- Engineer Node -->
-              <div class="bg-card border border-dark p-4 rounded-xl flex items-center gap-4 shadow-xl">
-                <div class="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center text-indigo-400 text-xl font-bold">
-                  <i class="fa-solid fa-code"></i>
-                </div>
-                <div>
-                  <div class="font-bold text-white text-xs">engineer</div>
-                  <select class="bg-slate-900 border border-dark rounded text-slate-300 text-[10px] mt-1">
-                    <option value="" selected disabled>Vælg model…</option>
-                  </select>
-                </div>
+          <!-- SKIB-canvas (team) -->
+          <div id="view-team-canvas" class="flex-1 ql-grid-bg p-6 relative overflow-y-auto custom-scrollbar flex flex-col justify-center items-center gap-6">
+            <div class="ql-card border p-4 rounded-xl flex items-center gap-4 shadow-xl">
+              <div class="w-12 h-12 rounded-full flex items-center justify-center ql-accent text-xl font-bold" style="background-color: var(--bg-input);"><i class="fa-solid fa-crown"></i></div>
+              <div>
+                <div class="font-bold text-xs">chief</div>
+                <select disabled title="Dynamisk modelliste — åbent spørgsmål 9" class="ql-input rounded text-[10px] mt-1 ql-disabled">
+                  <option value="" selected disabled>Groq · llama-3.3-70b</option>
+                </select>
               </div>
             </div>
-
-            <!-- LIVE TERMINAL LOG -->
-            <div class="bg-card border border-dark rounded-lg overflow-hidden font-mono text-[11px]">
-              <div class="bg-slate-900 px-3 py-1.5 border-b border-dark flex justify-between items-center text-slate-400">
-                <span class="flex items-center gap-2"><i class="fa-solid fa-terminal text-emerald-400"></i> LIVE ACTIVITY</span>
-              </div>
-              <div class="p-3 space-y-1 text-slate-400 bg-slate-950/80">
-                <div><span class="text-slate-600">[aug. 11 01:34:08 CEST]</span> <span class="text-indigo-400">TOOL</span> — engineer: Terminal</div>
-                <div><span class="text-slate-600">[aug. 11 01:34:18 CEST]</span> <span class="text-amber-500">PAUSED</span> — Team paused: usage limit reached</div>
+            <div class="w-0.5 h-6" style="background-color: var(--border);"></div>
+            <div class="ql-card border p-4 rounded-xl flex items-center gap-4 shadow-xl">
+              <div class="w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold" style="background-color: var(--bg-input); color: var(--signal-running);"><i class="fa-solid fa-code"></i></div>
+              <div>
+                <div class="font-bold text-xs">engineer</div>
+                <select disabled title="Dynamisk modelliste — åbent spørgsmål 9" class="ql-input rounded text-[10px] mt-1 ql-disabled">
+                  <option value="" selected disabled>Groq · llama-3.3-70b</option>
+                </select>
               </div>
             </div>
           </div>
 
-          <!-- LIVE SITE PREVIEW -->
-          <div id="view-site-preview" class="flex-1 flex flex-col min-h-0 hidden bg-slate-900">
-            <div class="p-2 border-b border-dark flex items-center gap-2 text-xs bg-sidebar">
-              <span class="text-slate-400 font-mono">googlesyn.quistline.app</span>
-            </div>
-            <div class="flex-1 bg-white text-slate-900 p-8 overflow-y-auto">
-              <div class="max-w-xl mx-auto text-center space-y-4 py-10">
-                <h1 class="text-3xl font-extrabold">Gratis Google-synlighedstjek</h1>
-                <p class="text-slate-600">Se hvor findbar din virksomhed er på Google på 30 sekunder.</p>
-              </div>
-            </div>
+          <div id="view-site-preview" class="flex-1 flex flex-col min-h-0 hidden">
+            <div class="flex-1 flex items-center justify-center text-xs ql-text-muted">Ingen live preview endnu — trin 5 (Vercel preview).</div>
           </div>
-
         </main>
 
-        <!-- HQ RIGHT CHAT PANEL -->
-        <aside class="w-80 border-l border-dark bg-sidebar flex flex-col justify-between shrink-0">
-          <div class="p-3 border-b border-dark flex justify-between items-center text-xs">
-            <span class="font-bold text-slate-200 flex items-center gap-1.5"><i class="fa-solid fa-crown text-amber-400"></i> Chief Lead Chat</span>
-            <span class="bg-emerald-950 border border-emerald-600/50 text-emerald-400 text-[10px] px-2 py-0.5 rounded font-mono font-bold">ONLINE</span>
+        <!-- CHIEF-CHAT (skibsjournalen, ægte /api/agent + /api/events) -->
+        <aside class="w-96 border-l ql-border ql-sidebar flex flex-col justify-between shrink-0">
+          <div class="p-3 border-b ql-border flex justify-between items-center text-xs">
+            <span class="font-bold flex items-center gap-1.5"><i class="fa-solid fa-crown ql-accent"></i> Chief</span>
+            <span class="ql-input text-[10px] px-2 py-0.5 rounded font-mono font-bold ql-signal-running">ONLINE</span>
           </div>
 
-          <div class="flex-1 p-3 space-y-3 overflow-y-auto custom-scrollbar text-xs">
-            <div class="bg-slate-900/60 border border-dark rounded-lg p-3 text-emerald-400 text-[11px] leading-relaxed">
-              Opret opgaver i Tasks eller bed mig om at scanne virksomheder. Jeg koordinerer direkte med Engineer for at bygge dine produkter.
-            </div>
+          <div id="chat-feed" class="flex-1 p-3 overflow-y-auto custom-scrollbar text-xs">
+            <div class="ql-meta" style="padding:16px;">Åbn eller søsæt et skib for at se skibsjournalen.</div>
           </div>
 
-          <div class="p-3 border-t border-dark space-y-2 bg-slate-900/30">
+          <div class="p-3 border-t ql-border space-y-2">
+            <label class="flex items-center gap-2 text-[11px] ql-text-muted">
+              <input id="hire-engineer-checkbox" type="checkbox" />
+              Hyr Engineer til denne opgave
+            </label>
             <div class="relative">
-              <input type="text" placeholder="Skriv til Chief..." class="w-full bg-slate-950 border border-dark rounded-lg pl-3 pr-8 py-2 text-xs text-white focus:outline-none focus:border-slate-600" />
-              <button class="absolute right-2 top-2 text-slate-500 hover:text-emerald-400"><i class="fa-solid fa-paper-plane"></i></button>
+              <input id="chat-input" type="text" placeholder="Skriv til Chief…" class="w-full ql-input rounded-lg pl-3 pr-8 py-2 text-xs" onkeydown="if(event.key==='Enter'){sendToChief()}" />
+              <button id="chat-send-btn" onclick="sendToChief()" class="absolute right-2 top-2 ql-text-muted hover:opacity-70"><i class="fa-solid fa-paper-plane"></i></button>
             </div>
           </div>
         </aside>
-
       </div>
 
-      <!-- SUBTAB 2: TASKS -->
-      <div id="subtab-tasks" class="hidden flex-1 p-6 overflow-y-auto bg-slate-950">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div class="space-y-3">
-            <div class="font-bold text-xs text-slate-300">BACKLOG</div>
-            <div class="bg-card border border-dark p-4 rounded-xl text-xs text-slate-200">Execute GoogleSyn's lead scan for frisører</div>
-          </div>
-          <div class="space-y-3">
-            <div class="font-bold text-xs text-slate-300">WORKING</div>
-            <div class="bg-card/40 border border-dark p-6 rounded-xl text-xs text-slate-500 text-center">Ingen opgaver i gang</div>
-          </div>
-          <div class="space-y-3">
-            <div class="font-bold text-xs text-slate-300">DONE</div>
-            <div class="bg-card border border-dark p-4 rounded-xl text-xs text-slate-200">Build GoogleSyn MVP landing page</div>
-          </div>
+      <!-- SUBTAB: OPGAVER (signalflag-grupperet) -->
+      <div id="subtab-tasks" class="hidden flex-1 p-6 overflow-y-auto custom-scrollbar">
+        <div id="task-board" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="ql-meta">Åbn et skib for at se dets opgaver.</div>
         </div>
       </div>
 
-      <!-- SUBTAB 3: FILES -->
-      <div id="subtab-files" class="hidden flex-1 flex bg-slate-950">
-        <div class="w-64 border-r border-dark p-3 bg-sidebar text-xs font-mono space-y-2">
-          <div class="text-slate-400">shared &gt; site</div>
-          <div class="text-amber-400"><i class="fa-solid fa-folder"></i> src</div>
-          <div class="text-slate-300"><i class="fa-regular fa-file"></i> index.html</div>
+      <!-- SUBTAB: FILER -->
+      <div id="subtab-files" class="hidden flex-1 flex">
+        <div class="w-64 border-r ql-border p-3 ql-sidebar text-xs font-mono space-y-2">
+          <div class="ql-text-muted">shared &gt; site</div>
+          <div class="ql-accent"><i class="fa-solid fa-folder"></i> src</div>
+          <div><i class="fa-regular fa-file"></i> index.html</div>
         </div>
-        <div class="flex-1 flex items-center justify-center text-xs text-slate-600">Vælg en fil for at få vist indholdet</div>
+        <div class="flex-1 flex items-center justify-center text-xs ql-text-muted">Vælg en fil for at få vist indholdet.</div>
       </div>
-
-      <!-- PLACEHOLDERS FOR REMAINING TABS -->
-      <div id="subtab-inbox" class="hidden flex-1 p-8 text-slate-400 text-xs bg-slate-950">Inbox funktioner.</div>
-      <div id="subtab-ads" class="hidden flex-1 p-8 text-slate-400 text-xs bg-slate-950">Ads integrationer.</div>
-      <div id="subtab-finance" class="hidden flex-1 p-8 text-slate-400 text-xs bg-slate-950">Økonomi oversigt.</div>
-      <div id="subtab-settings" class="hidden flex-1 p-8 text-slate-400 text-xs bg-slate-950">Virksomhedsindstillinger.</div>
 
     </div>
   </div>
 
-  <!-- BRANDING BADGE (jf. spec pkt. 5 — viser kun "QuistLine.ai") -->
-  <!-- Værdier matcher branding/badge.json. Hardcoded her fordi server.js endnu
-       ikke serverer /branding statisk — ægte dynamisk indlæsning er en
-       backend-opgave for trin 5 (GitHub + Vercel preview), ikke trin 0. -->
-  <div style="position:fixed;bottom:12px;left:12px;z-index:50;font-family:'JetBrains Mono',monospace;font-size:11px;color:#94a3b8;background-color:rgba(15,23,42,0.6);border:1px solid rgba(30,41,59,0.8);padding:4px 10px;border-radius:6px;pointer-events:none;">
+  <!-- BRANDING BADGE (spec pkt.5 — viser kun "QuistLine.ai") -->
+  <div style="position:fixed;bottom:12px;left:12px;z-index:50;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-muted);background-color:var(--bg-elevated);border:1px solid var(--border);padding:4px 10px;border-radius:6px;pointer-events:none;">
     QuistLine.ai
   </div>
 
-  <!-- JAVASCRIPT APP ROUTING LOGIK -->
   <script>
-    // 1. Navigation på Global App Level (Sidebar)
+    // ---------------------------------------------------------------
+    // Læsemiljø (Dæk/Nat, spec brainstorm B3) — ikke light/dark mode,
+    // to forskellige arbejdsformer. Persisteret i localStorage.
+    // ---------------------------------------------------------------
+    function applyMiljo(miljo) {
+      document.documentElement.setAttribute('data-miljo', miljo);
+      localStorage.setItem('quistline_miljo', miljo);
+      document.querySelectorAll('[data-miljo-label]').forEach(el => { el.textContent = miljo === 'dag' ? 'Dæk' : 'Nat'; });
+    }
+    function toggleMiljo() {
+      const current = document.documentElement.getAttribute('data-miljo') || 'nat';
+      applyMiljo(current === 'nat' ? 'dag' : 'nat');
+    }
+
+    // ---------------------------------------------------------------
+    // Owner-key (stopgap-auth, jf. src/server.js). Gemmes i localStorage.
+    // NB: dette er IKKE et rigtigt login (spec åbent spørgsmål 5) — det er
+    // synligt for enhver med adgang til denne browser. Acceptabelt for et
+    // ét-ejer-internt værktøj, der endnu ikke er offentligt hærdet.
+    // ---------------------------------------------------------------
+    let OWNER_KEY = localStorage.getItem('quistline_owner_key') || '';
+
+    function ensureOwnerKey() {
+      if (!OWNER_KEY) {
+        const entered = prompt('Indtast din Owner-key (samme værdi som OWNER_API_KEY i .env). Lad stå tom, hvis den ikke er sat på serveren.');
+        if (entered) {
+          OWNER_KEY = entered.trim();
+          localStorage.setItem('quistline_owner_key', OWNER_KEY);
+        }
+      }
+    }
+    function changeOwnerKey() {
+      const entered = prompt('Ny Owner-key:', OWNER_KEY);
+      if (entered !== null) {
+        OWNER_KEY = entered.trim();
+        if (OWNER_KEY) localStorage.setItem('quistline_owner_key', OWNER_KEY);
+        else localStorage.removeItem('quistline_owner_key');
+      }
+    }
+
+    function escapeHtml(str) {
+      return String(str == null ? '' : str).replace(/[&<>"']/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+    }
+
+    async function api(path, { method = 'GET', body } = {}) {
+      const headers = { 'Content-Type': 'application/json' };
+      if (OWNER_KEY) headers['x-owner-key'] = OWNER_KEY;
+      const res = await fetch(path, { method, headers, body: body ? JSON.stringify(body) : undefined });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || `Fejl (${res.status})`);
+      return data;
+    }
+
+    // ---------------------------------------------------------------
+    // Signalflag: én farve/label pr. tilstand (spec pkt.41.3 + 57.2)
+    // ---------------------------------------------------------------
+    const SIGNAL_BY_STATUS = {
+      DRAFT: 'running', AWAITING_TOOL_APPROVAL: 'awaiting', AWAITING_HIRE_APPROVAL: 'awaiting',
+      RUNNING: 'running', BLOCKED_ON_DEPENDENCY: 'blocked', AWAITING_OWNER_REVIEW: 'awaiting',
+      APPROVED: 'done', AWAITING_DEPLOY_APPROVAL: 'awaiting', DONE: 'done', KILLED: 'killed'
+    };
+    const STATUS_LABEL = {
+      DRAFT: 'Kladde', AWAITING_TOOL_APPROVAL: 'Afventer tool-godkendelse', AWAITING_HIRE_APPROVAL: 'Afventer hyring',
+      RUNNING: 'I gang', BLOCKED_ON_DEPENDENCY: 'Blokeret', AWAITING_OWNER_REVIEW: 'Afventer dig',
+      APPROVED: 'Godkendt', AWAITING_DEPLOY_APPROVAL: 'Afventer deploy', DONE: 'Færdig', KILLED: 'Stoppet'
+    };
+
+    // ---------------------------------------------------------------
+    // Global navigation (uændret struktur fra trin 0, kun omdøbt/omfarvet)
+    // ---------------------------------------------------------------
     function navigateGlobal(viewName) {
-      // Vis Global layout, skjul Workspace layout
       document.getElementById('global-app-layout').classList.remove('hidden');
       document.getElementById('workspace-app-layout').classList.add('hidden');
+      CURRENT_BUSINESS = null;
 
-      // Skjul alle globale visninger
-      ['launch', 'businesses', 'integrations'].forEach(v => {
+      ['launch', 'businesses', 'integrations'].forEach((v) => {
         const viewEl = document.getElementById(`view-${v}`);
         const navBtn = document.getElementById(`nav-${v}`);
-        
         if (viewEl) viewEl.classList.add('hidden');
-        if (navBtn) {
-          navBtn.classList.remove('text-emerald-400', 'bg-emerald-950/40', 'border', 'border-emerald-500/30');
-          navBtn.classList.add('text-slate-400');
-        }
+        if (navBtn) { navBtn.classList.remove('ql-accent'); navBtn.classList.add('ql-text-muted'); navBtn.style.backgroundColor = ''; navBtn.style.border = ''; }
       });
 
-      // Vis den valgte visning
       const targetView = document.getElementById(`view-${viewName}`);
       const targetNav = document.getElementById(`nav-${viewName}`);
-
       if (targetView) targetView.classList.remove('hidden');
       if (targetNav) {
-        targetNav.classList.add('text-emerald-400', 'bg-emerald-950/40', 'border', 'border-emerald-500/30');
-        targetNav.classList.remove('text-slate-400');
+        targetNav.classList.add('ql-accent'); targetNav.classList.remove('ql-text-muted');
+        targetNav.style.backgroundColor = 'color-mix(in srgb, var(--accent) 14%, transparent)';
+        targetNav.style.border = '1px solid color-mix(in srgb, var(--accent) 30%, transparent)';
       }
+      if (viewName === 'launch' || viewName === 'businesses') loadFleet();
     }
 
-    // 2. Åbn en specifik Business (Går ind i HQ)
-    function openBusiness(businessName) {
-      document.getElementById('global-app-layout').classList.add('hidden');
-      document.getElementById('workspace-app-layout').classList.remove('hidden');
-      document.getElementById('workspace-business-name').innerText = businessName;
-      
-      // Sæt standard fane til HQ
-      switchTab('hq');
-    }
-
-    // 3. Navigation inde i selve Business Workspace (HQ, Tasks, Files osv.)
     function switchTab(tabId) {
-      const allTabs = ['hq', 'tasks', 'files', 'inbox', 'ads', 'finance', 'settings'];
-
-      allTabs.forEach(id => {
+      const allTabs = ['hq', 'tasks', 'files'];
+      allTabs.forEach((id) => {
         const contentEl = document.getElementById(`subtab-${id}`);
         const tabBtn = document.getElementById(`tab-${id}`);
-
         if (contentEl) contentEl.classList.add('hidden');
-        if (tabBtn) {
-          tabBtn.classList.remove('active-nav-tab', 'font-semibold');
-          tabBtn.classList.add('text-slate-400');
-        }
+        if (tabBtn) { tabBtn.classList.remove('ql-active-tab', 'font-semibold'); tabBtn.classList.add('ql-text-muted'); }
       });
-
       const activeContent = document.getElementById(`subtab-${tabId}`);
       const activeTabBtn = document.getElementById(`tab-${tabId}`);
-
       if (activeContent) activeContent.classList.remove('hidden');
-      if (activeTabBtn) {
-        activeTabBtn.classList.add('active-nav-tab', 'font-semibold');
-        activeTabBtn.classList.remove('text-slate-400');
-      }
+      if (activeTabBtn) { activeTabBtn.classList.add('ql-active-tab', 'font-semibold'); activeTabBtn.classList.remove('ql-text-muted'); }
     }
 
-    // 4. Skift mellem TEAM og SITE i HQ
     function toggleMainView(view) {
       const teamCanvas = document.getElementById('view-team-canvas');
       const sitePreview = document.getElementById('view-site-preview');
       const btnTeam = document.getElementById('btn-view-team');
       const btnSite = document.getElementById('btn-view-site');
+      const showTeam = view === 'team';
+      teamCanvas.classList.toggle('hidden', !showTeam);
+      sitePreview.classList.toggle('hidden', showTeam);
+      btnTeam.className = showTeam ? 'font-bold flex items-center gap-1' : 'font-medium ql-text-muted flex items-center gap-1';
+      btnSite.className = showTeam ? 'font-medium ql-text-muted flex items-center gap-1' : 'font-bold flex items-center gap-1';
+    }
 
-      if (view === 'team') {
-        if (teamCanvas) teamCanvas.classList.remove('hidden');
-        if (sitePreview) sitePreview.classList.add('hidden');
-        if (btnTeam) btnTeam.className = 'font-bold text-white flex items-center gap-1';
-        if (btnSite) btnSite.className = 'font-medium text-slate-400 hover:text-white flex items-center gap-1';
-      } else {
-        if (teamCanvas) teamCanvas.classList.add('hidden');
-        if (sitePreview) sitePreview.classList.remove('hidden');
-        if (btnSite) btnSite.className = 'font-bold text-white flex items-center gap-1';
-        if (btnTeam) btnTeam.className = 'font-medium text-slate-400 hover:text-white flex items-center gap-1';
+    // ---------------------------------------------------------------
+    // Flåden — GET /api/businesses (ægte endpoint, ingen fake-data)
+    // ---------------------------------------------------------------
+    async function loadFleet() {
+      const quickList = document.getElementById('fleet-quick-list');
+      const fullList = document.getElementById('fleet-list');
+      try {
+        const businesses = await api('/api/businesses');
+        const html = businesses.length
+          ? businesses.map((b) => `
+              <div onclick="openBusiness('${b.id}', '${escapeHtml(b.name).replace(/'/g, "\\'")}')" class="ql-card border rounded-xl p-4 flex justify-between items-center cursor-pointer transition group">
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-lg flex items-center justify-center font-bold ql-accent" style="background-color: var(--bg-input);">${escapeHtml(b.name[0] || '?').toUpperCase()}</div>
+                  <div>
+                    <div class="font-bold text-sm">${escapeHtml(b.name)}</div>
+                    <div class="text-xs ql-text-muted flex items-center gap-2"><span class="ql-dot done"></span> ${escapeHtml(b.status)}</div>
+                  </div>
+                </div>
+                <i class="fa-solid fa-chevron-right ql-text-muted"></i>
+              </div>`).join('')
+          : `<div class="ql-meta">Ingen skibe søsat endnu.</div>`;
+        if (quickList) quickList.innerHTML = html;
+        if (fullList) fullList.innerHTML = html;
+      } catch (err) {
+        const errHtml = `<div class="ql-msg ql-msg-error ql-meta">Kunne ikke hente Flåden: ${escapeHtml(err.message)}</div>`;
+        if (quickList) quickList.innerHTML = errHtml;
+        if (fullList) fullList.innerHTML = errHtml;
       }
     }
 
-    // Start på Launch-siden ved indlæsning
+    async function launchBusiness() {
+      const nameInput = document.getElementById('launch-name');
+      const briefInput = document.getElementById('launch-brief');
+      const name = nameInput.value.trim();
+      const brief = briefInput.value.trim();
+      if (!name || !brief) { alert('Udfyld både projektnavn og en kort brief.'); return; }
+      ensureOwnerKey();
+      const btn = document.getElementById('launch-btn');
+      btn.disabled = true;
+      try {
+        const result = await api('/api/agent', { method: 'POST', body: { prompt: brief, projectName: name, hireWorker: false } });
+        nameInput.value = ''; briefInput.value = '';
+        await loadFleet();
+        openBusiness(result.businessId, name);
+      } catch (err) {
+        alert('Søsætning fejlede: ' + err.message);
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    // ---------------------------------------------------------------
+    // Workspace — chat (skibsjournalen) + opgaver, begge fra rigtige endpoints
+    // ---------------------------------------------------------------
+    let CURRENT_BUSINESS = null;
+
+    function openBusiness(businessId, businessName) {
+      CURRENT_BUSINESS = { id: businessId, name: businessName };
+      document.getElementById('global-app-layout').classList.add('hidden');
+      document.getElementById('workspace-app-layout').classList.remove('hidden');
+      document.getElementById('workspace-business-name').innerText = businessName;
+      switchTab('hq');
+      refreshWorkspace();
+    }
+
+    async function refreshWorkspace() {
+      if (!CURRENT_BUSINESS) return;
+      await Promise.all([loadEvents(), loadTasksForCurrentBusiness()]);
+    }
+
+    function renderEvent(ev) {
+      const time = new Date(ev.created_at).toLocaleString('da-DK', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short' });
+      if (ev.type === 'message' && ev.agent_id === 'owner') {
+        return `<div class="ql-msg ql-msg-owner"><div class="ql-meta" style="margin-bottom:6px;">DIG · ${time}</div><div class="ql-prose">${escapeHtml(ev.payload?.prompt)}</div></div>`;
+      }
+      if (ev.type === 'message') {
+        return `<div class="ql-msg ql-msg-chief"><div class="ql-meta" style="margin-bottom:6px;"><i class="fa-solid fa-crown ql-accent"></i> CHIEF · ${time}</div><div class="ql-prose">${escapeHtml(ev.payload?.content)}</div></div>`;
+      }
+      if (ev.type === 'report') {
+        return `<div class="ql-msg ql-msg-report"><div class="ql-meta" style="margin-bottom:6px;"><i class="fa-solid fa-code"></i> ENGINEER-RAPPORT · ${time}</div><pre class="ql-prose" style="white-space:pre-wrap; font-size:14px; margin:0;">${escapeHtml(ev.payload?.content)}</pre></div>`;
+      }
+      if (ev.type === 'guard_violation') {
+        return `<div class="ql-msg ql-msg-error"><div class="ql-meta" style="margin-bottom:4px;"><i class="fa-solid fa-triangle-exclamation"></i> VAGTPOST STOPPEDE OPGAVEN · ${time}</div><div class="ql-meta">${escapeHtml(ev.payload?.rule)}: ${escapeHtml(ev.payload?.detail)}</div></div>`;
+      }
+      if (ev.type === 'state_transition') {
+        return `<div class="ql-msg-status"><i class="fa-solid fa-arrow-right-long"></i> ${escapeHtml(ev.payload?.from || '–')} → ${escapeHtml(ev.payload?.to)} · ${time}</div>`;
+      }
+      return `<div class="ql-msg-status">${escapeHtml(ev.type)} · ${time}</div>`;
+    }
+
+    async function loadEvents() {
+      const feed = document.getElementById('chat-feed');
+      try {
+        const events = await api(`/api/events?businessId=${encodeURIComponent(CURRENT_BUSINESS.id)}`);
+        feed.innerHTML = events.length
+          ? events.map(renderEvent).join('')
+          : `<div class="ql-meta" style="padding:16px;">Ingen beskeder endnu i skibsjournalen for dette skib.</div>`;
+        feed.scrollTop = feed.scrollHeight;
+      } catch (err) {
+        feed.innerHTML = `<div class="ql-msg ql-msg-error ql-meta">Kunne ikke hente skibsjournalen: ${escapeHtml(err.message)}</div>`;
+      }
+    }
+
+    async function sendToChief() {
+      const input = document.getElementById('chat-input');
+      const hireCheckbox = document.getElementById('hire-engineer-checkbox');
+      const text = input.value.trim();
+      if (!text || !CURRENT_BUSINESS) return;
+      ensureOwnerKey();
+      const sendBtn = document.getElementById('chat-send-btn');
+      sendBtn.disabled = true;
+      input.value = '';
+      try {
+        await api('/api/agent', { method: 'POST', body: { prompt: text, projectName: CURRENT_BUSINESS.name, hireWorker: hireCheckbox.checked } });
+        hireCheckbox.checked = false;
+        await refreshWorkspace();
+      } catch (err) {
+        alert('Kunne ikke sende til Chief: ' + err.message);
+        input.value = text;
+      } finally {
+        sendBtn.disabled = false;
+      }
+    }
+
+    function renderTaskBoard(tasks) {
+      const board = document.getElementById('task-board');
+      const buckets = { awaiting: [], running: [], done: [], killed: [] };
+      tasks.forEach((t) => buckets[SIGNAL_BY_STATUS[t.status] || 'running'].push(t));
+
+      const column = (title, dotClass, items) => `
+        <div class="space-y-3">
+          <div class="font-bold text-xs flex items-center gap-2"><span class="ql-dot ${dotClass}"></span> ${title}</div>
+          ${items.length
+            ? items.map((t) => `<div class="ql-card border p-4 rounded-xl text-xs"><div class="font-medium">${escapeHtml(t.title)}</div><div class="ql-meta mt-1">${escapeHtml(STATUS_LABEL[t.status] || t.status)}</div></div>`).join('')
+            : `<div class="ql-card border p-6 rounded-xl text-xs ql-text-muted text-center">Ingen</div>`}
+        </div>`;
+
+      board.innerHTML = column('Afventer dig', 'awaiting', buckets.awaiting)
+        + column('I gang', 'running', buckets.running)
+        + column('Færdig', 'done', buckets.done)
+        + (buckets.killed.length ? column('Stoppet', 'killed', buckets.killed) : '');
+
+      const hqAwaiting = document.getElementById('hq-awaiting');
+      const hqLatest = document.getElementById('hq-latest');
+      if (hqAwaiting) {
+        hqAwaiting.innerHTML = buckets.awaiting.length
+          ? buckets.awaiting.map((t) => `<div class="text-left text-xs mb-2"><span class="ql-dot awaiting"></span> ${escapeHtml(t.title)}</div>`).join('')
+          : 'Intet afventer dig';
+        hqAwaiting.className = buckets.awaiting.length ? 'text-xs' : 'ql-card border rounded-lg p-4 text-center ql-text-muted text-xs';
+      }
+      if (hqLatest) {
+        const latest = tasks.slice(0, 3);
+        hqLatest.innerHTML = latest.length
+          ? latest.map((t) => `<div class="text-left text-xs mb-2"><span class="ql-dot ${SIGNAL_BY_STATUS[t.status]}"></span> ${escapeHtml(t.title)}</div>`).join('')
+          : 'Ingen opgaver endnu';
+        hqLatest.className = latest.length ? 'text-xs' : 'ql-card border rounded-lg p-4 text-center ql-text-muted text-xs';
+      }
+    }
+
+    async function loadTasksForCurrentBusiness() {
+      const board = document.getElementById('task-board');
+      try {
+        const allTasks = await api('/api/tasks');
+        const tasks = allTasks.filter((t) => t.business_id === CURRENT_BUSINESS.id);
+        renderTaskBoard(tasks);
+      } catch (err) {
+        board.innerHTML = `<div class="ql-meta">Kunne ikke hente opgaver: ${escapeHtml(err.message)}</div>`;
+      }
+    }
+
+    // ---------------------------------------------------------------
+    // Opstart
+    // ---------------------------------------------------------------
     document.addEventListener('DOMContentLoaded', () => {
+      applyMiljo(localStorage.getItem('quistline_miljo') || 'nat');
       navigateGlobal('launch');
     });
   </script>

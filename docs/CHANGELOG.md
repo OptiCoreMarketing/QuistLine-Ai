@@ -9,6 +9,7 @@
 - `GET /api/events` og `GET /api/events/verify` til at læse og verificere hash-kæden.
 - Trin 2, side 2.1: task-tilstandsmaskine (`src/taskStateMachine.js`, `migrations/002_state_machine.sql`) og alle 8 Vagtpost lag 1-regler (`src/guards.js`), jf. spec pkt. 41.3/60.1/84.
 - Kontraktvalidering + hemmeligheds-scanner koblet på `/api/agent`s hireWorker-flow.
+- Trin 3, side 3.1: `GET /api/businesses`, og `src/public/index.html` omskrevet — søkort-palette + to læsemiljøer (Dæk/Nat), signalflag-tilstandsfarver, rederi-sprog, chat/hire-flow forbundet til rigtige endpoints.
 ### Fjernet
 - Mongoose/MongoDB — erstattet af Postgres som system of record (spec pkt. 83).
 - `src/tasks.json` — dødt seed-data, blev ikke brugt af nogen kode.

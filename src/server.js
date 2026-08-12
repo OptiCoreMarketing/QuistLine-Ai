@@ -98,6 +98,17 @@ async function findOrCreateBusiness(name) {
 const CHIEF_PROMPT = `Du er CHIEF, Lead Agent på QuistLine.ai. Du koordinerer direkte med Owner. Spørg ALTID om lov før du hyrer en Engineer til at bygge. Tving mappestruktur: /branding, /memory, /docs, /reports, /src, /tests.`;
 const ENGINEER_PROMPT = `Du er ENGINEER, en Worker Agent. Når du bygger, skal du oprette en struktureret rapport med sektionerne: # Task Rapport, ## Status, ## Ændringer, ## Tests og ## Anbefalinger.`;
 
+// GET /api/businesses - Hent Flåden (alle businesses), nyeste først
+app.get("/api/businesses", requireOwnerKey, requireDatabase, async (req, res) => {
+  try {
+    const { rows } = await pool.query("SELECT * FROM business ORDER BY created_at DESC");
+    res.json(rows);
+  } catch (err) {
+    console.error("Postgres-fejl (GET /api/businesses):", err);
+    res.status(500).json({ error: "Kunne ikke hente Flåden" });
+  }
+});
+
 // GET /api/tasks - Hent opgaver fra Postgres, nyeste først
 app.get("/api/tasks", requireOwnerKey, requireDatabase, async (req, res) => {
   try {
