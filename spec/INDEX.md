@@ -4,10 +4,11 @@
 *Sidst opdateret: 12. august 2026*
 
 **Projektstatus: BYGGERI I GANG.** Trin 0, 1a, 2.1, 3.1–3.3 og 4.1 er
-gennemført, verificeret mod en rigtig Postgres, og pushet. Hyring er nu en
+gennemført, verificeret mod en rigtig Postgres **og et rigtigt Groq-kald**,
+og pushet — intet tilbageværende uverificeret stykke. Hyring er nu en
 rigtig, teknisk håndhævet godkendelses-gate (side 4.1) — ikke kun en
-instruktion i en prompt. Fem reelle fejl er fundet og rettet under
-verifikationerne, se seneste to rapporter. Side 2.2 (orchestrator/jobkø)
+instruktion i en prompt. Seks reelle fejl er fundet og rettet under
+verifikationerne, se de seneste rapporter. Side 2.2 (orchestrator/jobkø)
 er bevidst udskudt — kræver en hosting-beslutning, se spørgsmål 26.
 
 ---

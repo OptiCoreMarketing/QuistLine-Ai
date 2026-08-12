@@ -20,6 +20,8 @@
 - **En task kunne blive fanget i `RUNNING` for evigt**, hvis Groq-kaldet efter en godkendt hyring fejlede. Sættes nu til `KILLED` med sporbar årsag.
 - **Godkendelseskort i UI'et forblev aktive for evigt**, selv efter afgørelse — samme fejlklasse som "kræver mig"-filteret. Viser nu korrekt "Afgjort — status: X".
 - **UI'et opdaterede sig ikke, når en godkendelse "lykkedes server-side men rapporteredes som fejl"** (task blev sat til KILLED, men klienten fik kun en 500). `finally`-genindlæsning tilføjet.
+### Verificeret
+- Ægte Groq-kald (plain chat + fuldt hire-flow) kørt end-to-end mod rigtig Postgres. Intet resterende uverificeret stykke i trin 0–4.1. Se `reports/2026-08-12_groq_end_to_end_verifikation.md`.
 ### Fjernet
 - Mongoose/MongoDB — erstattet af Postgres som system of record (spec pkt. 83).
 - `src/tasks.json` — dødt seed-data, blev ikke brugt af nogen kode.
