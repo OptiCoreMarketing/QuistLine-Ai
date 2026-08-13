@@ -21,10 +21,15 @@ const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 // er ubesluttet). Formål: forhindre at en tilfældig tredjepart, der finder
 // URL'en, kan trigge betalte Groq-kald på din nøgle. Erstattes af en rigtig
 // godkendelses-model, når trin 4 (godkendelses-gates) bygges. ---
+let ownerKeyWarningLogged = false;
+
 function requireOwnerKey(req, res, next) {
   const configuredKey = process.env.OWNER_API_KEY;
   if (!configuredKey) {
-    console.warn("ADVARSEL: OWNER_API_KEY er ikke sat i miljøvariabler — dette endpoint er UBESKYTTET.");
+    if (!ownerKeyWarningLogged) {
+      console.warn("ADVARSEL: OWNER_API_KEY er ikke sat i miljøvariabler — dette endpoint er UBESKYTTET.");
+      ownerKeyWarningLogged = true;
+    }
     return next();
   }
   const providedKey = req.header("x-owner-key");
@@ -40,15 +45,28 @@ function requireOwnerKey(req, res, next) {
 // mellem invocations) — det er et lag, ikke løsningen. Den rigtige løsning
 // er budgetkuverten (spec pkt. 56.3), der lever i databasen, bygges trin 4. ---
 const RATE_LIMIT_PER_MINUTE = Number(process.env.RATE_LIMIT_PER_MINUTE) || 20;
+const RATE_LIMIT_WINDOW_MS = 60_000;
 const requestLog = new Map();
+
+// Uden oprydning vokser requestLog for evigt — hver ny IP, der nogensinde
+// har ramt serveren, blev siddende i hukommelsen resten af processens levetid,
+// selv efter dens vindue er udløbet. Fejer udløbne poster væk med samme
+// interval som selve vinduet.
+setInterval(() => {
+  const now = Date.now();
+  for (const [ip, entry] of requestLog) {
+    if (now - entry.windowStart > RATE_LIMIT_WINDOW_MS) {
+      requestLog.delete(ip);
+    }
+  }
+}, RATE_LIMIT_WINDOW_MS).unref();
 
 function rateLimit(req, res, next) {
   const ip = req.ip || "unknown";
   const now = Date.now();
-  const windowMs = 60_000;
   const entry = requestLog.get(ip);
 
-  if (!entry || now - entry.windowStart > windowMs) {
+  if (!entry || now - entry.windowStart > RATE_LIMIT_WINDOW_MS) {
     requestLog.set(ip, { windowStart: now, count: 1 });
     return next();
   }
@@ -163,14 +181,27 @@ app.patch("/api/businesses/:businessId", requireOwnerKey, requireDatabase, async
   }
 });
 
-// GET /api/tasks - Hent opgaver fra Postgres, nyeste først
+// GET /api/tasks - Hent opgaver fra Postgres, nyeste først. Valgfrit
+// ?businessId= filtrerer server-side (samme mønster som GET /api/events) —
+// uden dette sendte endpointet ALLE tasks på tværs af alle businesses ved
+// hvert workspace-åbn, og klienten filtrerede selv, hvilket er spild af
+// båndbredde og DB-arbejde, der kun vokser med antal projekter.
 app.get("/api/tasks", requireOwnerKey, requireDatabase, async (req, res) => {
+  const { businessId } = req.query;
   try {
-    const { rows } = await pool.query(
-      `SELECT task.*, business.name AS business_name
-       FROM task JOIN business ON business.id = task.business_id
-       ORDER BY task.created_at DESC`
-    );
+    const { rows } = businessId
+      ? await pool.query(
+          `SELECT task.*, business.name AS business_name
+           FROM task JOIN business ON business.id = task.business_id
+           WHERE task.business_id = $1
+           ORDER BY task.created_at DESC`,
+          [businessId]
+        )
+      : await pool.query(
+          `SELECT task.*, business.name AS business_name
+           FROM task JOIN business ON business.id = task.business_id
+           ORDER BY task.created_at DESC`
+        );
     res.json(rows);
   } catch (err) {
     console.error("Postgres-fejl (GET /api/tasks):", err);

@@ -679,9 +679,16 @@
       el.innerHTML = events.map(renderEvent).join('');
     }
 
-    function renderEvent(ev) {
+    // interactive=false bruges af "Hvorfor?"-kæde-modalen (showChain), som er
+    // en historisk, skrivebeskyttet visning — uden dette ville et klik på
+    // Godkend/Afvis/Fortsæt/Stop inde i modalen godt nok virke (den kalder
+    // samme globale funktioner), men modalens EGET indhold ville ikke
+    // genindlæses bagefter og fortsætte med at vise de nu-forældede knapper.
+    function renderEvent(ev, interactive = true) {
       const time = new Date(ev.created_at).toLocaleString('da-DK', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short' });
-      const chainBtn = `<button onclick="event.stopPropagation(); showChain('${ev.id}')" class="ql-text-muted hover:opacity-70" style="float:right;" title="Hvorfor? Vis kæden til denne hændelse"><i class="fa-solid fa-link"></i></button>`;
+      const chainBtn = interactive
+        ? `<button onclick="event.stopPropagation(); showChain('${ev.id}')" class="ql-text-muted hover:opacity-70" style="float:right;" title="Hvorfor? Vis kæden til denne hændelse"><i class="fa-solid fa-link"></i></button>`
+        : '';
       const taskAttr = ev.task_id ? ` data-task-id="${ev.task_id}"` : '';
 
       if (ev.type === 'message' && ev.agent_id === 'owner') {
@@ -701,7 +708,7 @@
         // guard_violation-kortet i side 3.2/lokal-verifikationen: en gammel
         // anmodning skal ikke kunne genafgøres eller se aktiv ud for evigt.
         const relatedTask = CURRENT_TASKS.find((t) => t.id === taskId);
-        const stillPending = relatedTask && relatedTask.status === 'AWAITING_HIRE_APPROVAL';
+        const stillPending = interactive && relatedTask && relatedTask.status === 'AWAITING_HIRE_APPROVAL';
         return `<div class="ql-msg ql-msg-chief"${taskAttr}>
           <div class="ql-meta" style="margin-bottom:6px;">${chainBtn}<i class="fa-solid fa-crown ql-accent"></i> CHIEF AFVENTER DIN GODKENDELSE · ${time}</div>
           <div class="ql-prose" style="margin-bottom:10px;">Hyre Engineer til: "${escapeHtml(promptSnippet)}${(ev.payload?.prompt || '').length > 140 ? '…' : ''}"?</div>
@@ -716,13 +723,20 @@
       }
       if (ev.type === 'guard_violation') {
         const taskId = ev.task_id || '';
+        // Samme fejlklasse som approval_request ovenfor: viste tidligere
+        // altid Fortsæt/Stop-knapper, blot fordi hændelsen havde en taskId —
+        // også når opgaven for længst var løst (i "vis alt"-visningen, hvor
+        // "kræver mig"-filteret ikke skjuler den). Tjek nu opgavens faktiske
+        // status, ligesom godkendelseskortet allerede gør.
+        const relatedTask = CURRENT_TASKS.find((t) => t.id === taskId);
+        const stillAwaiting = interactive && relatedTask && relatedTask.status === 'AWAITING_OWNER_REVIEW';
         return `<div class="ql-msg ql-msg-error"${taskAttr}>
           <div class="ql-meta" style="margin-bottom:4px;">${chainBtn}<i class="fa-solid fa-triangle-exclamation"></i> VAGTPOST STOPPEDE OPGAVEN · ${time}</div>
           <div class="ql-meta" style="margin-bottom:8px;">${escapeHtml(ev.payload?.rule)}: ${escapeHtml(ev.payload?.detail)}</div>
-          ${taskId ? `<div class="flex gap-2">
+          ${stillAwaiting ? `<div class="flex gap-2">
             <button onclick="resolveGuardTask('${taskId}','RUNNING')" class="ql-accent-bg text-[11px] px-3 py-1 rounded">Fortsæt opgaven</button>
             <button onclick="resolveGuardTask('${taskId}','KILLED')" class="ql-input text-[11px] px-3 py-1 rounded" style="color:var(--signal-killed);">Stop opgaven</button>
-          </div>` : ''}
+          </div>` : (taskId ? `<div class="ql-meta">Afgjort — status: ${escapeHtml(STATUS_LABEL[relatedTask?.status] || relatedTask?.status || 'ukendt')}</div>` : '')}
         </div>`;
       }
       if (ev.type === 'state_transition') {
@@ -747,7 +761,7 @@
     function showChain(eventId) {
       const chain = buildChain(eventId);
       document.getElementById('chain-modal-body').innerHTML = chain.length
-        ? chain.map(renderEvent).join('')
+        ? chain.map((e) => renderEvent(e, false)).join('')
         : `<div class="ql-meta">Denne hændelse har ingen forældre — den er kædens start.</div>`;
       const modal = document.getElementById('chain-modal');
       modal.classList.remove('hidden');
@@ -907,8 +921,10 @@
 
     async function loadTasksForCurrentBusiness() {
       try {
-        const allTasks = await api('/api/tasks');
-        CURRENT_TASKS = allTasks.filter((t) => t.business_id === CURRENT_BUSINESS.id);
+        // Server-side filter (samme mønster som GET /api/events) — undgår at
+        // hente hver eneste task på tværs af alle skibe, blot for at smide
+        // det meste væk client-side igen.
+        CURRENT_TASKS = await api(`/api/tasks?businessId=${encodeURIComponent(CURRENT_BUSINESS.id)}`);
         TASKS_ERROR = null;
       } catch (err) {
         CURRENT_TASKS = [];

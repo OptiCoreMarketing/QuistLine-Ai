@@ -1,6 +1,11 @@
 # Changelog · QuistLine.ai
 
 ## [Unreleased] - 2026-08-13
+### Rettet
+- **`GET /api/tasks` hentede altid alle tasks på tværs af alle businesses** — tilføjet valgfrit `?businessId=`-filter (samme mønster som `GET /api/events`), frontend opdateret til at bruge det i stedet for client-side filtrering.
+- **Rate limiter-Map'en (`requestLog`) voksede ubegrænset** — tilføjet periodisk oprydning af udløbne IP-poster.
+- **`console.warn` om manglende `OWNER_API_KEY` blev logget ved hver request** — logges nu kun én gang pr. proces-levetid.
+- **"Hvorfor?"-kædemodalen kunne vise forældede, klikbare handlingsknapper** (Godkend/Afvis, Fortsæt/Stop) for allerede-afgjorte opgaver — `renderEvent()` har nu et `interactive`-flag, som kæde-modalen sætter til `false`. Fandt samtidig, at `guard_violation`-kortet (i modsætning til `approval_request`) manglede den "er opgaven stadig afventende?"-kontrol fra side 3.2 — rettet til samme mønster. Se `reports/2026-08-13_debug_optimering.md`.
 ### Tilføjet
 - `PATCH /api/businesses/:businessId` — omdøb og/eller pause/genoptag et skib. `migrations/003_business_status.sql` giver `business.status` en håndhævet CHECK (`active`/`paused`), samme mønster som `task.status`.
 - Omdøb-blyant og Pause/Genoptag-knap i workspace-headeren; Flåden-listens statuspunkt viser nu korrekt aktiv/pauset (viste tidligere altid grøn uanset faktisk status).
